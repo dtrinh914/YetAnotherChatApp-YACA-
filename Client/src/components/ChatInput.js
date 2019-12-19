@@ -14,7 +14,7 @@ function ChatInput(props){
         clearMessage();
     }
     return(
-        <form className = 'ChatInput' onSubmit={handleSumbit}>
+        <form className='ChatInput' onSubmit={handleSumbit}>
             <input type="text" value={message} onChange={setMessage} />
             <button onClick={handleClick}>Send</button>
         </form>
