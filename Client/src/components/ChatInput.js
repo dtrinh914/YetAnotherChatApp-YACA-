@@ -7,17 +7,21 @@ function ChatInput(props){
 
     function handleClick(){
         props.newMessage(message);
-    }
-
-    function handleSumbit(e){
-        e.preventDefault()
         clearMessage();
     }
+    
+    function handleEnter(e){
+        if(e.key === 'Enter'){
+            e.preventDefault();
+            handleClick();
+        }
+    }
+
     return(
-        <form className='ChatInput' onSubmit={handleSumbit}>
-            <input type="text" value={message} onChange={setMessage} />
+        <div className='ChatInput'>
+            <textarea type="text" value={message} onChange={setMessage} onKeyPress={handleEnter} />
             <button onClick={handleClick}>Send</button>
-        </form>
+        </div>
     );
 }
 

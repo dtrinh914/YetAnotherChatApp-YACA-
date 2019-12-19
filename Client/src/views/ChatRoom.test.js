@@ -11,7 +11,7 @@ test('should match snapshot', () => {
 
 test('should type Hello World in chat input, press send, and Hello World should be displayed in chat window', ()=> {
     const {container} = render(<ChatRoom />);
-    const ChatInputBox = container.querySelector('.ChatInput input');
+    const ChatInputBox = container.querySelector('.ChatInput textarea');
     const ChatInputButton = container.querySelector('.ChatInput button');
     fireEvent.change(ChatInputBox, {target: {value: 'Hello World'}});
     fireEvent.click(ChatInputButton);

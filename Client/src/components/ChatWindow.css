@@ -1,0 +1,19 @@
+.ChatWindow{
+    height: 90vh;
+    background: white;
+    overflow: auto;
+}
+
+.ChatWindow ul{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ChatWindow li:nth-child(even){
+    background: lightgrey;
+}
+
+.ChatWindow li{
+    padding-left: 8px;
+}

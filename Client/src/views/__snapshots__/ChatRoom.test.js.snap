@@ -8,17 +8,16 @@ exports[`should match snapshot 1`] = `
     >
       <ul />
     </div>
-    <form
+    <div
       class="ChatInput"
     >
-      <input
+      <textarea
         type="text"
-        value=""
       />
       <button>
         Send
       </button>
-    </form>
+    </div>
   </div>
 </DocumentFragment>
 `;
