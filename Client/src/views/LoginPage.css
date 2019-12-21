@@ -1,0 +1,10 @@
+.LoginPage{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.LoginPage form{
+    display: flex;
+    flex-direction: column;
+}
