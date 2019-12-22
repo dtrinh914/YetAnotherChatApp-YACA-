@@ -9,13 +9,15 @@ function ChatRoom(){
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
-        socket = io('http://localhost:3000');
-        
-        //listens for new messages from the backend and updates state
-        socket.on('chat message', (message) => {
-            setMessages([...messages, message])
-        });
+        socket = io('http://localhost:5000');
     }, []);
+    
+    useEffect(() => {
+         //listens for new messages from the backend and updates state
+         socket.on('chat message', (message) => {
+            setMessages([...messages, message]);
+        });
+    }, [messages]);
 
     //Sends message to backend
     function newMessage(message){

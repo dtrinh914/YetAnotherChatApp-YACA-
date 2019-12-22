@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
 app.post('/users/login', (req,res) => {
-    res.send('Logged In');
+    res.redirect('/chat');
 });
 
 app.post('/users/new', (req, res) => {
@@ -38,6 +38,6 @@ io.on('connection', (socket) => {
     });
 });
 
-http.listen(3000, ()=> {
+http.listen(5000, ()=> {
     console.log('Server has started');
 });

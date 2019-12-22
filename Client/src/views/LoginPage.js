@@ -9,7 +9,7 @@ function LoginPage(){
     
     return(
         <div className='LoginPage' >
-            <form action='http://localhost:3000/users/login' method='POST'>
+            <form action='/users/login' method='POST'>
                 <h1>Sign In</h1>
                 <label htmlFor="username">Username</label>
                 <input type="text" name='username' id='username' value={username} onChange={setUsername} />
