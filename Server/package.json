@@ -9,9 +9,11 @@
   "author": "Duc Trinh",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^3.0.7",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "mongodb": "^3.4.1",
+    "node-gyp": "^5.0.7",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
