@@ -1,16 +1,16 @@
 import React from 'react';
-import ChatWindow from './ChatWindow';
+import Message from '../components/Message';
 import { render, cleanup } from '@testing-library/react';
 
 afterEach(cleanup);
 
 test('should match snapshot', () => {
-    const {asFragment} = render(<ChatWindow messages={[]} />)
+    const {asFragment} = render(<Message text={''} />)
     expect(asFragment()).toMatchSnapshot();
 });
 
 test('should render with correct message: Hello there! ', () => {
-    const {container} = render(<ChatWindow messages={['Hello there!']} />)
+    const {container} = render(<Message text={['Hello there!']} />)
     const message = container.querySelector('li').textContent;
     expect(message).toBe('Hello there!');
 })

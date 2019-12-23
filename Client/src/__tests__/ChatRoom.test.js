@@ -1,5 +1,5 @@
 import React from 'react';
-import ChatRoom from './ChatRoom';
+import ChatRoom from '../views/ChatRoom';
 import { render, cleanup, fireEvent } from '@testing-library/react';
 
 afterEach(cleanup);

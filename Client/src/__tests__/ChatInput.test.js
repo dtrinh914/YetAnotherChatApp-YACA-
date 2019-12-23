@@ -1,5 +1,5 @@
 import React from 'react';
-import ChatInput from './ChatInput';
+import ChatInput from '../components/ChatInput';
 import { render, cleanup } from '@testing-library/react';
 
 afterEach(cleanup);
