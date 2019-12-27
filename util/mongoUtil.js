@@ -2,8 +2,9 @@ const bcrypt = require('bcrypt');
 
 //Set up MongoClient
 const MongoClient = require('mongodb').MongoClient;
-const uri = require('../config/MONGO_DB_URI');
-const client = new MongoClient(uri, {poolSize: 10, useNewUrlParser: true, useUnifiedTopology: true });
+const ObjectId = require('mongodb').ObjectId;
+const {MONGO_DB_URI} = require('../config/config');
+const client = new MongoClient(MONGO_DB_URI, {poolSize: 10, useNewUrlParser: true, useUnifiedTopology: true });
 
 //Opens connection to database
 client.connect()
@@ -37,25 +38,24 @@ const addUser = async (username, password) =>{
 }
 
 const loginUser = async (username, password) => {
-    try{
-        const db = client.db('chat_app');
-        const collection = db.collection('users');
-        const user = await collection.findOne({username:username});
-
-        // returns 0 if user exists, inserts the new user data if it doesn't and returns 1
-        if(user){
-            const verified = await bcrypt.compare(password,user.password);
-            return verified ? 1 : 0;
-        } else {
-        //if user doesn't exist return 0
-            return 0;
-        }
-    // returns and logs -1 if there is an error
-    } catch(err){
-        console.log(err);
-        return -1;
+    const db = client.db('chat_app');
+    const collection = db.collection('users');
+    const user = await collection.findOne({username:username});
+    if(user){
+        const verified = await bcrypt.compare(password,user.password);
+        return {user: user, verified: verified};
+    } else {
+    //if user doesn't exist return 0
+        return {verifed: undefined};
     }
 }
 
+const findUserById = async (id) => {
+    const db = client.db('chat_app');
+    const collection = db.collection('users');
+    const user = await collection.findOne({_id: ObjectId(id)});
+    return user;
+}
 
-module.exports = {addUser, loginUser};
+
+module.exports = {addUser, loginUser, findUserById};

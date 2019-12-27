@@ -3,13 +3,14 @@ import io from 'socket.io-client';
 import ChatWindow from '../components/ChatWindow';
 import ChatInput from '../components/ChatInput';
 import './ChatRoom.css';
+import axios from 'axios';
 
 let socket;
 function ChatRoom(){
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
-        socket = io('http://localhost:5000');
+        socket = io();
         //listens for new messages from the backend and updates state
         socket.on('chat message', (message) => {
             setMessages(prevMsg => [...prevMsg, message]);

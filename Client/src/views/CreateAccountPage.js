@@ -8,7 +8,7 @@ function CreateAccountPage(){
     
     return(
         <div className='CreateAccountPage' >
-            <form action='/users/new' method='POST'>
+            <form action='api/users/new' method='POST'>
                 <h1>Create an Account</h1>
                 <label htmlFor="username">Username</label>
                 <input type="text" name='username' id='username' value={username} onChange={setUsername} />

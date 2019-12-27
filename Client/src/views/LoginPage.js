@@ -1,25 +1,45 @@
 import React from 'react';
 import useInput from '../hooks/useInput';
-import {Link} from 'react-router-dom';
+import {Link, Redirect} from 'react-router-dom';
+import axios from 'axios';
 import './LoginPage.css'
 
-function LoginPage(){
+function LoginPage({history, loggedIn}){
     const [username, setUsername] = useInput();
     const [password, setPassword] = useInput();
-    
-    return(
-        <div className='LoginPage' >
-            <form action='/users/login' method='POST'>
-                <h1>Sign In</h1>
-                <label htmlFor="username">Username</label>
-                <input type="text" name='username' id='username' value={username} onChange={setUsername} />
-                <label htmlFor="password">Password</label>
-                <input type="password" name='password' id='password' value={password} onChange={setPassword} />
-                <button>Login</button>
-                <Link exact to='/users/new'>Create User</Link>
-            </form>
-        </div>
-    );
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        axios.post('/api/users/login', {
+            username:username,
+            password:password,
+            withCredentials:true
+        })
+        .then( response => {
+            if(response.data.loggedIn){
+                history.push('/chat');
+            }
+        }) 
+        .catch( error => console.log(error));
+    }
+
+    if(loggedIn){
+        return <Redirect to='/chat' />
+    } else {
+        return(
+            <div className='LoginPage' >
+                <form onSubmit={handleSubmit}>
+                    <h1>Sign In</h1>
+                    <label htmlFor="username">Username</label>
+                    <input type="text" name='username' id='username' value={username} onChange={setUsername} />
+                    <label htmlFor="password">Password</label>
+                    <input type="password" name='password' id='password' value={password} onChange={setPassword} />
+                    <button>Login</button>
+                    <Link to='/users/new'>Create User</Link>
+                </form>
+            </div>
+        );
+    }
 }
 
 export default LoginPage; 
