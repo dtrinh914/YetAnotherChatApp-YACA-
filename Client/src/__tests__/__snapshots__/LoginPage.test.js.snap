@@ -5,10 +5,7 @@ exports[`should match snapshot 1`] = `
   <div
     class="LoginPage"
   >
-    <form
-      action="/users/login"
-      method="POST"
-    >
+    <form>
       <h1>
         Sign In
       </h1>

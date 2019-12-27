@@ -85,7 +85,7 @@ app.get('/api/users/logout', (req, res) => {
 // route to check is a user is logged in
 app.get('/api/users/loggedon', (req,res) => {
     if(req.isAuthenticated()){
-        res.json({loggedIn:true});
+        res.json({loggedIn:true, username:req.user.username});
     } else {
         res.json({loggedIn:false});
     }
@@ -99,7 +99,7 @@ app.post('/api/users/login', (req,res,next) => {
         if(err) return next(err);
         req.login(user, (err) => {
             if(err) return next(err);
-            return res.json({loggedIn:true});
+            return res.json({loggedIn:true, username:req.user.username});
         })
     })(req,res,next);
 });

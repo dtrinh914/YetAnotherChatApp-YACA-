@@ -6,7 +6,7 @@ exports[`should match snapshot 1`] = `
     class="CreateAccountPage"
   >
     <form
-      action="/users/new"
+      action="api/users/new"
       method="POST"
     >
       <h1>

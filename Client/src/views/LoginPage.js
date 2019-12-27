@@ -4,7 +4,7 @@ import {Link, Redirect} from 'react-router-dom';
 import axios from 'axios';
 import './LoginPage.css'
 
-function LoginPage({history, loggedIn}){
+function LoginPage({history, loggedIn, setUserData}){
     const [username, setUsername] = useInput();
     const [password, setPassword] = useInput();
 
@@ -17,6 +17,7 @@ function LoginPage({history, loggedIn}){
         })
         .then( response => {
             if(response.data.loggedIn){
+                setUserData(response.data);
                 history.push('/chat');
             }
         }) 

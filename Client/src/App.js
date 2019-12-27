@@ -17,8 +17,8 @@ function App() {
 
   return (
     <Switch>
-      <Route exact path = '/' render={(props) => <LoginPage {...props} {...userData} /> } />
-      <Route exact path = '/chat'><ChatRoom /></Route>
+      <Route exact path = '/' render={(props) => <LoginPage {...props} {...userData} setUserData={setUserData} />} />
+      <Route exact path = '/chat' render={(props) => <ChatRoom {...props} {...userData} setUserData={setUserData} />} />
       <Route exact path = '/users/new'><CreateAccountPage /></Route>
     </Switch>
   );
