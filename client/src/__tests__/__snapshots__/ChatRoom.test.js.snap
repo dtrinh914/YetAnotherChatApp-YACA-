@@ -3,6 +3,14 @@
 exports[`should match snapshot 1`] = `
 <DocumentFragment>
   <div>
+    <nav
+      class="Navbar"
+    >
+      <h1 />
+      <button>
+        Log Out
+      </button>
+    </nav>
     <div
       class="ChatWindow"
     >

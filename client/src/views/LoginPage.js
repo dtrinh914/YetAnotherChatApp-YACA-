@@ -1,12 +1,13 @@
 import React from 'react';
 import useInput from '../hooks/useInput';
-import {Link, Redirect} from 'react-router-dom';
+import {Link, Redirect, useHistory} from 'react-router-dom';
 import axios from 'axios';
 import './LoginPage.css'
 
-function LoginPage({history, loggedIn, setUserData}){
+function LoginPage({loggedIn, setUserData}){
     const [username, setUsername] = useInput();
     const [password, setPassword] = useInput();
+    let history = useHistory();
 
     const handleSubmit = (e) => {
         e.preventDefault();

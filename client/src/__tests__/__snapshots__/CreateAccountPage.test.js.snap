@@ -5,10 +5,7 @@ exports[`should match snapshot 1`] = `
   <div
     class="CreateAccountPage"
   >
-    <form
-      action="api/users/new"
-      method="POST"
-    >
+    <form>
       <h1>
         Create an Account
       </h1>

@@ -1,26 +1,28 @@
 import React, {useState, useEffect} from 'react';
+import {useHistory} from 'react-router-dom';
 import io from 'socket.io-client';
 import ChatWindow from '../components/ChatWindow';
 import ChatInput from '../components/ChatInput';
 import Navbar from '../components/Navbar';
 import './ChatRoom.css';
-import axios from 'axios';
 
 let socket;
-function ChatRoom({history, username, loggedIn, setUserData}){
+function ChatRoom({username, loggedIn, setUserData}){
     const [messages, setMessages] = useState([]);
+    let history = useHistory();
 
     useEffect(() => {
         //redirect if user is not logged in
         if(!loggedIn){
             history.push('/');
+        } else {
+            socket = io();
+            //listens for new messages from the backend and updates state
+            socket.on('chat message', (message) => {
+                setMessages(prevMsg => [...prevMsg, message]);
+            });
         }
-        socket = io();
-        //listens for new messages from the backend and updates state
-        socket.on('chat message', (message) => {
-            setMessages(prevMsg => [...prevMsg, message]);
-        });
-    }, []);
+    }, [loggedIn, history]);
 
     //Sends message to backend
     const newMessage = (message) => {
