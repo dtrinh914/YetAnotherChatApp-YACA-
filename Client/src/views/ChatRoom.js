@@ -11,6 +11,7 @@ function ChatRoom({history, username, loggedIn, setUserData}){
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
+        //redirect if user is not logged in
         if(!loggedIn){
             history.push('/');
         }
@@ -22,14 +23,19 @@ function ChatRoom({history, username, loggedIn, setUserData}){
     }, []);
 
     //Sends message to backend
-    function newMessage(message){
+    const newMessage = (message) => {
         socket.emit('chat message', message);
         setMessages(prevMsg => [...prevMsg, message]);
     }
 
+    //Closes all socket connections
+    const closeSockets = () => {
+        socket.close('chat message');
+    }
+
     return(
         <div>
-            <Navbar username={username} history={history} setUserData={setUserData} />
+            <Navbar username={username} history={history} setUserData={setUserData} closeSockets={closeSockets} />
             <ChatWindow messages={messages} />
             <ChatInput newMessage={newMessage} />
         </div>

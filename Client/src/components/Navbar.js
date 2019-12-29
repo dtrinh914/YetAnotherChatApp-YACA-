@@ -2,11 +2,12 @@ import React from 'react';
 import './Navbar.css'
 import axios from 'axios'
 
-function Navbar({username, history, setUserData}){
+function Navbar({username, history, setUserData, closeSockets}){
     const handleClick = () => {
         axios.get('/api/users/logout', {withCredentials:true})
         .then(res => {
             if(res.data.loggedIn === false){
+                closeSockets();
                 setUserData(res.data);
                 history.push('/');
             }
