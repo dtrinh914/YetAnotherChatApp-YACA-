@@ -18,20 +18,18 @@ function Chat({username, loggedIn, setUserData}){
 
     const [chatData, setChatData] = useState(seedData);
     const [selectedGroup, setSelectedGroup] = useState(chatData[0].id);
-
+    
     useEffect(() => {
         //redirect if user is not logged in
         if(!loggedIn){
             history.push('/');
         } else {
             socket = io();
+            //connects client to their groups
             socket.on('connect', () => {
-                socket.emit('room', '_xy34');
-                socket.emit('room', '_yy33');
-                socket.emit('room', '_zz54');
-            })
-            socket.on('message', (message) => {
-                console.log(message);
+                chatData.forEach(group => {
+                    socket.emit('room', group.id)
+                });
             })
             //listens for new messages from the backend and updates state
             socket.on('message', (room, message) => {
@@ -45,7 +43,8 @@ function Chat({username, loggedIn, setUserData}){
                 }));
             });
         }
-    }, [loggedIn, history]);
+        // eslint-disable-next-line
+    }, []);
 
     const newMessage = (message) => {
         socket.emit('message', selectedGroup, message);
@@ -57,6 +56,11 @@ function Chat({username, loggedIn, setUserData}){
                 return group;
             }
         }));
+    }
+
+    const createNewGroup = (groupName, groupId) => {
+        setChatData( groups => [...groups, {groupName: groupName, messages: [], members: [], id: groupId}]);
+        socket.emit('room', groupId);
     }
 
     const groups = chatData.map( group => {return {name:group.groupName, id:group.id}});
@@ -78,7 +82,7 @@ function Chat({username, loggedIn, setUserData}){
         <div className='ChatPage'>
             <Navbar username={username} history={history} setUserData={setUserData} closeSockets={closeSockets} />
             <div className='flex-container'>
-                <Groups groups={groups} setGroup={setSelectedGroup} />
+                <Groups groups={groups} setGroup={setSelectedGroup} createNewGroup={createNewGroup} />
                 <ChatRoom messages={displayMessages()} newMessage={newMessage} key={uuid()} />
             </div>
         </div>
