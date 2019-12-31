@@ -1,0 +1,11 @@
+.flex-container{
+    display:flex;
+    flex-direction: row;
+}
+
+.Groups{
+    width:20%;
+}
+.ChatRoom{
+    width:80%;
+}

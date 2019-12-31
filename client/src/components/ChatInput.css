@@ -1,6 +1,6 @@
 .ChatInput{
-    height: 10vh;
     display: flex;
+    height: 10vh;
 }
 .ChatInput textarea{
     flex-grow: 4;

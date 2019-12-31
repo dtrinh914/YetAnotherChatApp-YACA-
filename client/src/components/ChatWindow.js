@@ -5,11 +5,11 @@ import './ChatWindow.css';
 
 
 
-function ChatWindow(props){
+function ChatWindow({messages}){
     return(
         <div className='ChatWindow'>
             <ul>
-                {props.messages.map( message => <Message key={uuid()} text={message}/> )}
+                {messages.map( message => <Message key={uuid()} text={message}/> )}
             </ul>
         </div>
     );

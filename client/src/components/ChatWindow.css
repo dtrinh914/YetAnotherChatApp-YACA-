@@ -1,6 +1,6 @@
 .ChatWindow{
-    height: 85vh;
     background: white;
+    height: 85vh;
     overflow: auto;
 }
 
@@ -16,4 +16,5 @@
 
 .ChatWindow li{
     padding-left: 8px;
+    word-break: break-all;
 }
