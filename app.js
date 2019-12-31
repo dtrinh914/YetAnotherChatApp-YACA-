@@ -130,8 +130,16 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
-    socket.on('chat message', (message)=>{
-        socket.broadcast.emit('chat message', message);
+
+    //Creates room specified by the client
+    socket.on('room', (room) => {
+        socket.join(room);
+        console.log('a user has joined the room');
+    });
+
+    //Receives messages sent by client and broadcast messages to the specific room
+    socket.on('message', (room, message) => {
+        socket.in(room).broadcast.emit('message', room, message);
     });
 });
 

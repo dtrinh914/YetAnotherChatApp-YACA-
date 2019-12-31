@@ -25,15 +25,30 @@ function Chat({username, loggedIn, setUserData}){
             history.push('/');
         } else {
             socket = io();
+            socket.on('connect', () => {
+                socket.emit('room', '_xy34');
+                socket.emit('room', '_yy33');
+                socket.emit('room', '_zz54');
+            })
+            socket.on('message', (message) => {
+                console.log(message);
+            })
             //listens for new messages from the backend and updates state
-            // socket.on('chat message', (message) => {
-            //     setChatData(group[] => [...prevMsg, message]);
-            // });
+            socket.on('message', (room, message) => {
+                setChatData( groups => groups.map( group => {
+                    if(group.id === room ){
+                        const newMessages = [...group.messages, message];
+                        return {...group, messages:newMessages}
+                    } else {
+                        return group;
+                    }
+                }));
+            });
         }
     }, [loggedIn, history]);
 
     const newMessage = (message) => {
-        socket.emit('chat message', message);
+        socket.emit('message', selectedGroup, message);
         setChatData( groups => groups.map( group => {
             if(group.id === selectedGroup){
                 const newMessages = [...group.messages, message];
