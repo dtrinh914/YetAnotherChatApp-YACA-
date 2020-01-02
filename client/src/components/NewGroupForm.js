@@ -12,7 +12,7 @@ function NewGroup({createNewGroup}){
     }
     return(
         <form onSubmit={handleSubmit}>
-            <input type='text'value={newGroup} onChange={setNewGroup} />
+            <input type='text' name='newGroupName' value={newGroup} onChange={setNewGroup} />
             <button>Create New Group</button>
         </form>
     );

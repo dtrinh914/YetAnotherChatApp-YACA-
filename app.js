@@ -4,45 +4,20 @@ const bodyParser = require('body-parser')
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const indexRouter = require('./routes/index');
+const userRouter = require('./routes/users')
+const groupRouter = require('./routes/groups');
 const uuid = require('uuid/v4')
-const redis = require('redis');
-const session = require('express-session');
 const passport = require('passport');
-const LocalStrategy = require('passport-local');
-const {addUser, loginUser, findUserById} = require('./util/mongoUtil');
-
+const session = require('express-session');
+const redis = require('redis');
 const redisStore = require('connect-redis')(session);
 const redisClient = redis.createClient();
 redisClient.on('error', (err) => {
     console.log('Redis error: ', err);
 });
 
-// configure passport.js to use the local strategy
-passport.use(new LocalStrategy(
-    (username, password, done) => {
-        loginUser(username, password)
-        .then( response => {
-            if(response.verified){
-                return done(null, response.user);
-            } else if(response.verified === false) {
-                return done(null, false, {message: 'Incorrect Password'});
-            } else {
-                return done(null, false, {message: "User Doesn't Exist"});
-            }
-        })
-        .catch( err => done(err)); 
-    }
-));
-
-//tell passport how to serialize user
-passport.serializeUser((user,done) => {
-    done(null, user._id);
-});
-passport.deserializeUser((id, done) => {
-    findUserById(id)
-    .then(user =>  {done(null, user)})
-    .catch(error => done(error, false));
-});
+require('./util/pass')(passport);
 
 // middleware configurations
 app.use(express.static(path.join(__dirname, 'client', 'build')));
@@ -62,63 +37,10 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// isLoggedIn middleware
-function isLoggedIn(req,res,next){
-    if(req.isAuthenticated()){
-        return next();
-    } else {
-        res.redirect('/')
-    }
-}
 
-// index route serves client application build in react 
-app.get('/', (req,res) => {
-    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
-});
-
-// route to log out users
-app.get('/api/users/logout', (req, res) => {
-    req.logout();
-    res.json({loggedIn:false});
-})
-
-// route to check is a user is logged in
-app.get('/api/users/loggedon', (req,res) => {
-    if(req.isAuthenticated()){
-        res.json({loggedIn:true, username:req.user.username});
-    } else {
-        res.json({loggedIn:false});
-    }
-});
-
-
-// route to login user
-app.post('/api/users/login', (req,res,next) => {
-    passport.authenticate('local', (err, user, info) => {
-        if(info) return res.json(info.message);
-        if(err) return next(err);
-        req.login(user, (err) => {
-            if(err) return next(err);
-            return res.json({loggedIn:true, username:req.user.username});
-        })
-    })(req,res,next);
-});
-
-// route to add new user to database
-app.post('/api/users/new', (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-
-    addUser(username, password).then( response =>{
-        if(response === 1){
-            res.send('Created Account');
-        } else if(response === 0) {
-            res.send('Username already exists');
-        } else {
-            res.send('There is an error with processing your request');
-        }
-    });
-});
+app.use('/', indexRouter);
+app.use('/api/users', userRouter);
+app.use('/api/groups', groupRouter);
 
 //catch all route
 app.get('/*', (req,res) => {
@@ -139,6 +61,7 @@ io.on('connection', (socket) => {
 
     //Receives messages sent by client and broadcast messages to the specific room
     socket.on('message', (room, message) => {
+        storeGroupMsg(room,message);
         socket.in(room).broadcast.emit('message', room, message);
     });
 });

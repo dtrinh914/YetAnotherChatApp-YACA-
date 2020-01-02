@@ -9,4 +9,4 @@ function Group({name, id, setGroup}){
     );
 }
 
-export default Group
+export default Group;

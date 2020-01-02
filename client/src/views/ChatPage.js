@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import Groups from '../components/Groups';
 import ChatRoom from '../components/ChatRoom';
 import uuid from 'uuid/v4';
+import axios from 'axios';
 import './ChatPage.css';
 
 let socket;
@@ -42,6 +43,8 @@ function Chat({username, loggedIn, setUserData}){
                     }
                 }));
             });
+            axios.get('/api/users/data', {withCredentials:true})
+            .then(data => console.log(data));
         }
         // eslint-disable-next-line
     }, []);
@@ -58,9 +61,16 @@ function Chat({username, loggedIn, setUserData}){
         }));
     }
 
-    const createNewGroup = (groupName, groupId) => {
-        setChatData( groups => [...groups, {groupName: groupName, messages: [], members: [], id: groupId}]);
-        socket.emit('room', groupId);
+    const createNewGroup = (newGroupName, groupId) => {
+        axios.post('/api/groups/new', {
+            newGroupName:newGroupName,
+            withCredentials:true
+        }).then( res => {
+            console.log(res);
+            setChatData( groups => [...groups, {newGroupName: newGroupName, messages: [], members: [], id: groupId}]);
+            socket.emit('room', groupId);
+        })
+        
     }
 
     const groups = chatData.map( group => {return {name:group.groupName, id:group.id}});

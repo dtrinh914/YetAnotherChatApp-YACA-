@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{memo} from 'react';
 import Group from './Group';
 import NewGroupForm from './NewGroupForm';
 import './Groups.css';

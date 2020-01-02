@@ -109,3 +109,6 @@ dist
 # misc
 config
 .DS_Store
+
+# files used for development
+util/m.js
