@@ -1,12 +1,12 @@
-import React from 'react';
+import React,{useContext} from 'react';
 import useInput from '../hooks/useInput';
-import './ChatInput.css'
+import './ChatInput.css';
 
-function ChatInput(props){
+function ChatInput({onConfirm}){
     const [message, setMessage, clearMessage] = useInput();
 
     function handleClick(){
-        props.newMessage(message);
+        onConfirm(message);
         clearMessage();
     }
     

@@ -5,6 +5,7 @@ import CreateAccountPage from './views/CreateAccountPage';
 import ChatPage from './views/ChatPage';
 import axios from 'axios';
 import './App.css';
+import { ChatProvider } from './contexts/chatContext';
 
 function App() {
   const [userData, setUserData] = useState({loggedIn:false});
@@ -21,7 +22,9 @@ function App() {
         <LoginPage {...userData} setUserData={setUserData} />
       </Route>
       <Route exact path = '/chat'>
-        <ChatPage {...userData} setUserData={setUserData} />
+        <ChatProvider>
+          <ChatPage {...userData} setUserData={setUserData} />
+        </ChatProvider>
       </Route>
       <Route exact path = '/users/new'>
         <CreateAccountPage />

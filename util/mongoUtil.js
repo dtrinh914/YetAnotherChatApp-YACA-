@@ -6,43 +6,48 @@ const ObjectId = require('mongodb').ObjectId;
 const {MONGO_DB_URI} = require('../config/config');
 const client = new MongoClient(MONGO_DB_URI, {poolSize: 10, useNewUrlParser: true, useUnifiedTopology: true });
 
+//variables for different collections
+let userCol;
+let groupCol;
+
 //Opens connection to database
 client.connect()
-    .then( ()=> console.log('Connected to database . . . ') )
+    .then( ()=> {
+        console.log('Connected to database . . . ');
+        const db = client.db('chat_app');
+        userCol = db.collection('users');
+        groupCol = db.collection('groups');
+    })
     .catch( err => {
         console.log(err);
 });
 
-module.exports = {client}
+//
+// USER FUNCTIONS
+//
 
 const addUser = async (username, password) =>{
     try{
         // connects to proper connection and tests to see if user name exists
-        const db = client.db('chat_app');
-        const collection = db.collection('users');
-        const usernameExist = await collection.findOne({username:username});
+        const usernameExist = await userCol.findOne({username:username});
         
         // returns 0 if user exists, inserts the new user data if it doesn't and returns 1
         if(usernameExist){
-            return 0;
+            return {status: 0};
         } else {
         //salt and hash password before inserting into db
             const saltRounds = 10;
             const hash = await bcrypt.hash(password, saltRounds);
-            await collection.insertOne({username:username, password: hash, groups:[], ownerOf:[], adminOf:[]});
-            return 1;
+            await userCol.insertOne({username:username, password: hash, groups:[], friends:[]});
+            return {status: 1};
         }
-        // returns and logs -1 if there is an error
     } catch(err){
-        console.log(err);
-        return -1;
+        errorHandler(err)
     }
 }
 
 const loginUser = async (username, password) => {
-    const db = client.db('chat_app');
-    const collection = db.collection('users');
-    const user = await collection.findOne({username:username});
+    const user = await userCol.findOne({username:username});
     if(user){
         const verified = await bcrypt.compare(password,user.password);
         return {user: user, verified: verified};
@@ -52,12 +57,18 @@ const loginUser = async (username, password) => {
     }
 }
 
+const findUserById = async (id) => {
+    const user = await userCol.findOne({_id: ObjectId(id)});
+    return user;
+}
+
+//
+// GROUP FUNCTIONS
+//
+
 //add new group to the database
 const addGroup =  async (groupName, userId) => {
     try{
-        const db = client.db('chat_app');
-        const groupCol = db.collection('groups');
-        const userCol = db.collection('users');
         const groupExist = await groupCol.findOne({groupName:groupName});
                 
         // returns 0 if group exists, inserts the new group data if it doesn't and returns 1
@@ -73,13 +84,12 @@ const addGroup =  async (groupName, userId) => {
                                         creator: ObjectId(userId),
                                         admins: [ObjectId(userId)]
                                     });
-            await userCol.updateOne({_id:ObjectId(userId)}, {$push:{groups: groupId, ownerOf:groupId, adminOf:groupId}})
+            await userCol.updateOne({_id:ObjectId(userId)}, {$push:{groups: groupId}})
             return 1;
         }
         // returns and logs -1 if there is an error
     } catch(err){
-        console.log(err);
-        return -1;
+        errorHandler(err);
     }
 }
 
@@ -88,34 +98,36 @@ const addGroup =  async (groupName, userId) => {
 //add message to group
 const storeGroupMsg = async (groupId, newMessage) => {
     try{
-        await client.db('chat_app').collection('groups')
-                    .updateOne({_id:ObjectId(groupId)}, {$push:{messages: newMessage}} );
+        await groupCol.updateOne({_id:ObjectId(groupId)}, {$push:{messages: newMessage}} );
         return 1;
     } catch(err){
-        console.log(err);
-        return -1;
+        errorHandler(err);
     }   
 }
 
-// get group data
-const getGroupData = async (groupId) => {
+//gets group/message data for a user
+const getGroupData = async (userId) => {
     try{
-        const data = await client.db('chat_app'.collection('groups')
-                    .findOne({_id:ObjectId(groupId)}));
-        return data;
+        const userData = await userCol.aggregate([
+                                                    {$match: {_id: ObjectId(userId)}},
+                                                    {$lookup: {
+                                                        from: "groups",
+                                                        localField: "groups",
+                                                        foreignField: "_id",
+                                                        as: "groups"
+                                                    }},
+                                                ]).toArray();
+        const data = userData[0].groups;
+        return {data:data, status: 1};
     } catch(err){
-        console.log(err);
-        return -1;
+        errorHandler(err);
     }
 }
 
-
-const findUserById = async (id) => {
-    const db = client.db('chat_app');
-    const collection = db.collection('users');
-    const user = await collection.findOne({_id: ObjectId(id)});
-    return user;
+const errorHandler = (err) => {
+    console.log(err);
+    return {data: err, status: -1}
 }
 
-
-module.exports = {addUser, loginUser, findUserById, addGroup, storeGroupMsg, getGroupData};
+module.exports = {addUser, loginUser, findUserById,
+                  addGroup, storeGroupMsg, getGroupData};

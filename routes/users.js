@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const isLoggedIn = require('../middleware/isLoggedIn');
 const passport = require('passport');
+const {addUser, getGroupData} = require('../util/mongoUtil')
 
 // route to log out users
 router.get('/logout', (req, res) => {
@@ -18,20 +19,20 @@ router.get('/loggedon', (req,res) => {
     }
 });
 
+// route to get all of users groups and messages
 router.get('/data', isLoggedIn, (req,res) => {
-    // const data = [];
-    // req.user.groups.map(groupId => {
-    //     getGroupData(groupId)
-    //     .then(res => data.push(res))
-    //     .catch(err => res.json({error:true}))
-    // })
-    // res.json(data);
+    getGroupData(req.user._id).then(response => {
+        if(response.status === 1){
+            res.json(response.data);
+        } else {
+            res.send('There is an error with processing your request');
+        }
+    })
 })
 
 
 // route to login user
 router.post('/login', (req,res,next) => {
-    console.log('loggin in')
     passport.authenticate('local', (err, user, info) => {
         if(info) return res.json(info.message);
         if(err) return next(err);
@@ -48,9 +49,9 @@ router.post('/new', (req, res) => {
     const password = req.body.password;
 
     addUser(username, password).then( response =>{
-        if(response === 1){
+        if(response.status === 1){
             res.send('Created Account');
-        } else if(response === 0) {
+        } else if(response.status === 0) {
             res.send('Username already exists');
         } else {
             res.send('There is an error with processing your request');

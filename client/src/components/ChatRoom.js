@@ -1,13 +1,37 @@
-import React from 'react';
+import React, {useEffect, useContext} from 'react';
 import ChatWindow from './ChatWindow';
 import ChatInput from './ChatInput';
 import './ChatRoom.css';
+import io from 'socket.io-client';
+import {ChatContext} from '../contexts/chatContext'
 
-function ChatRoom({messages, newMessage}){
+let socket;
+function ChatRoom(){
+    const {chatData, dispatch} = useContext(ChatContext);
+    
+    useEffect(() => {
+        socket = io();
+        //listens for new messages from the backend and updates state
+        socket.on('message', (room, message) => {
+            dispatch({type:'NEWMSG', room:room, message: message})
+        });
+
+        socket.on('connect', () => {
+            chatData.groups.forEach(group => {
+                socket.emit('room', group._id)
+            })
+        })
+    },[])
+
+    const newMessage = (message) => {
+        // socket.emit('message', selectedGroup, message);
+        dispatch({type:'NEW_MSG', room:chatData.selected, message:message});
+    }
+
     return(
         <div className='ChatRoom'>
-            <ChatWindow messages={messages} />
-            <ChatInput newMessage={newMessage} />
+            <ChatWindow />
+            <ChatInput onConfirm={newMessage} />
         </div>
     );
 }

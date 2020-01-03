@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const isLoggedIn = require('../middleware/isLoggedIn');
+const {addGroup} = require('../util/mongoUtil');
 
 // route to add a new group to the database
 router.post('/new', isLoggedIn, (req,res) => {
