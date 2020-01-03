@@ -13,9 +13,10 @@ function ChatRoom(){
         socket = io();
         //listens for new messages from the backend and updates state
         socket.on('message', (room, message) => {
-            dispatch({type:'NEWMSG', room:room, message: message})
+            dispatch({type:'NEWMSG', room:room, message:message})
         });
-
+        
+        //on connect joins the rooms on the client side
         socket.on('connect', () => {
             chatData.groups.forEach(group => {
                 socket.emit('room', group._id)
@@ -24,7 +25,7 @@ function ChatRoom(){
     },[])
 
     const newMessage = (message) => {
-        // socket.emit('message', selectedGroup, message);
+        socket.emit('message', chatData.selected, message);
         dispatch({type:'NEW_MSG', room:chatData.selected, message:message});
     }
 

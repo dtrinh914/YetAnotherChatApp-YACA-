@@ -18,7 +18,7 @@ function Chat({username, loggedIn, setUserData}){
         if(!loggedIn){
             history.push('/');
         } else {
-            
+            //fetch current chat data from DB
             axios.get('/api/users/data', {withCredentials:true})
             .then(res => {
                 dispatch({type:"INIT", payload: res.data})
@@ -27,15 +27,10 @@ function Chat({username, loggedIn, setUserData}){
         }
     }, [history, loggedIn]);
 
-    //Closes all socket connections
-    const closeSockets = () => {
-        // socket.close('chat message');
-    }
-
     if(loaded){
         return(
             <div className='ChatPage'>
-                <Navbar username={username} history={history} setUserData={setUserData} closeSockets={closeSockets} />
+                <Navbar username={username} history={history} setUserData={setUserData} />
                 <div className='flex-container'>
                     <Groups />
                     <ChatRoom />

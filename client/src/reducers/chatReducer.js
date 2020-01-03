@@ -1,7 +1,7 @@
 function reducer(state, action){
     switch(action.type){
         case "INIT":
-            return {groups: action.payload, selected: action.payload[0]._id};
+            return action.payload;
         case "NEW_MSG":
             const newGroup = state.groups.map( group => {
                 if(group._id === action.room ){

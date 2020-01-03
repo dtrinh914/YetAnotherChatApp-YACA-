@@ -10,9 +10,11 @@ const groupRouter = require('./routes/groups');
 const uuid = require('uuid/v4')
 const passport = require('passport');
 const session = require('express-session');
+const {storeGroupMsg} = require('./util/mongoUtil');
 const redis = require('redis');
 const redisStore = require('connect-redis')(session);
 const redisClient = redis.createClient();
+
 redisClient.on('error', (err) => {
     console.log('Redis error: ', err);
 });

@@ -8,7 +8,7 @@ function NewGroup({createNewGroup}){
     const handleSubmit = (e) => {
         e.preventDefault();
         resetNewGroup();
-        createNewGroup(newGroup, 'aabb');
+        createNewGroup(newGroup);
     }
     return(
         <form onSubmit={handleSubmit}>

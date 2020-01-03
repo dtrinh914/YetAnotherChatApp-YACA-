@@ -8,7 +8,7 @@ import axios from 'axios';
 function Groups(){
     const {chatData,dispatch} = useContext(ChatContext);
 
-    const createNewGroup = (newGroupName, groupId) => {
+    const createNewGroup = (newGroupName) => {
         axios.post('/api/groups/new', {
             newGroupName:newGroupName,
             withCredentials:true

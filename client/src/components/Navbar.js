@@ -7,7 +7,6 @@ function Navbar({username, history, setUserData, closeSockets}){
         axios.get('/api/users/logout', {withCredentials:true})
         .then(res => {
             if(res.data.loggedIn === false){
-                closeSockets();
                 setUserData(res.data);
                 history.push('/');
             }

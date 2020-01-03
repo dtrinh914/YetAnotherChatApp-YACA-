@@ -38,7 +38,13 @@ const addUser = async (username, password) =>{
         //salt and hash password before inserting into db
             const saltRounds = 10;
             const hash = await bcrypt.hash(password, saltRounds);
-            await userCol.insertOne({username:username, password: hash, groups:[], friends:[]});
+            await userCol.insertOne({username:username, 
+                                     password: hash, 
+                                     groups:[], 
+                                     friends:[], 
+                                     groupInvites:[],
+                                     friendInvites:[],
+                                     blocked:[]});
             return {status: 1};
         }
     } catch(err){
@@ -73,7 +79,7 @@ const addGroup =  async (groupName, userId) => {
                 
         // returns 0 if group exists, inserts the new group data if it doesn't and returns 1
         if(groupExist){
-            return 0;
+            return {status: 0};
         } else {
         //insert group data into db
             const groupId = new ObjectId();
@@ -81,11 +87,13 @@ const addGroup =  async (groupName, userId) => {
                                         groupName:groupName, 
                                         messages:[], 
                                         members:[ObjectId(userId)],
+                                        groupInvites:[],
+                                        blocked:[],
                                         creator: ObjectId(userId),
                                         admins: [ObjectId(userId)]
                                     });
             await userCol.updateOne({_id:ObjectId(userId)}, {$push:{groups: groupId}})
-            return 1;
+            return {status: 1};
         }
         // returns and logs -1 if there is an error
     } catch(err){
@@ -106,7 +114,7 @@ const storeGroupMsg = async (groupId, newMessage) => {
 }
 
 //gets group/message data for a user
-const getGroupData = async (userId) => {
+const getInitData = async (userId) => {
     try{
         const userData = await userCol.aggregate([
                                                     {$match: {_id: ObjectId(userId)}},
@@ -117,12 +125,54 @@ const getGroupData = async (userId) => {
                                                         as: "groups"
                                                     }},
                                                 ]).toArray();
-        const data = userData[0].groups;
+        let user = userData[0];
+        let groups = [], selected = null;
+        if(user.groups.length > 0){
+            groups = userData[0].groups;
+            selected = userData[0].groups[0]._id;
+        }
+        delete user.password;
+        delete user.groups;
+
+        const data = {user:user, groups:groups, selected: selected};
         return {data:data, status: 1};
     } catch(err){
         errorHandler(err);
     }
 }
+
+//
+// GROUP MIDDLEWARE FUNCTIONS
+//
+
+const isGroupMember = async (userId, groupId) => {
+    try{
+        const isMember = await groupCol.find({members:ObjectId(userId), _id: ObjectId(groupId)}).count();
+        return isMember ? {status:1} : {status:0};
+    } catch (err){
+        errorHandler(err);
+    }
+}
+
+const isAdmin = async (userId, groupId) => {
+    try{
+        const isAdmin = await groupCol.find({admins:ObjectId(userId), _id: ObjectId(groupId)}).count();
+        return isAdmin ? {status:1} : {status:0};
+    } catch (err){
+        errorHandler(err);
+    }
+}
+
+const isCreator = async (userId, groupId) => {
+    try{
+        const isCreator = await groupCol.find({creator:ObjectId(userId), _id: ObjectId(groupId)}).count();
+        return isCreator ? {status:1} : {status:0};
+    } catch (err){
+        errorHandler(err);
+    }
+}
+
+
 
 const errorHandler = (err) => {
     console.log(err);
@@ -130,4 +180,6 @@ const errorHandler = (err) => {
 }
 
 module.exports = {addUser, loginUser, findUserById,
-                  addGroup, storeGroupMsg, getGroupData};
+                  addGroup, storeGroupMsg, getInitData,
+                  isGroupMember, isAdmin, isCreator
+                 };

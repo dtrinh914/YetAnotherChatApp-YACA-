@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const isLoggedIn = require('../middleware/isLoggedIn');
 const passport = require('passport');
-const {addUser, getGroupData} = require('../util/mongoUtil')
+const {addUser, getInitData} = require('../util/mongoUtil')
 
 // route to log out users
 router.get('/logout', (req, res) => {
@@ -21,7 +21,7 @@ router.get('/loggedon', (req,res) => {
 
 // route to get all of users groups and messages
 router.get('/data', isLoggedIn, (req,res) => {
-    getGroupData(req.user._id).then(response => {
+    getInitData(req.user._id).then(response => {
         if(response.status === 1){
             res.json(response.data);
         } else {
