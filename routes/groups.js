@@ -6,8 +6,8 @@ const {addGroup} = require('../util/mongoUtil');
 
 // route to add a new group to the database
 router.post('/new', isLoggedIn, (req,res) => {
-    const newGroupName = req.body.newGroupName;
-    addGroup(newGroupName, req.user._id).then( response => {
+    const groupName = req.body.newGroupName.trim();
+    addGroup(groupName, req.body.description, req.user._id).then( response => {
         res.json(response);
     });
 });

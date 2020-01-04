@@ -79,7 +79,7 @@ const findUserByUsername = async(name) => {
 //
 
 //add new group to the database
-const addGroup =  async (groupName, userId) => {
+const addGroup =  async (groupName, description, userId) => {
     try{
         const groupExist = await groupCol.findOne({groupName:groupName});
                 
@@ -91,6 +91,7 @@ const addGroup =  async (groupName, userId) => {
             const groupId = new ObjectId();
             await groupCol.insertOne({_id: groupId, 
                                         groupName:groupName, 
+                                        description: description,
                                         messages:[], 
                                         members:[ObjectId(userId)],
                                         groupInvites:[],
@@ -99,7 +100,10 @@ const addGroup =  async (groupName, userId) => {
                                         admins: [ObjectId(userId)]
                                     });
             await userCol.updateOne({_id:ObjectId(userId)}, {$push:{groups: groupId}})
-            return {status: 1};
+
+            const response = await getInitData(userId);
+            const data = response.data;
+            return {data, status: 1};
         }
         // returns and logs -1 if there is an error
     } catch(err){

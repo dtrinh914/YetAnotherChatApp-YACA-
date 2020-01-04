@@ -6,7 +6,9 @@ function Group({name, id, setGroup}){
         setGroup(id, name);
     }
     return(
-        <ListItem style={{padding:'5px 15px'}} onClick={handleClick} button>{name}</ListItem>
+        <ListItem style={{padding:'2px 15px 2px 30px'}} onClick={handleClick} button>
+            {name}
+        </ListItem>
     );
 }
 

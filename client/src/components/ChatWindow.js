@@ -1,4 +1,4 @@
-import React, {useContext, memo} from 'react';
+import React, {useContext} from 'react';
 import uuid from 'uuid/v4';
 import Message from './Message';
 import './ChatWindow.css';

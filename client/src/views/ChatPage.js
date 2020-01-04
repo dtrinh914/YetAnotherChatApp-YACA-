@@ -30,11 +30,11 @@ function Chat({username, loggedIn, setUserData}){
             //fetch current chat data from DB
             axios.get('/api/users/data', {withCredentials:true})
             .then(res => {
-                dispatch({type:"INIT", payload: res.data})
+                dispatch({type:'INIT', payload: res.data})
                 setLoaded(true);
             }) 
         }
-    }, [history, loggedIn]);
+    }, [history, loggedIn, dispatch]);
 
     if(loaded){
         return(

@@ -12,8 +12,8 @@ const useStyles = makeStyles({
         display: 'flex',
         flexDirection: 'column',
         width: '300px',
-        background:'#424242',
         height: '100vh',
+        background:'#424242',
         color: 'white',
         overflow: 'auto'
     },
@@ -35,7 +35,6 @@ export default function LeftMenu() {
                 <UserCard username={username} />
                 <Divider className={classes.divider} variant='middle' />
                 <Groups />
-                <Divider className={classes.divider} variant='middle' />
             </Paper>
         </Hidden>
     )
