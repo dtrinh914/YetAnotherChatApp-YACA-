@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const isLoggedIn = require('../middleware/isLoggedIn');
 const passport = require('passport');
-const {addUser, getInitData} = require('../util/mongoUtil')
+const {addUser, getInitData, findUserByUsername} = require('../util/mongoUtil')
 
 // route to log out users
 router.get('/logout', (req, res) => {
@@ -57,6 +57,17 @@ router.post('/new', (req, res) => {
             res.send('There is an error with processing your request');
         }
     });
+});
+
+//route to find user based on username
+router.get('/search', isLoggedIn, (req,res) => {
+    findUserByUsername(req.body.username)
+    .then( (data) => {
+        res.json(data);
+    })
+    .catch((err) => {
+        console.log(err);
+    })
 });
 
 module.exports = router;

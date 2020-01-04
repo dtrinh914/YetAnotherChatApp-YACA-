@@ -10,7 +10,7 @@ function ChatWindow(){
     const {chatData} = useContext(ChatContext);
     const messages = () => {
         for(let i = 0; i < chatData.groups.length; i++){
-            if(chatData.groups[i]._id === chatData.selected){
+            if(chatData.groups[i]._id === chatData.selected._id){
                 return chatData.groups[i].messages; 
             }
         }

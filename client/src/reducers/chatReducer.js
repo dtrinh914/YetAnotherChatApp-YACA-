@@ -12,8 +12,8 @@ function reducer(state, action){
                 }
             });
             return {...state, groups:newGroup}
-        case "CHANGE_ROOM":
-            return {...state, selected: action.selected}
+        case "CHANGE_GROUP":
+            return {...state, selected: {_id: action.selected, name:action.name, type:'group'}}
         default:
             return state;
     }

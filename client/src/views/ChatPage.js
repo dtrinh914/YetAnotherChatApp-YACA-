@@ -1,14 +1,23 @@
 import React, {useEffect, useState, useContext} from 'react';
 import {useHistory} from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import Groups from '../components/Groups';
+import LeftMenu from '../components/LeftMenu';
 import ChatRoom from '../components/ChatRoom';
 import axios from 'axios';
-import './ChatPage.css';
-import {ChatContext} from '../contexts/chatContext'
+import {ChatContext} from '../contexts/chatContext';
+import {makeStyles} from '@material-ui/styles';
 
+const useStyles = makeStyles({
+    root:{
+        display:'flex'
+    },
+    middle:{
+        width: '100%'
+    }
+});
 
 function Chat({username, loggedIn, setUserData}){
+    const classes = useStyles();
     const history = useHistory();
     const {dispatch} = useContext(ChatContext);
     const [loaded, setLoaded] = useState(false);
@@ -29,10 +38,10 @@ function Chat({username, loggedIn, setUserData}){
 
     if(loaded){
         return(
-            <div className='ChatPage'>
-                <Navbar username={username} history={history} setUserData={setUserData} />
-                <div className='flex-container'>
-                    <Groups />
+            <div className={classes.root}>
+                <LeftMenu username={username} />
+                <div className={classes.middle}>
+                    <Navbar history={history} setUserData={setUserData} />
                     <ChatRoom />
                 </div>
             </div>

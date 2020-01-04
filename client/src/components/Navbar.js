@@ -1,8 +1,27 @@
-import React from 'react';
-import './Navbar.css'
-import axios from 'axios'
+import React, {useContext} from 'react';
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import {makeStyles} from '@material-ui/styles';
+import axios from 'axios';
+import {ChatContext} from '../contexts/chatContext'
 
-function Navbar({username, history, setUserData, closeSockets}){
+const useStyles=makeStyles({
+    nav:{
+        height: '5vh',
+        display: 'flex',
+        justifyContent: 'center',
+    },
+    tool:{
+        display: 'flex',
+        justifyContent: 'space-between'
+    }
+});
+
+function Navbar({history, setUserData}){
+    const {chatData} = useContext(ChatContext);
+    const classes = useStyles();
     const handleClick = () => {
         axios.get('/api/users/logout', {withCredentials:true})
         .then(res => {
@@ -13,11 +32,14 @@ function Navbar({username, history, setUserData, closeSockets}){
         })
         .catch((err) => console.log(err));
     }
+
     return(
-        <nav className='Navbar'>
-            <h1>{username}</h1>
-            <button onClick={handleClick}>Log Out</button>
-        </nav>
+        <AppBar position="static" className={classes.nav}>
+            <Toolbar className={classes.tool}>
+                <Typography>{chatData.selected.name}</Typography>
+                <Button onClick={handleClick}>Log Out</Button>
+            </Toolbar>
+        </AppBar>
     )
 }
 export default Navbar;

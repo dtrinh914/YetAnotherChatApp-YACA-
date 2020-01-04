@@ -68,6 +68,12 @@ const findUserById = async (id) => {
     return user;
 }
 
+const findUserByUsername = async(name) => {
+    const user = await userCol.find({username: new RegExp(name, 'i')})
+                              .project({_id:1,username:1}).toArray(); 
+    return user;
+}
+
 //
 // GROUP FUNCTIONS
 //
@@ -126,15 +132,16 @@ const getInitData = async (userId) => {
                                                     }},
                                                 ]).toArray();
         let user = userData[0];
-        let groups = [], selected = null;
+        let groups = [], selected = null, name = null
         if(user.groups.length > 0){
             groups = userData[0].groups;
             selected = userData[0].groups[0]._id;
+            name = userData[0].groups[0].groupName;
         }
         delete user.password;
         delete user.groups;
 
-        const data = {user:user, groups:groups, selected: selected};
+        const data = {user:user, groups:groups, selected: {_id: selected, name: name, type:'group'}};
         return {data:data, status: 1};
     } catch(err){
         errorHandler(err);
@@ -179,7 +186,7 @@ const errorHandler = (err) => {
     return {data: err, status: -1}
 }
 
-module.exports = {addUser, loginUser, findUserById,
+module.exports = {addUser, loginUser, findUserById, findUserByUsername,
                   addGroup, storeGroupMsg, getInitData,
                   isGroupMember, isAdmin, isCreator
                  };
