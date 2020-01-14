@@ -1,5 +1,5 @@
 function reducer(state, action){
-    let newGroupState;
+    let newGroupState, newPendingState, newUserState;
 
     switch(action.type){
         // gathers all chat data {type: 'INIT', payload: *}
@@ -35,10 +35,25 @@ function reducer(state, action){
                 }
             });
             return {...state, groups:newGroupState};
-        // updates pending invites state {type:'DECLINE_INVITE, id:*}
+        // updates member list {type:'UPDATE_MEMBERS',groupId:*, payload:*}
+        case "UPDATE_MEMBERS":
+            newGroupState = state.groups.map( group => {
+                if(group._id === action.groupId){
+                    return {...group, ...action.payload};
+                } else {
+                    return group;
+                }
+            });
+            return {...state, groups:newGroupState};
+        // updates pending invites state {type:'UPDATE_PENDING', payload:*}
+        case "UPDATE_PENDING":
+            newPendingState = action.payload;
+            newUserState = {...state.user, groupInvites: newPendingState};
+            return {...state, user:newUserState};
+        // decline invite {type:'DECLINE_INVITE, id:*}
         case "DECLINE_INVITE":
-            const newInvites = state.user.groupInvites.filter( group => group._id !== action.id);
-            const newUserState = {...state.user, groupInvites: newInvites};
+            newPendingState = state.user.groupInvites.filter( group => group._id !== action.id);
+            newUserState = {...state.user, groupInvites: newPendingState};
             return {...state, user:newUserState};
         default:
             return state;

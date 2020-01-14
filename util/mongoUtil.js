@@ -26,6 +26,68 @@ client.connect()
 // USER FUNCTIONS
 //
 
+//gets group/message/user data for a specific user
+const getInitData = async (userId) => {
+    try{
+        const userData = await userCol.aggregate([  //retrieves user info based on id
+                                                    {$match: {_id: ObjectId(userId)}},
+                                                    //joins groups field
+                                                    {$lookup: {
+                                                        from: 'groups',
+                                                        let: {groups: '$groups'},
+                                                        pipeline:[
+                                                            {$match: {$expr:{$in:['$_id', '$$groups']}}},
+                                                            { '$addFields': {
+                                                                'sort': {
+                                                                    '$indexOfArray': [ '$$groups', '$_id' ]
+                                                                }
+                                                            }},
+                                                            { '$sort': { 'sort': 1 } },
+                                                            { '$addFields': { 'sort': '$$REMOVE' }}
+                                                        ],
+                                                        as: 'groups'
+                                                    }},
+                                                    //joins groupInvite field
+                                                    {$lookup:{
+                                                        from:'groups',
+                                                        let: {groupInvites:'$groupInvites'},
+                                                        pipeline:[
+                                                            {$match: {$expr:{$in:['$_id', '$$groupInvites']}}},
+                                                            {$project: {_id: 1, 
+                                                                        groupName:1,
+                                                                        description: 1}},
+                                                            { '$addFields': {
+                                                                'sort': {
+                                                                    '$indexOfArray': [ '$$groupInvites', '$_id' ]
+                                                                }
+                                                            }},
+                                                            { '$sort': { 'sort': 1 } },
+                                                            { '$addFields': { 'sort': '$$REMOVE' }}
+                                                        ],
+                                                        as: 'groupInvites'
+                                                    }}
+                                                ]).toArray();
+        //extract user data object from array
+        let user = userData[0];
+
+        //formats group field of init data 
+        let groups = [], selected = null, name = null
+        if(user.groups.length > 0){
+            groups = userData[0].groups;
+            selected = userData[0].groups[0]._id;
+            name = userData[0].groups[0].groupName;
+        }
+        // removes unnecessary infomation before sending to client
+        delete user.password;
+        delete user.groups;
+
+        const data = {user:user, groups:groups, selected: {_id: selected, name: name, type:'group', index: 0}};
+        return {data:data, status: 1};
+    } catch(err){
+        errorHandler(err);
+    }
+}
+
 const addUser = async (username, password) =>{
     try{
         // connects to proper connection and tests to see if user name exists
@@ -128,68 +190,6 @@ const storeGroupMsg = async (groupId, newMessage) => {
     } catch(err){
         errorHandler(err);
     }   
-}
-
-//gets group/message data for a user
-const getInitData = async (userId) => {
-    try{
-        const userData = await userCol.aggregate([  //retrieves user info based on id
-                                                    {$match: {_id: ObjectId(userId)}},
-                                                    //joins groups field
-                                                    {$lookup: {
-                                                        from: 'groups',
-                                                        let: {groups: '$groups'},
-                                                        pipeline:[
-                                                            {$match: {$expr:{$in:['$_id', '$$groups']}}},
-                                                            { '$addFields': {
-                                                                'sort': {
-                                                                    '$indexOfArray': [ '$$groups', '$_id' ]
-                                                                }
-                                                            }},
-                                                            { '$sort': { 'sort': 1 } },
-                                                            { '$addFields': { 'sort': '$$REMOVE' }}
-                                                        ],
-                                                        as: 'groups'
-                                                    }},
-                                                    //joins groupInvite field
-                                                    {$lookup:{
-                                                        from:'groups',
-                                                        let: {groupInvites:'$groupInvites'},
-                                                        pipeline:[
-                                                            {$match: {$expr:{$in:['$_id', '$$groupInvites']}}},
-                                                            {$project: {_id: 1, 
-                                                                        groupName:1,
-                                                                        description: 1}},
-                                                            { '$addFields': {
-                                                                'sort': {
-                                                                    '$indexOfArray': [ '$$groupInvites', '$_id' ]
-                                                                }
-                                                            }},
-                                                            { '$sort': { 'sort': 1 } },
-                                                            { '$addFields': { 'sort': '$$REMOVE' }}
-                                                        ],
-                                                        as: 'groupInvites'
-                                                    }}
-                                                ]).toArray();
-        //extract user data object from array
-        let user = userData[0];
-
-        //formats group field of init data 
-        let groups = [], selected = null, name = null
-        if(user.groups.length > 0){
-            groups = userData[0].groups;
-            selected = userData[0].groups[0]._id;
-            name = userData[0].groups[0].groupName;
-        }
-        // removes unnecessary infomation before sending to client
-        delete user.password;
-        delete user.groups;
-
-        const data = {user:user, groups:groups, selected: {_id: selected, name: name, type:'group', index: 0}};
-        return {data:data, status: 1};
-    } catch(err){
-        errorHandler(err);
-    }
 }
 
 //gets group info

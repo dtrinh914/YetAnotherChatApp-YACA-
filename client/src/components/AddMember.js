@@ -29,7 +29,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function AddMember({isOpen, open}) {
+export default function AddMember({open, updateInvite, updateMembers}) {
     const {chatData, chatDispatch} = useContext(ChatContext);
     const classes = useStyles();
     const [username, setUsername, resetUsername] = useInput();
@@ -65,6 +65,8 @@ export default function AddMember({isOpen, open}) {
             .then(res => {
                 if(res.data.status === 1){
                     chatDispatch({type:'ADD_MEMBER', groupId:selectedGroupId, memberId: userId});
+                    updateInvite(userId);
+                    updateMembers(selectedGroupId);
                 }
             })
             .catch(err => {

@@ -20,6 +20,25 @@ router.get('/:id', isLoggedIn, (req,res) => {
         .catch(err => res.json(err));
 });
 
+// route to get all members of a group
+router.get('/:id/members', isLoggedIn, verifyGroupMember, (req,res) => {
+    const groupId = req.params.id;
+    getGroupInfo(groupId)
+        .then(response => {
+            if(response.status === 1){
+                const {activeMembers, pendingMembers, pendingRequests, blocked} = response.data;
+                res.json({data:{activeMembers: activeMembers, 
+                          pendingMembers: pendingMembers,
+                          pendingRequests: pendingRequests,
+                          blocked: blocked},
+                          status:1})
+            } else {
+                res.json(response)
+            }
+        })
+        .catch(err => res.json(err));
+});
+
 // route to invite member to a group
 router.post('/:id/members', isLoggedIn, verifyGroupMember, (req,res) => {
     const userId = req.body.userId;

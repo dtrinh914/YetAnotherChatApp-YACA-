@@ -26,7 +26,7 @@ const useStyles = makeStyles({
 });
 
 
-export default function LeftNav({joinRoom}) {
+export default function LeftNav({joinRoom,updateMembers}) {
     const {chatData, chatDispatch} = useContext(ChatContext);
     const classes = useStyles();
     const username = chatData.user.username;
@@ -45,6 +45,7 @@ export default function LeftNav({joinRoom}) {
                     // remove pending invite from state
                     chatDispatch({type:'DECLINE_INVITE', id:groupId});
                     joinRoom(groupId);
+                    updateMembers(groupId);
                 }
             }
         } catch (err) {
@@ -57,7 +58,10 @@ export default function LeftNav({joinRoom}) {
         axios.delete('/api/users/pendinginvites/' + groupId, {withCredentials:true})
         .then(res => {
             //remove pending invite from state
-            if(res.data.status === 1) chatDispatch({type:'DECLINE_INVITE', id:groupId});
+            if(res.data.status === 1){
+                chatDispatch({type:'DECLINE_INVITE', id:groupId});
+                updateMembers(groupId);
+            }
         })
         .catch(err => console.log(err));
     }

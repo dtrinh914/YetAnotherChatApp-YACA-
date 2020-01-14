@@ -27,7 +27,7 @@ const useStyles = makeStyles({
 });
 
 
-export default function RightNav() {
+export default function RightNav({updateInvite, updateMembers}) {
     const {navData} = useContext(NavContext);
     const classes = useStyles();
 
@@ -37,7 +37,7 @@ export default function RightNav() {
         <Hidden smDown >
             <Paper className={rightNavStatus ? classes.paperActive : classes.paperHidden} 
             variant='outlined'  square>
-                <AddMember open={addMemStatus} />
+                <AddMember open={addMemStatus} updateInvite={updateInvite} updateMembers={updateMembers} />
             </Paper>
         </Hidden>
     )

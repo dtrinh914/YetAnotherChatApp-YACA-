@@ -49,11 +49,35 @@ function Chat({username, loggedIn, setUserData}){
                 chatDispatch({type:'NEW_MSG', room:room, message:message})
             });
 
+            //listener to update pending list
+            socket.on('update_pendinglist', ()=> {
+                axios.get('/api/users/pendinginvites', {withCredentials:true})
+                .then(res => {
+                    if(res.data.status === 1){
+                        chatDispatch({type:'UPDATE_PENDING', payload:res.data.data}) 
+                    }
+                })
+                .catch(err => console.log(err)); 
+            });
+
+            //listener to update member list
+            socket.on('update_memberlist', (groupId) => {
+                axios.get('/api/groups/'+ groupId + '/members', {withCredentials:true})
+                .then(res => {
+                    console.log(res);
+                    if(res.data.status === 1){
+                        chatDispatch({type:'UPDATE_MEMBERS', groupId:groupId, payload:res.data.data}) 
+                    }
+                })
+                .catch(err => console.log(err)); 
+            });
+
             //on connect joins the rooms on the client side
             socket.on('connect', () => {
                 chatData.groups.forEach(group => {
                     socket.emit('room', group._id)
                 })
+                socket.emit('user', chatData.user._id)
             })
         }
     }, [loaded])
@@ -65,12 +89,18 @@ function Chat({username, loggedIn, setUserData}){
     const joinRoom = (roomId) => {
         socket.emit('room', roomId)
     }
+    const updateInvite = (userId) => {
+        socket.emit('update_pendinglist', userId);
+    }
+    const updateMembers = (groupId) => {
+        socket.emit('update_memberlist', groupId);
+    }
 
     if(loaded){
         return(
             <NavProvider>
                 <div className={classes.root}>
-                    <LeftNav username={username} joinRoom={joinRoom} />
+                    <LeftNav username={username} joinRoom={joinRoom} updateMembers={updateMembers} />
                     <div className={classes.middle}>
                         <Navbar history={history} setUserData={setUserData} />
                         <div className='ChatRoom'>
@@ -78,7 +108,8 @@ function Chat({username, loggedIn, setUserData}){
                             <ChatInput onConfirm={newMessage} />
                         </div>
                     </div>
-                    {chatData.groups && chatData.groups.length > 0 ? <RightNav /> : ''}
+                    { (chatData.groups && chatData.groups.length > 0 ) ? 
+                            <RightNav updateInvite={updateInvite} updateMembers={updateMembers} /> : ''}
                 </div>
             </NavProvider>
         );

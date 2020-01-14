@@ -58,10 +58,25 @@ io.on('connection', (socket) => {
         console.log('user disconnected');
     });
 
-    //Creates room specified by the client
+    //joins room specified by the client
     socket.on('room', (room) => {
         socket.join(room);
-        console.log('a user has joined the room');
+    });
+
+    //creates a room specific for each user
+    socket.on('user', (userId) => {
+        socket.join(userId);
+    })
+
+    //tells a specific user to update their pending invite list
+    socket.on('update_pendinglist', (userId) => {
+        socket.in(userId).broadcast.emit('update_pendinglist');
+    });
+
+    //receives msg from client to update a group's member list
+    //and sends msg to all client in a group to update their member list
+    socket.on('update_memberlist', (groupId) => {
+        socket.in(groupId).broadcast.emit('update_memberlist', (groupId));
     });
 
     //Receives messages sent by client and broadcast messages to the specific room
