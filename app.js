@@ -7,6 +7,7 @@ const io = require('socket.io')(http);
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/users')
 const groupRouter = require('./routes/groups');
+const actionRouter = require('./routes/actions');
 const uuid = require('uuid/v4')
 const passport = require('passport');
 const session = require('express-session');
@@ -41,8 +42,10 @@ app.use(passport.session());
 
 
 app.use('/', indexRouter);
-app.use('/api/users', userRouter);
+app.use('/api/actions', actionRouter);
 app.use('/api/groups', groupRouter);
+app.use('/api/users', userRouter);
+
 
 //catch all route
 app.get('/*', (req,res) => {

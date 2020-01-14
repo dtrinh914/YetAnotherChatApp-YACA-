@@ -69,9 +69,17 @@ const findUserById = async (id) => {
 }
 
 const findUserByUsername = async(name) => {
-    const user = await userCol.find({username: new RegExp(name, 'i')})
-                              .project({_id:1,username:1}).toArray(); 
-    return user;
+    try{
+        //finds all user that matches with search string
+        const user = await userCol.find({username: new RegExp(name, 'i')})
+                                  .project({_id:1,username:1}).toArray(); 
+        if(user.length > 0){
+            return {data:user, status: 1}
+        }
+        return {data:[], status:0}
+    } catch(err){
+        errorHandler(err);
+    }
 }
 
 //
@@ -93,8 +101,9 @@ const addGroup =  async (groupName, description, userId) => {
                                         groupName:groupName, 
                                         description: description,
                                         messages:[], 
-                                        members:[ObjectId(userId)],
-                                        groupInvites:[],
+                                        activeMembers:[ObjectId(userId)],
+                                        pendingMembers: [],
+                                        pendingRequests: [],
                                         blocked:[],
                                         creator: ObjectId(userId),
                                         admins: [ObjectId(userId)]
@@ -126,31 +135,63 @@ const storeGroupMsg = async (groupId, newMessage) => {
 //gets group/message data for a user
 const getInitData = async (userId) => {
     try{
-        const userData = await userCol.aggregate([
+        const userData = await userCol.aggregate([  //retrieves user info based on id
                                                     {$match: {_id: ObjectId(userId)}},
+                                                    //joins groups field
                                                     {$lookup: {
-                                                        from: "groups",
-                                                        localField: "groups",
-                                                        foreignField: "_id",
-                                                        as: "groups"
+                                                        from: 'groups',
+                                                        localField: 'groups',
+                                                        foreignField: '_id',
+                                                        as: 'groups'
                                                     }},
+                                                    //joins groupInvite field
+                                                    {$lookup:{
+                                                        from:'groups',
+                                                        let: {groupInvites:'$groupInvites'},
+                                                        pipeline:[
+                                                            {$match: {$expr:{$in:['$_id', '$$groupInvites']}}},
+                                                            {$project: {_id: 1, 
+                                                                        groupName:1,
+                                                                        description: 1}}
+                                                        ],
+                                                        as: 'groupInvites'
+                                                    }}
                                                 ]).toArray();
+        //extract user data object from array
         let user = userData[0];
+
+        //formats group field of init data 
         let groups = [], selected = null, name = null
         if(user.groups.length > 0){
             groups = userData[0].groups;
             selected = userData[0].groups[0]._id;
             name = userData[0].groups[0].groupName;
         }
+        // removes unnecessary infomation before sending to client
         delete user.password;
         delete user.groups;
 
-        const data = {user:user, groups:groups, selected: {_id: selected, name: name, type:'group'}};
+        const data = {user:user, groups:groups, selected: {_id: selected, name: name, type:'group', index: 0}};
         return {data:data, status: 1};
     } catch(err){
         errorHandler(err);
     }
 }
+
+//gets group info
+const getGroupInfo = async (groupId) =>{
+    try{
+        const groupData = await groupCol.findOne({_id:ObjectId(groupId)});
+        if(groupData){
+            return {data:groupData, status: 1}
+        } else {
+            return {data:"This group ID doesn't exist" ,status: 0}
+        }
+    }catch(err){
+        errorHandler(err);
+    }
+}
+
 
 //
 // GROUP MIDDLEWARE FUNCTIONS
@@ -158,7 +199,7 @@ const getInitData = async (userId) => {
 
 const isGroupMember = async (userId, groupId) => {
     try{
-        const isMember = await groupCol.find({members:ObjectId(userId), _id: ObjectId(groupId)}).count();
+        const isMember = await groupCol.find({activeMembers:ObjectId(userId), _id: ObjectId(groupId)}).count();
         return isMember ? {status:1} : {status:0};
     } catch (err){
         errorHandler(err);
@@ -183,14 +224,98 @@ const isCreator = async (userId, groupId) => {
     }
 }
 
+//
+// INVITES/ADD FUNCTIONS
+//
+
+// send group invite to a user
+const sendGroupInvite = async (userId, groupId) => {
+    const userObjId = ObjectId(userId);
+    const groupObjId = ObjectId(groupId);
+    try{
+        //check if user is already a group member
+        const isMember = await isGroupMember(userId, groupId);
+        if(isMember.status === 1){
+            return {data:'User is already a member.',status:0}
+        }
+        //check to see if user already has the group invite
+        const hasInvite = await hasGroupInvite(userObjId,groupObjId);
+        if(hasInvite){
+            return {data:'Invite already has been sent.',status:0}
+        }
+        //add group invite to user data
+        await userCol.updateOne({_id:userObjId}, {$push:{groupInvites: groupObjId}});
+        //add user invite to group pending list
+        await groupCol.updateOne({_id:groupObjId}, {$push:{pendingMembers:userObjId}});
+        
+        return {data:'Invite sent.', status: 1};
+    } catch(err){
+        errorHandler(err);
+    }
+}
+
+// accept group invite
+const acceptGroupInvite = async (userId, groupId) =>{
+    const userObjId = ObjectId(userId);
+    const groupObjId = ObjectId(groupId);
+    try{
+        //check if user has a pending group invite
+        const hasInvite = await hasGroupInvite(userObjId,groupObjId);
+        if(hasInvite){
+            //add groupID to list of user's groups & remove groupID from user's list of pending invites
+            await userCol.updateOne({_id:userObjId}, {$push:{groups: groupObjId}, 
+                                                      $pull:{groupInvites: groupObjId}});
+            await groupCol.updateOne({_id:groupObjId}, {$push:{activeMembers: userObjId}, 
+                                                          $pull:{pendingMembers: userObjId}})
+            return {data: 'Successfully added user to the group.', status: 1};
+        } else {
+            return {data:'The group invite for this user does not exist', status: 0};
+        }
+    } catch(err){
+        errorHandler(err);
+    }
+}
+// decline group invite
+const declineGroupInvite = async (userId, groupId) =>{
+    const userObjId = ObjectId(userId);
+    const groupObjId = ObjectId(groupId);
+    try{
+        //check if user has a pending group invite
+        const hasInvite = await hasGroupInvite(userObjId,groupObjId);
+        if(hasInvite){
+            //remove groupID from user's list of pending invites
+            await userCol.updateOne({_id:userObjId}, {$pull:{groupInvites: groupObjId}});
+            //remove userID from group list of pending members
+            await groupCol.updateOne({_id:groupObjId}, {$pull:{pendingMembers: userObjId}})
+            return {data: 'Successfully declined invite.', status: 1};
+        } else {
+            return {data:'The group invite for this user does not exist', status: 0};
+        }
+    } catch(err){
+        errorHandler(err);
+    }
+}
+
+
+//check if user has a pending group invite
+const hasGroupInvite = async (userObjId, groupObjId) => {
+    try{
+        const hasInvite = await userCol.find({_id:userObjId, groupInvites:groupObjId}).count();
+        // returns 1 if user has invite and 0 if the user does not have invite
+        return hasInvite;
+    } catch(err){
+        errorHandler(err);
+    }
+}
 
 
 const errorHandler = (err) => {
     console.log(err);
-    return {data: err, status: -1}
+    throw {data: err, status: -1}
 }
 
 module.exports = {addUser, loginUser, findUserById, findUserByUsername,
-                  addGroup, storeGroupMsg, getInitData,
-                  isGroupMember, isAdmin, isCreator
+                  addGroup, storeGroupMsg, getGroupInfo, getInitData,
+                  isGroupMember, isAdmin, isCreator,
+                  sendGroupInvite, acceptGroupInvite, declineGroupInvite
                  };
