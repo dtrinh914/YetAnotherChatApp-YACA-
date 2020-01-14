@@ -6,13 +6,13 @@ import {ChatContext} from '../contexts/chatContext';
 
 let socket;
 function ChatRoom(){
-    const {chatData, dispatch} = useContext(ChatContext);
+    const {chatData, chatDispatch} = useContext(ChatContext);
     
     useEffect(() => {
         socket = io();
         //listens for new messages from the backend and updates state
         socket.on('message', (room, message) => {
-            dispatch({type:'NEW_MSG', room:room, message:message})
+            chatDispatch({type:'NEW_MSG', room:room, message:message})
         });
         
         //on connect joins the rooms on the client side
@@ -26,11 +26,11 @@ function ChatRoom(){
             socket.close();
         }
     // eslint-disable-next-line
-    },[dispatch])
+    },[chatDispatch])
 
     const newMessage = (message) => {
         socket.emit('message', chatData.selected._id, message);
-        dispatch({type:'NEW_MSG', room:chatData.selected._id, message:message});
+        chatDispatch({type:'NEW_MSG', room:chatData.selected._id, message:message});
     }
 
     return(

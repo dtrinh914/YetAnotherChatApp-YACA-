@@ -11,7 +11,7 @@ function App() {
   const [userData, setUserData] = useState({loggedIn:false});
 
   useEffect(() =>{
-    axios.get('/api/users/loggedon', {withCredentials:true})
+    axios.get('/api/actions/loggedon', {withCredentials:true})
       .then( res => setUserData(res.data) )
       .catch( err => console.log(err) );
   }, [])

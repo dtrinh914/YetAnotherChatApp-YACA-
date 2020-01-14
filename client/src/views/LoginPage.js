@@ -13,7 +13,7 @@ function LoginPage({loggedIn, setUserData}){
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post('/api/users/login', {
+        axios.post('/api/actions/login', {
             username:username,
             password:password,
             withCredentials:true

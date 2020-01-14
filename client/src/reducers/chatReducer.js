@@ -12,8 +12,11 @@ function reducer(state, action){
                 }
             });
             return {...state, groups:newGroup}
+        case "ADD_GROUP":
+            const newGroupsData = [...state.groups, action.payload]
+            return {...state, groups:newGroupsData};
         case "CHANGE_GROUP":
-            return {...state, selected: {_id: action.selected, name:action.name, type:'group'}}
+            return {...state, selected: {_id: action.selected, name:action.name, type:'group', index:action.index}}
         default:
             return state;
     }
