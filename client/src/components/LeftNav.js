@@ -26,7 +26,7 @@ const useStyles = makeStyles({
 });
 
 
-export default function LeftNav() {
+export default function LeftNav({joinRoom}) {
     const {chatData, chatDispatch} = useContext(ChatContext);
     const classes = useStyles();
     const username = chatData.user.username;
@@ -44,6 +44,7 @@ export default function LeftNav() {
                     chatDispatch({type:'ADD_GROUP', payload: res.data.data});
                     // remove pending invite from state
                     chatDispatch({type:'DECLINE_INVITE', id:groupId});
+                    joinRoom(groupId);
                 }
             }
         } catch (err) {
@@ -66,7 +67,7 @@ export default function LeftNav() {
             <Paper className={classes.paper} variant='outlined'  square>
                 <UserCard username={username} />
                 <Divider className={classes.divider} variant='middle' />
-                <Groups />
+                <Groups joinRoom={joinRoom} />
                 <Divider className={classes.divider} variant='middle' />
                 {chatData.user.groupInvites.length > 0 
                     ?   (<><GroupInvites pendingInvites={pendingInvites} 

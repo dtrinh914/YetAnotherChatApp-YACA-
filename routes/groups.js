@@ -15,7 +15,6 @@ router.post('/', isLoggedIn, (req,res) => {
 //route to get a specific group info
 router.get('/:id', isLoggedIn, (req,res) => {
     const groupId = req.params.id; 
-    console.log('works');
     getGroupInfo(groupId)
         .then(response => res.json(response))
         .catch(err => res.json(err));

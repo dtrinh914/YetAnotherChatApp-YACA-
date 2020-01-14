@@ -93,7 +93,7 @@ const addGroup =  async (groupName, description, userId) => {
                 
         // returns 0 if group exists, inserts the new group data if it doesn't and returns 1
         if(groupExist){
-            return {status: 0};
+            return {data:'The group already exists.',status: 0};
         } else {
         //insert group data into db
             const groupId = new ObjectId();
@@ -110,11 +110,9 @@ const addGroup =  async (groupName, description, userId) => {
                                     });
             await userCol.updateOne({_id:ObjectId(userId)}, {$push:{groups: groupId}})
 
-            const response = await getInitData(userId);
-            const data = response.data;
-            return {data, status: 1};
+            const groupData = await groupCol.findOne({_id: groupId});
+            return {data:groupData, status: 1};
         }
-        // returns and logs -1 if there is an error
     } catch(err){
         errorHandler(err);
     }

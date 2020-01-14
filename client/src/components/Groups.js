@@ -34,7 +34,7 @@ const useStyles = makeStyles({
     }
 });
 
-function Groups(){
+function Groups({joinRoom}){
     const classes = useStyles();
     const {chatData,chatDispatch} = useContext(ChatContext);
     const {navDispatch} = useContext(NavContext);
@@ -48,7 +48,8 @@ function Groups(){
         })
 
         if(res.data.status === 1){
-            chatDispatch({type:'INIT', payload: res.data.data})
+            chatDispatch({type:'ADD_GROUP', payload: res.data.data});
+            joinRoom(res.data.data._id);
             return 1;
         } else if(res.data.status === 0){
             return 0;
