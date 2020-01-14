@@ -140,8 +140,17 @@ const getInitData = async (userId) => {
                                                     //joins groups field
                                                     {$lookup: {
                                                         from: 'groups',
-                                                        localField: 'groups',
-                                                        foreignField: '_id',
+                                                        let: {groups: '$groups'},
+                                                        pipeline:[
+                                                            {$match: {$expr:{$in:['$_id', '$$groups']}}},
+                                                            { '$addFields': {
+                                                                'sort': {
+                                                                    '$indexOfArray': [ '$$groups', '$_id' ]
+                                                                }
+                                                            }},
+                                                            { '$sort': { 'sort': 1 } },
+                                                            { '$addFields': { 'sort': '$$REMOVE' }}
+                                                        ],
                                                         as: 'groups'
                                                     }},
                                                     //joins groupInvite field
@@ -152,7 +161,14 @@ const getInitData = async (userId) => {
                                                             {$match: {$expr:{$in:['$_id', '$$groupInvites']}}},
                                                             {$project: {_id: 1, 
                                                                         groupName:1,
-                                                                        description: 1}}
+                                                                        description: 1}},
+                                                            { '$addFields': {
+                                                                'sort': {
+                                                                    '$indexOfArray': [ '$$groupInvites', '$_id' ]
+                                                                }
+                                                            }},
+                                                            { '$sort': { 'sort': 1 } },
+                                                            { '$addFields': { 'sort': '$$REMOVE' }}
                                                         ],
                                                         as: 'groupInvites'
                                                     }}

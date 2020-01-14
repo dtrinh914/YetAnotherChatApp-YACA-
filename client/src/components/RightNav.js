@@ -28,29 +28,16 @@ const useStyles = makeStyles({
 
 
 export default function RightNav() {
-    const {chatData} = useContext(ChatContext);
     const {navData} = useContext(NavContext);
     const classes = useStyles();
 
     const rightNavStatus = navData.rightNav.root;
     const addMemStatus = navData.rightNav.addMem;
-    const selectedGroupId = chatData.selected._id;
-    const currUserId = chatData.user._id;
-
-    let activeMembers = [], pendingMembers = [], pendingRequests = [];
-    if(chatData.groups > 0){
-        const groupData = chatData.groups[chatData.selected.index];
-        activeMembers = groupData.activeMembers;
-        pendingMembers = groupData.pendingMembers;
-        pendingRequests = groupData.pendingRequests;
-    }
-
     return (
         <Hidden smDown >
             <Paper className={rightNavStatus ? classes.paperActive : classes.paperHidden} 
             variant='outlined'  square>
-                <AddMember currUserId={currUserId} activeMembers={activeMembers} pendingMembers={pendingMembers}
-                pendingRequests={pendingRequests} selectedGroupId={selectedGroupId} open={addMemStatus} />
+                <AddMember open={addMemStatus} />
             </Paper>
         </Hidden>
     )

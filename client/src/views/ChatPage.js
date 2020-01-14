@@ -21,7 +21,7 @@ const useStyles = makeStyles({
 function Chat({username, loggedIn, setUserData}){
     const classes = useStyles();
     const history = useHistory();
-    const {chatDispatch} = useContext(ChatContext);
+    const {chatData, chatDispatch} = useContext(ChatContext);
     const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
@@ -47,7 +47,7 @@ function Chat({username, loggedIn, setUserData}){
                         <Navbar history={history} setUserData={setUserData} />
                         <ChatRoom />
                     </div>
-                    <RightNav />
+                    {chatData.groups && chatData.groups.length > 0 ? <RightNav /> : ''}
                 </div>
             </NavProvider>
         );

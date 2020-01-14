@@ -1,4 +1,5 @@
-import React,{useState} from 'react';
+import React,{useState, useContext, useEffect} from 'react';
+import {ChatContext} from '../contexts/chatContext';
 import useInput from '../hooks/useInput';
 import MemberResultCard from './MemberResultCard';
 import {makeStyles} from '@material-ui/styles';
@@ -28,11 +29,22 @@ const useStyles = makeStyles({
     }
 });
 
-export default function AddMember({currUserId,activeMembers, pendingMembers, pendingRequests, selectedGroupId, open}) {
+export default function AddMember({isOpen, open}) {
+    const {chatData, chatDispatch} = useContext(ChatContext);
     const classes = useStyles();
     const [username, setUsername, resetUsername] = useInput();
     const [searchResults, setSearchResults] = useState([]);
 
+    const selectedGroupId = chatData.selected._id;
+    const currUserId = chatData.user._id;
+    
+    const {activeMembers, pendingMembers, pendingRequests} = chatData.groups[chatData.selected.index];
+
+
+    useEffect(()=>{
+        resetUsername();
+    },[open]);
+    
     const searchUser = (name) =>{
         const url = '/api/users/search/'+ name;
         axios.get(url, {withCredentials:true})
@@ -51,7 +63,12 @@ export default function AddMember({currUserId,activeMembers, pendingMembers, pen
         axios.post('/api/groups/' + selectedGroupId + '/members',{userId: userId, 
             withCredentials:true})
             .then(res => {
-                console.log(res);
+                if(res.data.status === 1){
+                    chatDispatch({type:'ADD_MEMBER', groupId:selectedGroupId, memberId: userId});
+                }
+            })
+            .catch(err => {
+                console.log(err);
             })
     }
 
@@ -64,7 +81,6 @@ export default function AddMember({currUserId,activeMembers, pendingMembers, pen
             if(current._id === currUserId){
                 continue;
             }
-            
             //check if current user is an active member 
             //and creates a key 'status' set to 'active' for the user object
             if(activeMembers.includes(current._id)){

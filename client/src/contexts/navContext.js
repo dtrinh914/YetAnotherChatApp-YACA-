@@ -3,8 +3,8 @@ import navReducer from '../reducers/navReducer';
 
 const initialState = {
     rightNav:{
-        root:true,
-        addMem:true
+        root:false,
+        addMem:false
     }
 }
 

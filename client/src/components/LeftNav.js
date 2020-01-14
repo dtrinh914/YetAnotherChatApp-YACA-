@@ -34,11 +34,16 @@ export default function LeftNav() {
 
     const acceptInvite = async (groupId) => {
         try{
+            //send request to update user data in backend
             let res = await axios.post('/api/users/pendinginvites/' + groupId, {withCredentials:true})
+            // if successful, fetch new group data
             if (res.data.status === 1){
                 res = await axios.get('/api/groups/' + groupId, {withCredentials:true});
                 if(res.data.status === 1){
+                    // add group data to state
                     chatDispatch({type:'ADD_GROUP', payload: res.data.data});
+                    // remove pending invite from state
+                    chatDispatch({type:'DECLINE_INVITE', id:groupId});
                 }
             }
         } catch (err) {
@@ -47,8 +52,12 @@ export default function LeftNav() {
         
     }
     const declineInvite = (groupId) => {
+        //send request to update user data in backend
         axios.delete('/api/users/pendinginvites/' + groupId, {withCredentials:true})
-        .then(res => console.log(res))
+        .then(res => {
+            //remove pending invite from state
+            if(res.data.status === 1) chatDispatch({type:'DECLINE_INVITE', id:groupId});
+        })
         .catch(err => console.log(err));
     }
 
@@ -59,10 +68,12 @@ export default function LeftNav() {
                 <Divider className={classes.divider} variant='middle' />
                 <Groups />
                 <Divider className={classes.divider} variant='middle' />
-                <GroupInvites pendingInvites={pendingInvites} 
-                    acceptInvite={acceptInvite} 
-                    declineInvite={declineInvite} />
-                <Divider className={classes.divider} variant='middle' />
+                {chatData.user.groupInvites.length > 0 
+                    ?   (<><GroupInvites pendingInvites={pendingInvites} 
+                            acceptInvite={acceptInvite} 
+                            declineInvite={declineInvite} />
+                        <Divider className={classes.divider} variant='middle' /></>)
+                    : ''}
             </Paper>
         </Hidden>
     )
