@@ -3,8 +3,10 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import MenuIcon from '@material-ui/icons/Menu';
 import {makeStyles} from '@material-ui/styles';
 import axios from 'axios';
 import {ChatContext} from '../contexts/chatContext'
@@ -40,10 +42,18 @@ function Navbar({history, setUserData}){
     const handleAddMem = () => {
         navDispatch({type:'ADDMEM'});
     }
+    const handleLeftMenu = () => {
+        navDispatch({type:'OPENLEFT'})
+    }
 
     return(
         <AppBar position="static" className={classes.nav}>
             <Toolbar className={classes.tool}>
+                <Hidden smUp>
+                    <IconButton onClick={handleLeftMenu} size='small'>
+                        <MenuIcon />
+                    </IconButton>
+                </Hidden>
                 <Typography>{chatData.selected.name}</Typography>
                 <IconButton onClick={handleAddMem} size='small'>
                     <PersonAddIcon />

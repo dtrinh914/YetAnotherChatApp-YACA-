@@ -2,6 +2,8 @@ import React, {useEffect, useState, useContext} from 'react';
 import {useHistory} from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LeftNav from '../components/LeftNav';
+import Drawer from '@material-ui/core/Drawer';
+import Hidden from '@material-ui/core/Hidden';
 import RightNav from '../components/RightNav';
 import ChatWindow from '../components/ChatWindow';
 import ChatInput from '../components/ChatInput';
@@ -9,11 +11,15 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import {ChatContext} from '../contexts/chatContext';
 import {makeStyles} from '@material-ui/styles';
-import { NavProvider } from '../contexts/navContext';
+import {NavContext} from '../contexts/navContext';
+
 
 const useStyles = makeStyles({
     root:{
         display:'flex'
+    },
+    drawer:{
+        width: '300px'
     },
     middle:{
         width: '100%'
@@ -25,6 +31,7 @@ function Chat({username, loggedIn, setUserData}){
     const classes = useStyles();
     const history = useHistory();
     const {chatData, chatDispatch} = useContext(ChatContext);
+    const {navData, navDispatch} = useContext(NavContext);
     const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
@@ -96,22 +103,34 @@ function Chat({username, loggedIn, setUserData}){
         socket.emit('update_memberlist', groupId);
     }
 
+    //closes left menu on clickaway
+    const handleLeftClickAway = () => {
+        if(navData.leftNav.root){
+            navDispatch({type:'CLOSELEFT'})
+        }
+    }
+
     if(loaded){
         return(
-            <NavProvider>
-                <div className={classes.root}>
+            <div className={classes.root}>
+                <Hidden xsDown>
                     <LeftNav username={username} joinRoom={joinRoom} updateMembers={updateMembers} />
-                    <div className={classes.middle}>
-                        <Navbar history={history} setUserData={setUserData} />
-                        <div className='ChatRoom'>
-                            <ChatWindow />
-                            <ChatInput onConfirm={newMessage} />
-                        </div>
+                </Hidden>
+                <Hidden smUp>
+                    <Drawer open={navData.leftNav.root} ModalProps={{ onBackdropClick: handleLeftClickAway }}>
+                        <LeftNav username={username} joinRoom={joinRoom} updateMembers={updateMembers} />
+                    </Drawer>
+                </Hidden>
+                <div className={classes.middle}>
+                    <Navbar history={history} setUserData={setUserData} />
+                    <div className='ChatRoom'>
+                        <ChatWindow />
+                        <ChatInput onConfirm={newMessage} />
                     </div>
-                    { (chatData.groups && chatData.groups.length > 0 ) ? 
-                            <RightNav updateInvite={updateInvite} updateMembers={updateMembers} /> : ''}
                 </div>
-            </NavProvider>
+                { (chatData.groups && chatData.groups.length > 0 ) ? 
+                        <RightNav updateInvite={updateInvite} updateMembers={updateMembers} /> : ''}
+            </div>
         );
     } else {
         return(

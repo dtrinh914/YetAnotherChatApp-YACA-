@@ -5,6 +5,9 @@ const initialState = {
     rightNav:{
         root:false,
         addMem:false
+    },
+    leftNav:{
+        root: false
     }
 }
 

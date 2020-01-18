@@ -60,7 +60,8 @@ function Groups({joinRoom}){
 
     const setGroup = (id, name, index) => {
         chatDispatch({type:'CHANGE_GROUP', selected:id, name:name, index:index});
-        navDispatch({type:'CLOSERIGHT'})
+        navDispatch({type:'CLOSELEFT'});
+        navDispatch({type:'CLOSERIGHT'});
     }
 
     const groups = chatData.groups.map( group => {return {name:group.groupName, id:group._id}});
