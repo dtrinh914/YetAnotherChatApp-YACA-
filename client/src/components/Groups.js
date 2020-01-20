@@ -16,9 +16,7 @@ const useStyles = makeStyles({
     root:{
         padding: '10px 0px',
         textAlign: 'center',
-        margin: 0,
-        overflow: 'hidden',
-        overflowY: 'scroll'
+        margin: 0
     },
     header:{
         display: 'flex',

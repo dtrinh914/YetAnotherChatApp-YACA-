@@ -38,16 +38,17 @@ export default function MemberResultCard({username, userId, status, sendInvite})
     let statusButton;
 
     switch(status){
-        case 'add':
-            statusButton = <IconButton size='small' onClick={handleClick}>
-                                <AddCircleOutlineIcon className={classes.add} />
-                            </IconButton>
-            break;
         case 'active':
             statusButton = <DoneIcon />
             break;
         case 'pending':
             statusButton = <Button>Pending</Button>
+            break;
+        default:
+            statusButton = <IconButton size='small' onClick={handleClick}>
+                                <AddCircleOutlineIcon className={classes.add} />
+                            </IconButton>
+            break;
     }
                         
 

@@ -13,8 +13,9 @@ const useStyles = makeStyles({
     paper:{
         display: 'flex',
         flexDirection: 'column',
-        width: '300px',
-        height: '100vh',
+        maxWidth: '250px',
+        height: '100%',
+        border: 'none',
         background:'#424242',
         color: 'white',
         overflow: 'auto'
@@ -71,12 +72,13 @@ export default function LeftNav({joinRoom,updateMembers}) {
             <UserCard username={username} />
             <Divider className={classes.divider} variant='middle' />
             <Groups joinRoom={joinRoom} />
-            <Divider className={classes.divider} variant='middle' />
             {chatData.user.groupInvites.length > 0 
-                ?   (<><GroupInvites pendingInvites={pendingInvites} 
+                ?   (<>
+                        <Divider className={classes.divider} variant='middle' />
+                        <GroupInvites pendingInvites={pendingInvites} 
                         acceptInvite={acceptInvite} 
                         declineInvite={declineInvite} />
-                    <Divider className={classes.divider} variant='middle' /></>)
+                    </>)
                 : ''}
         </Paper>
     )

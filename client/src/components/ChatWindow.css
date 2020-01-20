@@ -1,6 +1,6 @@
 .ChatWindow{
     background: white;
-    height: 85vh;
+    flex-grow: 1;
     overflow: auto;
 }
 

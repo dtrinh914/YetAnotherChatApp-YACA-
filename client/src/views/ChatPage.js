@@ -16,13 +16,16 @@ import {NavContext} from '../contexts/navContext';
 
 const useStyles = makeStyles({
     root:{
-        display:'flex'
+        display:'flex',
+        height: '100vh'
     },
     drawer:{
         width: '300px'
     },
     middle:{
-        width: '100%'
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow:'1'
     }
 });
 
@@ -87,6 +90,7 @@ function Chat({username, loggedIn, setUserData}){
                 socket.emit('user', chatData.user._id)
             })
         }
+        //eslint-disable-next-line
     }, [loaded])
 
     const newMessage = (message) => {
@@ -123,10 +127,8 @@ function Chat({username, loggedIn, setUserData}){
                 </Hidden>
                 <div className={classes.middle}>
                     <Navbar history={history} setUserData={setUserData} />
-                    <div className='ChatRoom'>
-                        <ChatWindow />
-                        <ChatInput onConfirm={newMessage} />
-                    </div>
+                    <ChatWindow />
+                    <ChatInput onConfirm={newMessage} />
                 </div>
                 { (chatData.groups && chatData.groups.length > 0 ) ? 
                         <RightNav updateInvite={updateInvite} updateMembers={updateMembers} /> : ''}
