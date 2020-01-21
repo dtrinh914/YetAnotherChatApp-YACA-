@@ -12,6 +12,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import IconButton from '@material-ui/core/IconButton';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import GroupIcon from '@material-ui/icons/Group';
 import MenuIcon from '@material-ui/icons/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
 import {makeStyles} from '@material-ui/styles';
@@ -24,6 +25,7 @@ const useStyles=makeStyles({
         height: '40px',
         display: 'flex',
         justifyContent: 'center',
+        zIndex: 100
     },
     tool:{
         display: 'flex',
@@ -39,7 +41,7 @@ const useStyles=makeStyles({
 
 function Navbar({history, setUserData}){
     const {chatData} = useContext(ChatContext);
-    const {navDispatch} = useContext(NavContext);
+    const {navData, navDispatch} = useContext(NavContext);
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const anchorRef = useRef(null);
@@ -84,17 +86,25 @@ function Navbar({history, setUserData}){
         .catch((err) => console.log(err));
     }
     const handleAddMem = () => {
-        navDispatch({type:'ADDMEM'});
+        navDispatch({type:'ADDMEM', open:true});
     }
-    const handleLeftMenu = () => {
-        navDispatch({type:'OPENLEFT'})
+    const handleLeftDrawer = () => {
+        navDispatch({type:'LEFTDRAWER', open:true})
+    }
+
+    const handleRightDrawer = () => {
+        navDispatch({type:'RIGHTDRAWER', open:true});
+    }
+    
+    const handleToggleInfo = () => {
+        navDispatch({type:'RIGHT', open:!navData.rightNav.root})
     }
 
     return(
         <AppBar position="static" className={classes.nav}>
             <Toolbar className={classes.tool}>
                 <Hidden smUp>
-                    <IconButton onClick={handleLeftMenu} size='small'>
+                    <IconButton onClick={handleLeftDrawer} size='small'>
                         <MenuIcon />
                     </IconButton>
                 </Hidden>
@@ -115,11 +125,11 @@ function Navbar({history, setUserData}){
                             >
                             <Paper className={classes.rightmenu}>
                                 <ClickAwayListener onClickAway={handleClose}>
-                                <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                                    <MenuItem onClick={handleClose}>Group Information</MenuItem>
-                                    <MenuItem onClick={handleClose}>Invite</MenuItem>
-                                    <MenuItem onClick={(e)=> {handleClose(e); handleLogOut(e);}}>Logout</MenuItem>
-                                </MenuList>
+                                    <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                                        <MenuItem onClick={e => {handleClose(e); handleRightDrawer(e)}}>Group Information</MenuItem>
+                                        <MenuItem onClick={e => {handleClose(e); handleAddMem(e);}}>Invite</MenuItem>
+                                        <MenuItem onClick={e=> {handleClose(e); handleLogOut(e);}}>Logout</MenuItem>
+                                    </MenuList>
                                 </ClickAwayListener>
                             </Paper>
                             </Grow>
@@ -130,6 +140,9 @@ function Navbar({history, setUserData}){
 
                 <Hidden smDown>
                     <div>
+                        <IconButton onClick={handleToggleInfo} size='small'>
+                            <GroupIcon />
+                        </IconButton>
                         <IconButton onClick={handleAddMem} size='small'>
                             <PersonAddIcon />
                         </IconButton>

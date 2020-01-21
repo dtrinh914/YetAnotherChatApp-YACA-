@@ -3,11 +3,12 @@ import useInput from '../hooks/useInput';
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import LinearProgress from '@material-ui/core/LinearProgress'
+import LinearProgress from '@material-ui/core/LinearProgress';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import {makeStyles} from '@material-ui/styles';
 
 const useStyles = makeStyles({
-    rootActive:{
+    root:{
         display: 'flex',
         position: 'fixed',
         top: 0,
@@ -22,7 +23,8 @@ const useStyles = makeStyles({
         display: 'none',
     },
     paper:{
-        width: '500px',
+        width: '80%',
+        maxWidth: '500px',
         padding: '30px 30px'
     },
     loadbar:{
@@ -37,9 +39,9 @@ const useStyles = makeStyles({
     }
 })
 
-function NewGroup({createNewGroup, openCreate, toggleOpenCreate}){
-    const [newGroup, setNewGroup, resetNewGroup] = useInput('');
-    const [description, setDescription, resetDescription] = useInput('');
+function NewGroup({createNewGroup, close}){
+    const [newGroup, setNewGroup] = useInput('');
+    const [description, setDescription] = useInput('');
     const [inputErr, setInputErr] = useState({status:false, err:''})
     const [loading, setLoading] = useState(false);
     const nameInputRef = useRef(null);
@@ -48,7 +50,7 @@ function NewGroup({createNewGroup, openCreate, toggleOpenCreate}){
     useEffect(()=>{
         //targets the group name textfield 
         nameInputRef.current.children[1].children[0].focus();
-    },[openCreate,loading])
+    },[loading])
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -82,34 +84,32 @@ function NewGroup({createNewGroup, openCreate, toggleOpenCreate}){
 
     // resets all values
     const handleClose = () =>{
-        resetNewGroup();
-        resetDescription();
-        setInputErr({status:false, err:''});
-        toggleOpenCreate();
+        close();
     }
 
     // clears errors and updates state
     const handleGroupChange=(e)=>{
-        setInputErr({status:false, err:''});
         setNewGroup(e);
     }
 
     return(
-        <div className={openCreate ? classes.rootActive : classes.hidden}>
-                <Paper className={classes.paper}>
-                    <LinearProgress className={loading ? classes.loadbar : classes.hidden} />
-                    <form className={classes.form} onSubmit={handleSubmit}>
-                        <TextField ref={nameInputRef} className={classes.textInput} label='Group Name' 
-                        id='Group Name' type='text' name='newGroupName' 
-                        value={newGroup} onChange={handleGroupChange} error={inputErr.status}
-                        helperText={inputErr.err} disabled={loading} />
-                        <TextField className={classes.textInput}  label='Group Description' 
-                        id='Group Description' type='text' name='newGroupDescription' 
-                        value={description} onChange={setDescription} disabled={loading}/>
-                        <Button type='submit' disabled={loading}>Create Group</Button>
-                    </form>
-                    <Button onClick={handleClose} disabled={loading}>Close</Button>
-                </Paper>
+        <div className={classes.root}>
+                <ClickAwayListener onClickAway={handleClose}>
+                    <Paper className={classes.paper}>
+                        <LinearProgress className={loading ? classes.loadbar : classes.hidden} />
+                        <form className={classes.form} onSubmit={handleSubmit}>
+                            <TextField ref={nameInputRef} className={classes.textInput} label='Group Name' 
+                            id='Group Name' type='text' name='newGroupName' 
+                            value={newGroup} onChange={handleGroupChange} error={inputErr.status}
+                            helperText={inputErr.err} disabled={loading} />
+                            <TextField className={classes.textInput}  label='Group Description' 
+                            id='Group Description' type='text' name='newGroupDescription' 
+                            value={description} onChange={setDescription} disabled={loading}/>
+                            <Button type='submit' disabled={loading}>Create Group</Button>
+                        </form>
+                        <Button onClick={handleClose} disabled={loading}>Close</Button>
+                    </Paper>
+                </ClickAwayListener>
         </div>
     );
 }

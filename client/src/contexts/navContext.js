@@ -3,11 +3,14 @@ import navReducer from '../reducers/navReducer';
 
 const initialState = {
     rightNav:{
-        root:false,
+        root:true,
+        drawer: false,
         addMem:false
     },
     leftNav:{
-        root: false
+        root: true,
+        drawer: false,
+        newGroup: false
     }
 }
 

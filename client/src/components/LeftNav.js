@@ -2,7 +2,6 @@ import React, {useContext} from 'react';
 import Groups from './Groups';
 import UserCard from './UserCard';
 import GroupInvites from './GroupInvites'
-import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import {makeStyles} from '@material-ui/styles';
 import {ChatContext} from '../contexts/chatContext';
@@ -10,13 +9,16 @@ import axios from 'axios';
 
 
 const useStyles = makeStyles({
+    root:{
+        width: '250px',
+        height: '100%',
+        border: 'none',
+        background:'#424242', 
+    },
     paper:{
         display: 'flex',
         flexDirection: 'column',
-        maxWidth: '250px',
-        height: '100%',
-        border: 'none',
-        background:'#424242',
+        padding: '10px',
         color: 'white',
         overflow: 'auto'
     },
@@ -68,18 +70,20 @@ export default function LeftNav({joinRoom,updateMembers}) {
     }
 
     return (
-        <Paper className={classes.paper} variant='outlined'  square>
-            <UserCard username={username} />
-            <Divider className={classes.divider} variant='middle' />
-            <Groups joinRoom={joinRoom} />
-            {chatData.user.groupInvites.length > 0 
-                ?   (<>
-                        <Divider className={classes.divider} variant='middle' />
-                        <GroupInvites pendingInvites={pendingInvites} 
-                        acceptInvite={acceptInvite} 
-                        declineInvite={declineInvite} />
-                    </>)
-                : ''}
-        </Paper>
+        <div className={classes.root}>
+            <div className={classes.paper}>
+                <UserCard username={username} />
+                <Divider className={classes.divider} variant='middle' />
+                <Groups joinRoom={joinRoom} />
+                {chatData.user.groupInvites.length > 0 
+                    ?   (<>
+                            <Divider className={classes.divider} variant='middle' />
+                            <GroupInvites pendingInvites={pendingInvites} 
+                            acceptInvite={acceptInvite} 
+                            declineInvite={declineInvite} />
+                        </>)
+                    : ''}
+            </div>
+        </div>
     )
 }

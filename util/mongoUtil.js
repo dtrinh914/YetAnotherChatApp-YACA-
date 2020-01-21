@@ -31,22 +31,6 @@ const getInitData = async (userId) => {
     try{
         const userData = await userCol.aggregate([  //retrieves user info based on id
                                                     {$match: {_id: ObjectId(userId)}},
-                                                    //joins groups field
-                                                    {$lookup: {
-                                                        from: 'groups',
-                                                        let: {groups: '$groups'},
-                                                        pipeline:[
-                                                            {$match: {$expr:{$in:['$_id', '$$groups']}}},
-                                                            { '$addFields': {
-                                                                'sort': {
-                                                                    '$indexOfArray': [ '$$groups', '$_id' ]
-                                                                }
-                                                            }},
-                                                            { '$sort': { 'sort': 1 } },
-                                                            { '$addFields': { 'sort': '$$REMOVE' }}
-                                                        ],
-                                                        as: 'groups'
-                                                    }},
                                                     //joins groupInvite field
                                                     {$lookup:{
                                                         from:'groups',
@@ -65,7 +49,7 @@ const getInitData = async (userId) => {
                                                             { '$addFields': { 'sort': '$$REMOVE' }}
                                                         ],
                                                         as: 'groupInvites'
-                                                    }}
+                                                    }},
                                                 ]).toArray();
         //extract user data object from array
         let user = userData[0];
@@ -73,14 +57,23 @@ const getInitData = async (userId) => {
         //formats group field of init data 
         let groups = [], selected = null, name = null
         if(user.groups.length > 0){
-            groups = userData[0].groups;
-            selected = userData[0].groups[0]._id;
-            name = userData[0].groups[0].groupName;
+            const groupIds = user.groups;
+            let formatedGroups = [];
+
+            //fetches each of the group data for the user
+            for(let i=0; i < groupIds.length; i++){
+                const response = await getGroupInfo(groupIds[i]);
+                formatedGroups.push(response.data[0]);
+            }
+
+            groups = formatedGroups;
+            selected = formatedGroups[0]._id;
+            name = formatedGroups[0].groupName;
         }
         // removes unnecessary infomation before sending to client
         delete user.password;
         delete user.groups;
-
+        
         const data = {user:user, groups:groups, selected: {_id: selected, name: name, type:'group', index: 0}};
         return {data:data, status: 1};
     } catch(err){
@@ -195,7 +188,27 @@ const storeGroupMsg = async (groupId, newMessage) => {
 //gets group info
 const getGroupInfo = async (groupId) =>{
     try{
-        const groupData = await groupCol.findOne({_id:ObjectId(groupId)});
+        const groupData = await groupCol.aggregate([  //retrieves info based on id
+                                                    {$match: {_id: ObjectId(groupId)}},
+                                                    //joins activeMembers field
+                                                    {$lookup:{
+                                                        from:'users',
+                                                        let: {activeMembers:'$activeMembers'},
+                                                        pipeline:[
+                                                            {$match: {$expr:{$in:['$_id', '$$activeMembers']}}},
+                                                            {$project: {_id: 1, 
+                                                                        username:1}},
+                                                            { '$addFields': {
+                                                                'sort': {
+                                                                    '$indexOfArray': [ '$$activeMembers', '$_id' ]
+                                                                }
+                                                            }},
+                                                            { '$sort': { 'sort': 1 } },
+                                                            { '$addFields': { 'sort': '$$REMOVE' }}
+                                                        ],
+                                                        as: 'activeMembers'
+                                                    }},
+                                                ]).toArray();
         if(groupData){
             return {data:groupData, status: 1}
         } else {

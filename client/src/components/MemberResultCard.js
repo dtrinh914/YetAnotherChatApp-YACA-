@@ -24,7 +24,6 @@ const useStyles = makeStyles({
         display:'flex'
     },
     add:{
-        color:'white',
         fontSize: '1rem'
     }
 });
@@ -56,7 +55,7 @@ export default function MemberResultCard({username, userId, status, sendInvite})
         <ListItem className={classes.root}>
             <div className={classes.user}>
                 <Avatar className={classes.avatar}>{username[0].toUpperCase()}</Avatar>
-                {username}
+                <span>{username}</span>
             </div>
             {statusButton}
         </ListItem>

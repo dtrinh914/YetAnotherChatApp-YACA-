@@ -1,20 +1,31 @@
 import React, {useContext} from 'react';
-import Paper from '@material-ui/core/Paper';
-import Hidden from '@material-ui/core/Hidden';
-import {makeStyles} from '@material-ui/styles';
 import AddMember from './AddMember';
+import GroupDescription from './GroupDescription';
+import Hidden from '@material-ui/core/Hidden';
+import Divider from '@material-ui/core/Divider';
+import Drawer from '@material-ui/core/Drawer';
+import {makeStyles} from '@material-ui/styles';
 import {NavContext} from '../contexts/navContext';
 import {ChatContext} from '../contexts/chatContext';
 import axios from 'axios';
+import GroupMembers from './GroupMembers';
+
 
 const useStyles = makeStyles({
     root:{
-        display: 'flex',
-        flexDirection: 'column',
         width: '250px',
         height: '100%',
+        background:'#424242'
+    },
+    hidden:{
+        display:'none'
+    },
+    paper:{
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '15px',
+        textAlign: 'center',
         border: 'none',
-        background:'#424242',
         color: 'white',
         overflow: 'auto'
     },
@@ -26,14 +37,17 @@ const useStyles = makeStyles({
 
 
 export default function RightNav({updateInvite, updateMembers}) {
-    const {navData} = useContext(NavContext);
+    const {navData, navDispatch} = useContext(NavContext);
     const {chatData, chatDispatch} = useContext(ChatContext);
     const classes = useStyles();
     const addMemStatus = navData.rightNav.addMem;
 
+    const groupIndex = chatData.selected.index;
     const selectedGroupId = chatData.selected._id;
     const currUserId = chatData.user._id;
-    const {activeMembers, pendingMembers, pendingRequests} = chatData.groups[chatData.selected.index];
+    const groupDescription = chatData.groups[groupIndex].description;
+    const groupMembers = chatData.groups[groupIndex].activeMembers;
+    const {activeMembers, pendingMembers, pendingRequests} = chatData.groups[groupIndex];
 
     const sendInvite = (userId) =>{
         axios.post('/api/groups/' + selectedGroupId + '/members',{userId: userId, 
@@ -54,7 +68,7 @@ export default function RightNav({updateInvite, updateMembers}) {
     //or has a pending invite
     const filterResults = (results) => {
         let filtered = [];
-        
+        let activeMembersId = activeMembers.map( member => member._id)
         for(let i = 0; i < results.length; i++){
             let current = results[i];
             if(current._id === currUserId){
@@ -62,7 +76,7 @@ export default function RightNav({updateInvite, updateMembers}) {
             }
             //check if current user is an active member 
             //and creates a key 'status' set to 'active' for the user object
-            if(activeMembers.includes(current._id)){
+            if(activeMembersId.includes(current._id)){
                 current['status'] = 'active';
             }
             //check if current user had a pending request for the group
@@ -75,13 +89,37 @@ export default function RightNav({updateInvite, updateMembers}) {
         }
         return filtered;
     }
+    
+    const closeAddMem = () => {
+        navDispatch({type:'ADDMEM', open:false});
+    }
+    
+    const handleClickAway = () => {
+        navDispatch({type:'RIGHTDRAWER', open:false});
+    }
 
-
+    const rightNav = <div className={classes.paper} square>
+                        <GroupDescription description={groupDescription} />
+                        <Divider className={classes.divider} variant='middle' />
+                        <GroupMembers groupMembers={groupMembers} />
+                     </div>
     return (
-        <Hidden smDown >
-            <Paper className={classes.root} square>
-                <AddMember open={addMemStatus} sendInvite={sendInvite} filterResults={filterResults} />
-            </Paper>
-        </Hidden>
+        <>
+            <Hidden smDown >
+                <div className={navData.rightNav.root ? classes.root : classes.hidden}>
+                    {rightNav}
+                </div>
+            </Hidden>
+            <Hidden mdUp>
+                <Drawer open={navData.rightNav.drawer} anchor='right' ModalProps={{ onBackdropClick: handleClickAway }}>
+                    <div className={classes.root}>
+                        {rightNav}
+                    </div>
+                </Drawer>
+            </Hidden>
+            {addMemStatus ? 
+                <AddMember closeAddMem={closeAddMem} sendInvite={sendInvite} 
+                filterResults={filterResults}/> : ''}
+        </>
     )
 }

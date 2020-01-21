@@ -1,5 +1,4 @@
 import React,{useContext} from 'react';
-import useToggle from '../hooks/useToggle';
 import Group from './Group';
 import NewGroupForm from './NewGroupForm';
 import {ChatContext} from '../contexts/chatContext';
@@ -35,8 +34,15 @@ const useStyles = makeStyles({
 function Groups({joinRoom}){
     const classes = useStyles();
     const {chatData,chatDispatch} = useContext(ChatContext);
-    const {navDispatch} = useContext(NavContext);
-    const [openCreate, toggleOpenCreate] = useToggle(false)
+    const {navData, navDispatch} = useContext(NavContext);
+    const newGroupOpen = navData.leftNav.newGroup;
+
+    const openNewGroup = () => {
+        navDispatch({type:'NEWGROUP', open:true});
+    }
+    const closeNewGroup = () => {
+        navDispatch({type:'NEWGROUP', open:false});
+    }
 
     const createNewGroup = async (newGroupName, description) => {
         const res = await axios.post('/api/groups/', {
@@ -58,8 +64,8 @@ function Groups({joinRoom}){
 
     const setGroup = (id, name, index) => {
         chatDispatch({type:'CHANGE_GROUP', selected:id, name:name, index:index});
-        navDispatch({type:'CLOSELEFT'});
-        navDispatch({type:'CLOSERIGHT'});
+        navDispatch({type:'LEFT', open: false});
+        navDispatch({type:'LEFTDRAWER', open: false});
     }
 
     const groups = chatData.groups.map( group => {return {name:group.groupName, id:group._id}});
@@ -68,7 +74,7 @@ function Groups({joinRoom}){
         <div className={classes.root} aria-label='group-nav'>
             <div className={classes.header}>
                 <Typography className={classes.headerText}>Groups</Typography>
-                <IconButton className={classes.create} color='inherit' size='small' onClick={toggleOpenCreate}>
+                <IconButton className={classes.create} color='inherit' size='small' onClick={openNewGroup}>
                     <AddCircleOutlineIcon fontSize='inherit'/>
                 </IconButton>
             </div>
@@ -76,7 +82,7 @@ function Groups({joinRoom}){
             {groups.map( (group, index) => <Group id={group.id} name={group.name} 
             key={group.id} setGroup={setGroup} index={index} />)}    
             </List>
-            <NewGroupForm openCreate={openCreate} toggleOpenCreate={toggleOpenCreate} createNewGroup={createNewGroup} />
+            {newGroupOpen ? <NewGroupForm createNewGroup={createNewGroup} close={closeNewGroup} /> : ''}
         </div> 
     )
 }

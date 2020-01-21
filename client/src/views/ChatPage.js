@@ -109,8 +109,8 @@ function Chat({username, loggedIn, setUserData}){
 
     //closes left menu on clickaway
     const handleLeftClickAway = () => {
-        if(navData.leftNav.root){
-            navDispatch({type:'CLOSELEFT'})
+        if(!navData.leftNav.newGroup){
+            navDispatch({type:'LEFTDRAWER', open:false});
         }
     }
 
@@ -121,7 +121,7 @@ function Chat({username, loggedIn, setUserData}){
                     <LeftNav username={username} joinRoom={joinRoom} updateMembers={updateMembers} />
                 </Hidden>
                 <Hidden smUp>
-                    <Drawer open={navData.leftNav.root} ModalProps={{ onBackdropClick: handleLeftClickAway }}>
+                    <Drawer open={navData.leftNav.drawer} ModalProps={{ onBackdropClick: handleLeftClickAway }}>
                         <LeftNav username={username} joinRoom={joinRoom} updateMembers={updateMembers} />
                     </Drawer>
                 </Hidden>
@@ -130,7 +130,7 @@ function Chat({username, loggedIn, setUserData}){
                     <ChatWindow />
                     <ChatInput onConfirm={newMessage} />
                 </div>
-                { (chatData.groups && chatData.groups.length > 0 ) ? 
+                { (chatData.groups.length > 0) ? 
                         <RightNav updateInvite={updateInvite} updateMembers={updateMembers} /> : ''}
             </div>
         );

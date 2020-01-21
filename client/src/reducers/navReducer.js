@@ -1,22 +1,25 @@
 function reducer(state, action){
+    let prevRightNav, prevLeftNav;
     switch(action.type){
-        //Shows add member selection
+        //opens/close add member selection
         case 'ADDMEM':
-            const prevRightNav = state.rightNav;
-            return {...state, rightNav:{...prevRightNav, addMem:true, root:true}};
-        // opens left nav
-        case 'OPENLEFT':
-            return {...state, leftNav:{...state.leftNav, root: true}};
-        // closes left nav
-        case 'CLOSELEFT':
-            return {...state, leftNav:{...state.leftNav, root: false}};
-        // closes right nav
-        case 'CLOSERIGHT':
-            let newRightNav={};
-            for(let key in state.rightNav){
-                newRightNav[key] = false;
-            }
-            return {...state, rightNav:newRightNav};
+            prevRightNav = state.rightNav;
+            return {...state, rightNav:{...prevRightNav, addMem:action.open}};
+        //opens/close right nav
+        case 'RIGHT':
+            prevRightNav = state.rightNav;
+            return {...state, rightNav:{...prevRightNav, root:action.open}};
+        case 'RIGHTDRAWER':
+            prevRightNav = state.rightNav;
+            return {...state, rightNav:{...prevRightNav, drawer:action.open}};
+        //opens/close left nav
+        case 'LEFTDRAWER':
+            prevLeftNav = state.leftNav;
+            return {...state, leftNav:{...prevLeftNav, drawer:action.open}};
+        //Shows add member selection
+        case 'NEWGROUP':
+            prevLeftNav = state.leftNav;
+            return {...state, leftNav:{...prevLeftNav, newGroup:action.open}};
         default:
             return state;
     }
