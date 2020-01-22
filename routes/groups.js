@@ -26,7 +26,7 @@ router.get('/:id/members', isLoggedIn, verifyGroupMember, (req,res) => {
     getGroupInfo(groupId)
         .then(response => {
             if(response.status === 1){
-                const {activeMembers, pendingMembers, pendingRequests, blocked} = response.data;
+                const {activeMembers, pendingMembers, pendingRequests, blocked} = response.data[0];
                 res.json({data:{activeMembers: activeMembers, 
                           pendingMembers: pendingMembers,
                           pendingRequests: pendingRequests,

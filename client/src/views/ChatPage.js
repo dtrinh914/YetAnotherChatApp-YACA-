@@ -86,7 +86,8 @@ function Chat({username, loggedIn, setUserData}){
         //eslint-disable-next-line
     }, [loaded])
 
-    const newMessage = (message) => {
+    const newMessage = (text) => {
+        const message = {id: chatData.user._id, text: text, time: new Date()}
         socket.emit('message', chatData.selected._id, message);
         chatDispatch({type:'NEW_MSG', room:chatData.selected._id, message:message});
     }

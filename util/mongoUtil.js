@@ -165,7 +165,9 @@ const addGroup =  async (groupName, description, userId) => {
                                     });
             await userCol.updateOne({_id:ObjectId(userId)}, {$push:{groups: groupId}})
 
-            const groupData = await groupCol.findOne({_id: groupId});
+            const response = await getGroupInfo(groupId);
+            const groupData = response.data;
+            
             return {data:groupData, status: 1};
         }
     } catch(err){

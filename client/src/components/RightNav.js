@@ -98,7 +98,7 @@ export default function RightNav({updateInvite, updateMembers}) {
         navDispatch({type:'RIGHTDRAWER', open:false});
     }
 
-    const rightNav = <div className={classes.paper} square>
+    const rightNav = <div className={classes.paper}>
                         <GroupDescription description={groupDescription} />
                         <Divider className={classes.divider} variant='middle' />
                         <GroupMembers groupMembers={groupMembers} />

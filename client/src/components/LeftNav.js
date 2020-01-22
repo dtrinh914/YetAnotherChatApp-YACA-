@@ -58,6 +58,7 @@ export default function LeftNav({joinRoom,updateMembers}) {
     const newGroupOpen = navData.leftNav.newGroup;
     const openNewGroup = () => {
         navDispatch({type:'NEWGROUP', open:true});
+        navDispatch({type:'LEFTDRAWER', open: false});
     }
     const closeNewGroup = () => {
         navDispatch({type:'NEWGROUP', open:false});
@@ -71,7 +72,9 @@ export default function LeftNav({joinRoom,updateMembers}) {
         })
 
         if(res.data.status === 1){
-            chatDispatch({type:'ADD_GROUP', payload: res.data.data});
+            const groupData = res.data.data[0];
+            chatDispatch({type:'ADD_GROUP', payload: groupData});
+            chatDispatch({type:'CHANGE_GROUP', selected: groupData._id, name:groupData.groupName, index:chatData.groups.length - 1});
             joinRoom(res.data.data._id);
             return 1;
         } else if(res.data.status === 0){
@@ -96,7 +99,7 @@ export default function LeftNav({joinRoom,updateMembers}) {
                 res = await axios.get('/api/groups/' + groupId, {withCredentials:true});
                 if(res.data.status === 1){
                     // add group data to state
-                    chatDispatch({type:'ADD_GROUP', payload: res.data.data});
+                    chatDispatch({type:'ADD_GROUP', payload: res.data.data[0]});
                     // remove pending invite from state
                     chatDispatch({type:'DECLINE_INVITE', id:groupId});
                     joinRoom(groupId);
