@@ -15,7 +15,8 @@ const useStyles = makeStyles({
     root:{
         width: '250px',
         height: '100%',
-        background:'#424242'
+        background:'#424242',
+        overflow: 'auto'
     },
     hidden:{
         display:'none'
@@ -26,8 +27,7 @@ const useStyles = makeStyles({
         padding: '15px',
         textAlign: 'center',
         border: 'none',
-        color: 'white',
-        overflow: 'auto'
+        color: 'white'
     },
     divider:{
         width: '85%',

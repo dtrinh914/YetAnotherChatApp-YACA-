@@ -12,7 +12,7 @@ const useStyles = makeStyles({
         display: 'flex',
         position: 'fixed',
         top: 0,
-        zIndex: 500,
+        zIndex: 5000,
         height: '100%',
         width: '100%',
         justifyContent: 'center',
@@ -23,7 +23,7 @@ const useStyles = makeStyles({
         display: 'none',
     },
     paper:{
-        width: '80%',
+        width: '70%',
         maxWidth: '500px',
         padding: '30px 30px'
     },
@@ -106,8 +106,8 @@ function NewGroup({createNewGroup, close}){
                             id='Group Description' type='text' name='newGroupDescription' 
                             value={description} onChange={setDescription} disabled={loading}/>
                             <Button type='submit' disabled={loading}>Create Group</Button>
+                            <Button onClick={handleClose} disabled={loading}>Close</Button>
                         </form>
-                        <Button onClick={handleClose} disabled={loading}>Close</Button>
                     </Paper>
                 </ClickAwayListener>
         </div>

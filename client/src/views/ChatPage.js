@@ -2,8 +2,6 @@ import React, {useEffect, useState, useContext} from 'react';
 import {useHistory} from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LeftNav from '../components/LeftNav';
-import Drawer from '@material-ui/core/Drawer';
-import Hidden from '@material-ui/core/Hidden';
 import RightNav from '../components/RightNav';
 import ChatWindow from '../components/ChatWindow';
 import ChatInput from '../components/ChatInput';
@@ -11,16 +9,12 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import {ChatContext} from '../contexts/chatContext';
 import {makeStyles} from '@material-ui/styles';
-import {NavContext} from '../contexts/navContext';
 
 
 const useStyles = makeStyles({
     root:{
         display:'flex',
-        height: '100vh'
-    },
-    drawer:{
-        width: '300px'
+        height: '100vh',
     },
     middle:{
         display: 'flex',
@@ -34,7 +28,6 @@ function Chat({username, loggedIn, setUserData}){
     const classes = useStyles();
     const history = useHistory();
     const {chatData, chatDispatch} = useContext(ChatContext);
-    const {navData, navDispatch} = useContext(NavContext);
     const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
@@ -107,24 +100,10 @@ function Chat({username, loggedIn, setUserData}){
         socket.emit('update_memberlist', groupId);
     }
 
-    //closes left menu on clickaway
-    const handleLeftClickAway = () => {
-        if(!navData.leftNav.newGroup){
-            navDispatch({type:'LEFTDRAWER', open:false});
-        }
-    }
-
     if(loaded){
         return(
             <div className={classes.root}>
-                <Hidden xsDown>
-                    <LeftNav username={username} joinRoom={joinRoom} updateMembers={updateMembers} />
-                </Hidden>
-                <Hidden smUp>
-                    <Drawer open={navData.leftNav.drawer} ModalProps={{ onBackdropClick: handleLeftClickAway }}>
-                        <LeftNav username={username} joinRoom={joinRoom} updateMembers={updateMembers} />
-                    </Drawer>
-                </Hidden>
+                <LeftNav username={username} joinRoom={joinRoom} updateMembers={updateMembers} />
                 <div className={classes.middle}>
                     <Navbar history={history} setUserData={setUserData} />
                     <ChatWindow />

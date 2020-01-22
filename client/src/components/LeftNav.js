@@ -2,9 +2,13 @@ import React, {useContext} from 'react';
 import Groups from './Groups';
 import UserCard from './UserCard';
 import GroupInvites from './GroupInvites'
+import NewGroupForm from './NewGroupForm';
 import Divider from '@material-ui/core/Divider';
+import Hidden from '@material-ui/core/Hidden';
+import Drawer from '@material-ui/core/Drawer';
 import {makeStyles} from '@material-ui/styles';
 import {ChatContext} from '../contexts/chatContext';
+import {NavContext} from '../contexts/navContext';
 import axios from 'axios';
 
 
@@ -14,13 +18,13 @@ const useStyles = makeStyles({
         height: '100%',
         border: 'none',
         background:'#424242', 
+        overflow: 'auto'
     },
     paper:{
         display: 'flex',
         flexDirection: 'column',
         padding: '10px',
         color: 'white',
-        overflow: 'auto'
     },
     divider:{
         width: '85%',
@@ -31,7 +35,55 @@ const useStyles = makeStyles({
 
 export default function LeftNav({joinRoom,updateMembers}) {
     const {chatData, chatDispatch} = useContext(ChatContext);
+    const {navData, navDispatch} = useContext(NavContext);
     const classes = useStyles();
+
+    //
+    // GROUPS
+    //
+
+    const setGroup = (id, name, index) => {
+        chatDispatch({type:'CHANGE_GROUP', selected:id, name:name, index:index});
+        navDispatch({type:'LEFT', open: false});
+        navDispatch({type:'LEFTDRAWER', open: false});
+    }
+
+    const groups = chatData.groups.map( group => {return {name:group.groupName, id:group._id}});
+
+
+    //
+    // NEW GROUP FORM
+    //
+
+    const newGroupOpen = navData.leftNav.newGroup;
+    const openNewGroup = () => {
+        navDispatch({type:'NEWGROUP', open:true});
+    }
+    const closeNewGroup = () => {
+        navDispatch({type:'NEWGROUP', open:false});
+    }
+
+    const createNewGroup = async (newGroupName, description) => {
+        const res = await axios.post('/api/groups/', {
+            newGroupName:newGroupName,
+            description:description,
+            withCredentials:true
+        })
+
+        if(res.data.status === 1){
+            chatDispatch({type:'ADD_GROUP', payload: res.data.data});
+            joinRoom(res.data.data._id);
+            return 1;
+        } else if(res.data.status === 0){
+            return 0;
+        } else {
+            return -1;
+        }  
+    }
+
+    //
+    // PENDING INVITES
+    //
     const username = chatData.user.username;
     const pendingInvites = chatData.user.groupInvites;
 
@@ -69,21 +121,45 @@ export default function LeftNav({joinRoom,updateMembers}) {
         .catch(err => console.log(err));
     }
 
-    return (
-        <div className={classes.root}>
-            <div className={classes.paper}>
-                <UserCard username={username} />
-                <Divider className={classes.divider} variant='middle' />
-                <Groups joinRoom={joinRoom} />
-                {chatData.user.groupInvites.length > 0 
-                    ?   (<>
+    //
+    // LEFT NAV
+    //
+
+    //closes left menu on clickaway
+    const handleLeftClickAway = () => {
+        if(!navData.leftNav.newGroup){
+            navDispatch({type:'LEFTDRAWER', open:false});
+        }
+    }
+
+    const leftNav = <div className={classes.root}>
+                        <div className={classes.paper}>
+                            <UserCard username={username} />
                             <Divider className={classes.divider} variant='middle' />
-                            <GroupInvites pendingInvites={pendingInvites} 
-                            acceptInvite={acceptInvite} 
-                            declineInvite={declineInvite} />
-                        </>)
-                    : ''}
-            </div>
-        </div>
+                            <Groups openNewGroup={openNewGroup} setGroup={setGroup} groups={groups} />
+                            {chatData.user.groupInvites.length > 0 
+                                ?   (<>
+                                        <Divider className={classes.divider} variant='middle' />
+                                        <GroupInvites pendingInvites={pendingInvites} 
+                                        acceptInvite={acceptInvite} 
+                                        declineInvite={declineInvite} />
+                                    </>)
+                                : ''}
+                        </div>
+                    </div>
+
+    return (
+        <>
+            <Hidden xsDown>
+                {leftNav}
+            </Hidden>
+            <Hidden smUp>
+                <Drawer open={navData.leftNav.drawer} ModalProps={{ onBackdropClick: handleLeftClickAway }}>
+                    {leftNav}
+                </Drawer>
+            </Hidden>
+        
+            {newGroupOpen ? <NewGroupForm createNewGroup={createNewGroup} close={closeNewGroup} /> : ''}
+        </>
     )
 }
