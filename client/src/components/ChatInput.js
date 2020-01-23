@@ -1,11 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import useInput from '../hooks/useInput';
 import Button from '@material-ui/core/Button';
 import {makeStyles} from '@material-ui/styles'
 
 const useStyles = makeStyles({
     root:{
-        display: 'flex'
+        display: 'flex',
+        height: '40px',
     },
     input:{
         fontSize: '1rem',
@@ -16,10 +17,14 @@ const useStyles = makeStyles({
     }
 })
 
-function ChatInput({onConfirm}){
+function ChatInput({onConfirm, selected}){
     const classes = useStyles();
     const [message, setMessage, clearMessage] = useInput();
 
+    useEffect(()=>{
+        clearMessage();
+        //eslint-disable-next-line
+    },[selected]);
     function handleClick(){
         onConfirm(message);
         clearMessage();

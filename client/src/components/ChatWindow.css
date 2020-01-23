@@ -1,7 +1,8 @@
 .ChatWindow{
     background: white;
-    flex-grow: 1;
     overflow: auto;
+    flex-grow: 1;
+    flex-shrink: 100;
 }
 
 .ChatWindow ul{

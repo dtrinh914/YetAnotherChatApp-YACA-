@@ -1,9 +1,23 @@
 function reducer(state, action){
-    let newGroupState, newPendingState, newUserState;
+    let newGroupState, newPendingState, newUserState, newSelectedState;
+
+    //create a hashtable using the memberID as a key and the member info as the value
+    const createMemberMap = (members) => {
+        let hashMap = {};
+        members.map( member => hashMap[member._id] = {username: member.username});
+        return hashMap;
+    }
 
     switch(action.type){
         // gathers all chat data {type: 'INIT', payload: *}
         case "INIT":
+            //loops through each group and creates a member hashtable in each
+            newGroupState = action.payload.groups.map(group => {
+                const memberMap = createMemberMap(group.activeMembers);
+                group.memberMap = memberMap;
+                return group;
+            });
+            action.payload.groups = newGroupState;
             return action.payload;
         // inputs new message in state {type:'NEW_MSG, room: *, message: *}
         case "NEW_MSG":
@@ -18,8 +32,12 @@ function reducer(state, action){
             return {...state, groups:newGroupState};
         // adds new a new group {type:'ADD_GROUP', payload: *}
         case "ADD_GROUP":
-            newGroupState = [...state.groups, action.payload]
-            return {...state, groups:newGroupState};
+            //create hashmap of new group members
+            action.payload.memberMap = createMemberMap(action.payload.activeMembers);
+            newGroupState = [...state.groups, action.payload];
+            newSelectedState = {...state.selected, selected: action.payload._id, 
+                                name: action.payload.groupName, index: newGroupState.length-1};
+            return {...state, groups:newGroupState, selected:newSelectedState};
         // changes the current view of the chat page {type:'CHANGE_GROUP, selected:*, name:*, index:*}
         case "CHANGE_GROUP":
             return {...state, selected: {_id: action.selected, name:action.name, type:'group', index:action.index}}
@@ -39,7 +57,7 @@ function reducer(state, action){
         case "UPDATE_MEMBERS":
             newGroupState = state.groups.map( group => {
                 if(group._id === action.groupId){
-                    return {...group, ...action.payload};
+                    return {...group, ...action.payload, memberMap: createMemberMap(action.payload.activeMembers)};
                 } else {
                     return group;
                 }

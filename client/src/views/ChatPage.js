@@ -1,10 +1,7 @@
 import React, {useEffect, useState, useContext} from 'react';
 import {useHistory} from 'react-router-dom';
-import Navbar from '../components/Navbar';
 import LeftNav from '../components/LeftNav';
-import RightNav from '../components/RightNav';
-import ChatWindow from '../components/ChatWindow';
-import ChatInput from '../components/ChatInput';
+import ChatRoom from '../components/ChatRoom';
 import axios from 'axios';
 import io from 'socket.io-client';
 import {ChatContext} from '../contexts/chatContext';
@@ -15,11 +12,12 @@ const useStyles = makeStyles({
     root:{
         display:'flex',
         height: '100vh',
+        width: '100vw'
     },
     middle:{
         display: 'flex',
-        flexDirection: 'column',
-        flexGrow:'1'
+        flexGrow: 1,
+        flexDirection: 'column'
     }
 });
 
@@ -105,13 +103,11 @@ function Chat({username, loggedIn, setUserData}){
         return(
             <div className={classes.root}>
                 <LeftNav username={username} joinRoom={joinRoom} updateMembers={updateMembers} />
-                <div className={classes.middle}>
-                    <Navbar history={history} setUserData={setUserData} />
-                    <ChatWindow />
-                    <ChatInput onConfirm={newMessage} />
-                </div>
-                { (chatData.groups.length > 0) ? 
-                        <RightNav updateInvite={updateInvite} updateMembers={updateMembers} /> : ''}
+                {chatData.groups.length > 0 ? 
+                    <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} 
+                    newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}
+                    updateInvite={updateInvite} history={history} setUserData={setUserData}/> : ''}
+                
             </div>
         );
     } else {
