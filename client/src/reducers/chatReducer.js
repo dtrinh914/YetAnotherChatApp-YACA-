@@ -35,7 +35,7 @@ function reducer(state, action){
             //create hashmap of new group members
             action.payload.memberMap = createMemberMap(action.payload.activeMembers);
             newGroupState = [...state.groups, action.payload];
-            newSelectedState = {...state.selected, selected: action.payload._id, 
+            newSelectedState = {...state.selected, _id: action.payload._id, 
                                 name: action.payload.groupName, index: newGroupState.length-1};
             return {...state, groups:newGroupState, selected:newSelectedState};
         // changes the current view of the chat page {type:'CHANGE_GROUP, selected:*, name:*, index:*}

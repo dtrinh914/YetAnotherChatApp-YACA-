@@ -1,11 +1,16 @@
 import React from 'react';
 import ListItem from '@material-ui/core/ListItem';
 import Avatar from '@material-ui/core/Avatar';
+import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
+import format from 'date-fns/format';
 
 const useStyle = makeStyles({
+    root:{
+        alignItems: 'start'
+    },
     avatar:{
-        marginRight: '10px'
+        margin: '0 15px'
     },
     span:{
         marginLeft: '10px'
@@ -17,11 +22,11 @@ function Message({message}){
     const date = new Date(message.time);
 
     return(
-        <ListItem>
+        <ListItem className={classes.root}>
             <Avatar className={classes.avatar}>{message.username[0].toUpperCase()}</Avatar>
             <div>
-                <p><strong>{message.username}</strong><span className={classes.span}>{date.toString()}</span></p>
-                {message.text} 
+                <Typography><strong>{message.username}</strong><span className={classes.span}>{format(date, 'hh:mm aa')}</span></Typography>
+                <Typography>{message.text} </Typography>
             </div>
         </ListItem>
     );

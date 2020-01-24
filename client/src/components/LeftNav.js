@@ -17,7 +17,7 @@ const useStyles = makeStyles({
         width: '250px',
         height: '100%',
         border: 'none',
-        background:'#424242', 
+        background: '#424242', 
         overflow: 'auto'
     },
     paper:{
