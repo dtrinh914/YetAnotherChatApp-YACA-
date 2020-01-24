@@ -17,7 +17,8 @@ const useStyle = makeStyles({
         transform: 'translateX(-50%)',
         backgroundColor: '#fafafa',
         padding: '8px 12px',
-        borderRadius: '25px'
+        borderRadius: '25px',
+        whiteSpace: 'nowrap'
     },
     divider:{
         width:'95%',
