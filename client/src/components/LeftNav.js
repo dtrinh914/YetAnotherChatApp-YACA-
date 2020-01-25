@@ -74,7 +74,7 @@ export default function LeftNav({joinRoom,updateMembers}) {
         if(res.data.status === 1){
             const groupData = res.data.data[0];
             chatDispatch({type:'ADD_GROUP', payload: groupData});
-            joinRoom(res.data.data._id);
+            joinRoom(groupData._id);
             return 1;
         } else if(res.data.status === 0){
             return 0;
