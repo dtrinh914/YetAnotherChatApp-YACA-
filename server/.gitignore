@@ -108,6 +108,7 @@ dist
 
 # misc
 config
+build
 .DS_Store
 
 # files used for development
