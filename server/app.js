@@ -23,7 +23,7 @@ redisClient.on('error', (err) => {
 require('./util/pass')(passport);
 
 // middleware configurations
-app.use(express.static(path.join(__dirname, 'client', 'build')));
+app.use(express.static(path.join(__dirname, 'build')));
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 app.use(
