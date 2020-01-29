@@ -11,11 +11,11 @@ router.post('/new', (req, res) => {
 
     addUser(username, password).then( response =>{
         if(response.status === 1){
-            res.send('Created Account');
+            res.json({data: 'Created Account', status: 1});
         } else if(response.status === 0) {
-            res.send('Username already exists');
+            res.json({data: 'Username already exists', status: 0});
         } else {
-            res.send('There is an error with processing your request');
+            res.json({data: 'There is an error with processing your request', status: -1});
         }
     });
 });

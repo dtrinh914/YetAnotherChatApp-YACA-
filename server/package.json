@@ -2,9 +2,9 @@
   "name": "chat_app_server",
   "version": "1.0.0",
   "description": "Backend for chat app",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --detectOpenHandles"
   },
   "author": "Duc Trinh",
   "license": "ISC",
