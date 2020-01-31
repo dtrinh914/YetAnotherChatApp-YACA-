@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const isLoggedIn = require('../middleware/isLoggedIn');
-const {addUser, findUserByUsername, acceptGroupInvite, 
-       declineGroupInvite, getInitData} = require('../util/mongoUtil')
+const {addUser, findUserById, findUserByUsername, acceptGroupInvite, 
+       declineGroupInvite} = require('../util/mongoUtil')
 
 // route to add new user to database
 router.post('/new', (req, res) => {
@@ -30,7 +30,7 @@ router.get('/search/:username', isLoggedIn, (req,res) => {
 
 // route to get all of a users pending invites
 router.get('/pendinginvites', isLoggedIn, (req,res) => {
-    getInitData(req.user._id)
+    findUserById(req.user._id)
         .then(response => {
             if(response.status === 1){
                 res.json({data:response.data.user.groupInvites, status: 1});

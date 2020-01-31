@@ -64,6 +64,9 @@ const getInitData = async (userId) => {
 
 const addUser = async (username, password) =>{
     try{
+        if(!username.trim() || !password.trim()){
+            return {status: -1};
+        }
         const client = getClient();
         const userCol = client.db(DB).collection('users');
 
@@ -109,12 +112,35 @@ const findUserById = async (id) => {
     const client = getClient();
     const userCol = client.db(DB).collection('users');
 
-    const user = await userCol.findOne({_id: ObjectId(id)});
-    return user;
+    const userData = await userCol.aggregate([  //retrieves user info based on id
+        {$match: {_id: ObjectId(id)}},
+        //joins groupInvite field
+        {$lookup:{
+            from:'groups',
+            let: {groupInvites:'$groupInvites'},
+            pipeline:[
+                {$match: {$expr:{$in:['$_id', '$$groupInvites']}}},
+                {$project: {_id: 1, 
+                            groupName:1,
+                            description: 1}},
+                { '$addFields': {
+                    'sort': {
+                        '$indexOfArray': [ '$$groupInvites', '$_id' ]
+                    }
+                }},
+                { '$sort': { 'sort': 1 } },
+                { '$addFields': { 'sort': '$$REMOVE' }}
+            ],
+            as: 'groupInvites'
+        }},
+    ]).toArray();
+    return userData[0];
 }
 
 const findUserByUsername = async(name) => {
     try{
+        if(name.trim() === '') return {data:'Username cannot be an empty String', status: 0}; 
+
         const client = getClient();
         const userCol = client.db(DB).collection('users');
 
@@ -124,7 +150,7 @@ const findUserByUsername = async(name) => {
         if(user.length > 0){
             return {data:user, status: 1}
         }
-        return {data:[], status:0}
+        return {data:'User Not Found', status:0}
     } catch(err){
         errorHandler(err);
     }

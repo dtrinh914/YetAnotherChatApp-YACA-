@@ -43,6 +43,26 @@ const addGroup =  async (groupName, description, userId) => {
 
 //remove group from database
 
+//remove user from group
+const removeMember = async (userId, groupId) => {
+    try{
+        const client = getClient();
+        const userCol = client.db(DB).collection('users');
+        const groupCol = client.db(DB).collection('groups');
+        const userObjId = ObjectId(userId);
+        const groupObjId = ObjectId(groupId);
+
+        //remove groupID from user's list of groups
+        await userCol.updateOne({_id:userObjId}, {$pull:{groups: groupObjId}});
+        //remove userID from group list of active members
+        await groupCol.updateOne({_id:groupObjId}, {$pull:{activeMembers: userObjId}})
+
+        return {data:'Successfully removed member from group' , status:1}
+    } catch(err){
+        errorHandler(err);
+    }
+}
+
 //add message to group
 const storeGroupMsg = async (groupId, newMessage) => {
     try{
@@ -233,6 +253,7 @@ const hasGroupInvite = async (userObjId, groupObjId) => {
     }
 }
 
-module.exports = {addGroup, storeGroupMsg, getGroupInfo, 
+module.exports = {addGroup, storeGroupMsg, getGroupInfo,
+                  removeMember, 
                   isGroupMember, isAdmin, isCreator,
                   sendGroupInvite, acceptGroupInvite, declineGroupInvite}
