@@ -7,9 +7,15 @@ const {addGroup, getGroupInfo, sendGroupInvite} = require('../util/mongoUtil');
 // route to add a new group to the database
 router.post('/', isLoggedIn, (req,res) => {
     const groupName = req.body.newGroupName.trim();
-    addGroup(groupName, req.body.description, req.user._id)
-        .then( response => res.json(response))
-        .catch( err => res.json(err));
+
+    //check if groupName is empty string
+    if(groupName === '') res.json({data: 'A group name cannot be an empty string.', status: 0})
+    else{
+        addGroup(groupName, req.body.description, req.user._id)
+            .then( response => res.json(response))
+            .catch( err => res.json(err));
+    }
+   
 });
 
 //route to get a specific group info
