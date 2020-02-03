@@ -60,8 +60,8 @@ describe('/api/users/new', () =>{
         ${'   '}       | ${'   '}           | ${errorStatus}
     `('should return $result when username = $username and password = $password', async({username, password, result}) => {
         const response = await request(app)
-            .post('/api/users/new')
-            .send({username: username, password: password});
+                                    .post('/api/users/new')
+                                    .send({username: username, password: password});
         expect(response.text).toBe(result);
     });
 });

@@ -23,7 +23,6 @@ const closeConnection = () => {
 }
 
 const errorHandler = (err) => {
-    console.log(err);
     throw {data: err, status: -1}
 }
 

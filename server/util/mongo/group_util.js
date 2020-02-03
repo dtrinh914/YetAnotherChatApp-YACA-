@@ -103,7 +103,7 @@ const getGroupInfo = async (groupId) =>{
                                                         as: 'activeMembers'
                                                     }},
                                                 ]).toArray();
-        if(groupData){
+        if(groupData.length > 0){
             return {data:groupData, status: 1}
         } else {
             return {data:"This group ID doesn't exist" ,status: 0}
