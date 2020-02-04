@@ -22,11 +22,14 @@ function Message({message}){
     const date = new Date(message.time);
 
     return(
-        <ListItem className={classes.root}>
+        <ListItem className={classes.root} data-testid='message'>
             <Avatar className={classes.avatar}>{message.username[0].toUpperCase()}</Avatar>
             <div>
-                <Typography><strong>{message.username}</strong><span className={classes.span}>{format(date, 'hh:mm aa')}</span></Typography>
-                <Typography>{message.text} </Typography>
+                <Typography data-testid='username-time'>
+                    <strong>{message.username}</strong>
+                    <span className={classes.span}>{format(date, 'hh:mm aa')}</span>
+                </Typography>
+                <Typography data-testid='text-field'>{message.text}</Typography>
             </div>
         </ListItem>
     );

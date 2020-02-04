@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should match snapshot 1`] = `
+<div>
+  <div
+    class="makeStyles-root-1"
+    data-testid="date-divider"
+  >
+    <p
+      class="MuiTypography-root makeStyles-text-2 MuiTypography-body1"
+    >
+      Wed January 22, 2020
+    </p>
+    <hr
+      class="MuiDivider-root makeStyles-divider-3"
+    />
+  </div>
+</div>
+`;

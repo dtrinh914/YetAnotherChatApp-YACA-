@@ -1,7 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should match snapshot 1`] = `
-<DocumentFragment>
-  <li />
-</DocumentFragment>
+<div>
+  <li
+    class="MuiListItem-root makeStyles-root-1 MuiListItem-gutters"
+    data-testid="message"
+  >
+    <div
+      class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-2 MuiAvatar-colorDefault"
+    >
+      T
+    </div>
+    <div>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+        data-testid="username-time"
+      >
+        <strong>
+          test_user
+        </strong>
+        <span
+          class="makeStyles-span-3"
+        >
+          02:18 PM
+        </span>
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+        data-testid="text-field"
+      >
+        This is a test message.
+      </p>
+    </div>
+  </li>
+</div>
 `;
