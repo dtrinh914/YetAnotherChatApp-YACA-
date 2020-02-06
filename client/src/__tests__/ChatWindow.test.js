@@ -1,6 +1,6 @@
 import React from 'react';
 import ChatWindow from '../components/ChatWindow';
-import {cleanup, getAllByTestId, render} from '@testing-library/react';
+import {render} from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 
 //seedData
@@ -24,35 +24,24 @@ const testMemberMap = {
                         "5e28c5c485ffc434b337c268": {username:"test_user3"}
                       }
 
-afterEach(cleanup);
+describe('<ChatWindow> with seedData', () => {
+    const {container, getAllByTestId} = render(<ChatWindow messages={testMessages} memberMap={testMemberMap}/>);
+    const messages = getAllByTestId('message');
+    const dateDividers = getAllByTestId('date-divider');
 
-test('should match snapshot', ()=>{
-    const {container} = render(<ChatWindow messages={testMessages} memberMap={testMemberMap}/>);
-    expect(container).toMatchSnapshot();
-});
+    it('should match snapshot', ()=>{
+        expect(container).toMatchSnapshot();
+    });
 
-test('should display three messages that is formated properly', ()=>{
-    const {container} = render(<ChatWindow messages={testMessages} memberMap={testMemberMap}/>);
-    const messages = getAllByTestId(container, 'message');
+    it('should display three messages that is formated properly', ()=>{
+        expect(messages.length).toBe(3);
+        expect(messages[0]).toHaveTextContent('This is message 1','test_user1','02:02 PM');
+        expect(messages[1]).toHaveTextContent('This is message 2', 'test_user2', '02:03 PM');
+        expect(messages[2]).toHaveTextContent('This is message 3', 'test_user3', '02:04 PM');
+    });
 
-    expect(messages.length).toBe(3);
-    expect(messages[0]).toHaveTextContent('This is message 1');
-    expect(messages[0]).toHaveTextContent('test_user1');
-    expect(messages[0]).toHaveTextContent('02:02 PM');
-
-    expect(messages[1]).toHaveTextContent('This is message 2');
-    expect(messages[1]).toHaveTextContent('test_user2');
-    expect(messages[1]).toHaveTextContent('02:03 PM');
-
-    expect(messages[2]).toHaveTextContent('This is message 3');
-    expect(messages[2]).toHaveTextContent('test_user3');
-    expect(messages[2]).toHaveTextContent('02:04 PM');
-});
-
-test('should have one properly formatted date divider', () =>{
-    const {container} = render(<ChatWindow messages={testMessages} memberMap={testMemberMap}/>);
-    const dateDividers = getAllByTestId(container, 'date-divider');
-
-    expect(dateDividers.length).toBe(1);
-    expect(dateDividers[0]).toHaveTextContent("Wed January 22, 2020");
+    it('should have one properly formatted date divider', () =>{
+        expect(dateDividers.length).toBe(1);
+        expect(dateDividers[0]).toHaveTextContent("Wed January 22, 2020");
+    });
 });

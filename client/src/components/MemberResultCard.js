@@ -38,13 +38,13 @@ export default function MemberResultCard({username, userId, status, sendInvite})
 
     switch(status){
         case 'active':
-            statusButton = <DoneIcon />
+            statusButton = <DoneIcon data-testid='active-icon' />
             break;
         case 'pending':
-            statusButton = <Button>Pending</Button>
+            statusButton = <Button data-testid='pending-icon'>Pending</Button>
             break;
         default:
-            statusButton = <IconButton size='small' onClick={handleClick}>
+            statusButton = <IconButton size='small' onClick={handleClick} data-testid='add-button'>
                                 <AddCircleOutlineIcon className={classes.add} />
                             </IconButton>
             break;
@@ -52,7 +52,7 @@ export default function MemberResultCard({username, userId, status, sendInvite})
                         
 
     return (
-        <ListItem className={classes.root}>
+        <ListItem data-testid='member-result-card' className={classes.root}>
             <div className={classes.user}>
                 <Avatar className={classes.avatar}>{username[0].toUpperCase()}</Avatar>
                 <span>{username}</span>

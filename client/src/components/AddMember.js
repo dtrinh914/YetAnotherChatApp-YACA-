@@ -63,8 +63,8 @@ export default function AddMember({sendInvite, filterResults, closeAddMem}) {
                 <Paper className={classes.paper} >
                     <Typography>Add a Member</Typography>
                     <form onSubmit={handleSubmit}>
-                        <Input className={classes.input} id='username' name='username' placeholder='Username' 
-                        value={username} onChange={setUsername} />
+                        <Input inputProps={{'data-testid':'addmember-input'}} className={classes.input} id='username' 
+                        name='username' placeholder='Username' value={username} onChange={setUsername} />
                         <List>
                             {filterResults(searchResults)
                                 .map(result => <MemberResultCard key={uuid()} 
@@ -74,9 +74,9 @@ export default function AddMember({sendInvite, filterResults, closeAddMem}) {
                                                                 sendInvite = {sendInvite}
                                                                 />)}
                         </List>
-                        <Button className={classes.button} type='submit'>Search</Button>
+                        <Button data-testid='addmember-submit-button' className={classes.button} type='submit'>Search</Button>
                     </form>
-                    <Button className={classes.button} onClick={closeAddMem} >Close</Button>
+                    <Button className={classes.button} onClick={closeAddMem}>Close</Button>
                 </Paper>
             </ClickAwayListener>
         </div>

@@ -1,6 +1,7 @@
 import React, {useContext} from 'react';
 import AddMember from './AddMember';
 import GroupDescription from './GroupDescription';
+import GroupMembers from './GroupMembers';
 import Hidden from '@material-ui/core/Hidden';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
@@ -8,7 +9,7 @@ import {makeStyles} from '@material-ui/styles';
 import {NavContext} from '../contexts/navContext';
 import {ChatContext} from '../contexts/chatContext';
 import axios from 'axios';
-import GroupMembers from './GroupMembers';
+
 
 
 const useStyles = makeStyles({

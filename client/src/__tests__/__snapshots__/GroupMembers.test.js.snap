@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GroupMember component with no data should match snapshot 1`] = `
+<div>
+  <div>
+    <h2>
+      Group Members
+    </h2>
+    <ul
+      class="MuiList-root makeStyles-list-1 MuiList-padding"
+    />
+  </div>
+</div>
+`;
+
+exports[`GroupMember component with seedData should match snapshot 2 1`] = `<div />`;
