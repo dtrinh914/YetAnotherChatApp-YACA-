@@ -104,7 +104,7 @@ function Chat({username, loggedIn, setUserData}){
             <div className={classes.root}>
                 <LeftNav username={username} joinRoom={joinRoom} updateMembers={updateMembers} />
                 {chatData.groups.length > 0 ? 
-                    <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} 
+                    <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} userInfo={chatData.user}
                     newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}
                     updateInvite={updateInvite} history={history} setUserData={setUserData}/> : ''}
                 

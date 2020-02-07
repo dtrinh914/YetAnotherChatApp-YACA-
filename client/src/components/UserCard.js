@@ -18,8 +18,8 @@ export default function UserCard({username}) {
     const classes = useStyles();
     return (
         <div className={classes.root}>
-            <Avatar className={classes.avatar}>{username[0].toUpperCase()}</Avatar>
-            <Typography>{username}</Typography>
+            <Avatar className={classes.avatar}>{username ? username[0].toUpperCase() : ''}</Avatar>
+            <Typography data-testid='usercard-username'>{username}</Typography>
         </div>
     )
 }

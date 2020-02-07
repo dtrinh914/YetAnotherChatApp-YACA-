@@ -14,7 +14,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function ChatRoom({newMessage, currentGroup, selected, updateInvite, updateMembers, history, setUserData}) {
+export default function ChatRoom({newMessage, currentGroup, selected, updateInvite, updateMembers, history, setUserData, userInfo}) {
     const classes = useStyles();
     return (
         <>
@@ -23,7 +23,7 @@ export default function ChatRoom({newMessage, currentGroup, selected, updateInvi
                 <ChatWindow messages={currentGroup.messages} memberMap={currentGroup.memberMap} />
                 <ChatInput onConfirm={newMessage} selected={selected} />
             </div>
-            <RightNav currentGroup={currentGroup} updateInvite={updateInvite} updateMembers={updateMembers} />
+            <RightNav userID={userInfo._id} currentGroup={currentGroup} updateInvite={updateInvite} updateMembers={updateMembers} />
         </>
     )
 }

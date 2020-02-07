@@ -1,0 +1,78 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`right nav when window size is md should render properly and match snapshot 1`] = `
+<div>
+  <div
+    class="makeStyles-root-1"
+    data-testid="rightnav-sidebar"
+  >
+    <div
+      class="makeStyles-paper-3"
+    >
+      <div>
+        <p>
+          [No description has been written]
+        </p>
+      </div>
+      <hr
+        class="MuiDivider-root makeStyles-divider-4 MuiDivider-middle"
+      />
+      <div>
+        <h2>
+          Group Members
+        </h2>
+        <ul
+          class="MuiList-root makeStyles-list-11 MuiList-padding"
+        >
+          <li
+            class="MuiListItem-root MuiListItem-gutters"
+            data-testid="group-member"
+          >
+            <div
+              class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-12 MuiAvatar-colorDefault"
+            >
+              T
+            </div>
+            <span>
+              test_user1
+            </span>
+          </li>
+          <li
+            class="MuiListItem-root MuiListItem-gutters"
+            data-testid="group-member"
+          >
+            <div
+              class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-12 MuiAvatar-colorDefault"
+            >
+              T
+            </div>
+            <span>
+              test_user2
+            </span>
+          </li>
+          <li
+            class="MuiListItem-root MuiListItem-gutters"
+            data-testid="group-member"
+          >
+            <div
+              class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-12 MuiAvatar-colorDefault"
+            >
+              T
+            </div>
+            <span>
+              test_user3
+            </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+</div>
+`;
+
+exports[`right nav when window size is sm should render empty div and match snapshot 1`] = `
+<div>
+  
+</div>
+`;

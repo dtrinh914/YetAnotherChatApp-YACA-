@@ -39,6 +39,8 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "css-mediaquery": "^0.1.2"
+  },
   "proxy": "http://localhost:5000"
 }
