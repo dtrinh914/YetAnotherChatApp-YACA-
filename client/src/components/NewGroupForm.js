@@ -60,10 +60,15 @@ function NewGroup({createNewGroup, close}){
         }
     }
 
+    const handleError = (message) => {
+        setInputErr({status:true, err:message})
+        nameInputRef.current.children[1].children[0].focus();
+    };
+
     //checks if group field is empty
     const checkEmpty = (input) => {
         if(input.trim() === ''){
-            setInputErr({status:true, err:'This field is required.'})
+            handleError('This field is required.');
             return true;
         }
         return false;
@@ -71,14 +76,19 @@ function NewGroup({createNewGroup, close}){
 
     //sends data to backend and edits form based on response
     const sendData = async () =>{
-        const res = await createNewGroup(newGroup, description)
-        setLoading(false);
-        if(res === 1){
-            handleClose();
-        } else if (res === 0){
-            setInputErr({status:true, err:'A group with this name already exists.'})
-        } else {
-            setInputErr({status:true, err:'An error occured while processing your request.'})
+        try{
+            const res = await createNewGroup(newGroup, description);
+            if(res === 1){
+                handleClose();
+            } else if (res === 0){
+                handleError('A group with this name already exists.');
+            } else {
+                handleError('An error occured while processing your request.');
+            }
+        } catch(err){
+            handleError('An error occured while processing your request.');
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -90,23 +100,30 @@ function NewGroup({createNewGroup, close}){
     // clears errors and updates state
     const handleGroupChange=(e)=>{
         setNewGroup(e);
+        setInputErr({status:false, err:''});
     }
 
     return(
         <div className={classes.root}>
                 <ClickAwayListener onClickAway={handleClose}>
                     <Paper className={classes.paper}>
-                        <LinearProgress className={loading ? classes.loadbar : classes.hidden} />
+                        {loading ? <LinearProgress data-testid='newgroupform-loading' className={classes.loadbar} /> : ''}
+
                         <form className={classes.form} onSubmit={handleSubmit}>
-                            <TextField ref={nameInputRef} className={classes.textInput} label='Group Name' 
-                            id='Group Name' type='text' name='newGroupName' 
-                            value={newGroup} onChange={handleGroupChange} error={inputErr.status}
-                            helperText={inputErr.err} disabled={loading} />
-                            <TextField className={classes.textInput}  label='Group Description' 
-                            id='Group Description' type='text' name='newGroupDescription' 
-                            value={description} onChange={setDescription} disabled={loading}/>
-                            <Button type='submit' disabled={loading}>Create Group</Button>
-                            <Button onClick={handleClose} disabled={loading}>Close</Button>
+
+                            <TextField inputProps={{'data-testid': 'newgroupform-group-name-input'}} ref={nameInputRef} 
+                            FormHelperTextProps = {{'data-testid': 'newgroupform-group-name-error'}}
+                            className={classes.textInput} label='Group Name' id='Group Name' 
+                            type='text' name='newGroupName' value={newGroup} onChange={handleGroupChange}
+                            error={inputErr.status} helperText={inputErr.err} disabled={loading} />
+
+                            <TextField inputProps={{'data-testid': 'newgroupform-group-description-input'}} 
+                            className={classes.textInput}  label='Group Description' id='Group Description' 
+                            type='text' name='newGroupDescription' value={description} 
+                            onChange={setDescription} disabled={loading}/>
+
+                            <Button data-testid='newgroupform-submit' type='submit' disabled={loading}>Create Group</Button>
+                            <Button data-testid='newgroupform-close' onClick={handleClose} disabled={loading}>Close</Button>
                         </form>
                     </Paper>
                 </ClickAwayListener>
