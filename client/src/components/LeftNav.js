@@ -33,8 +33,8 @@ const useStyles = makeStyles({
 });
 
 
-export default function LeftNav({joinRoom,updateMembers}) {
-    const {chatData, chatDispatch} = useContext(ChatContext);
+export default function LeftNav({userData, groupData, joinRoom, updateMembers}) {
+    const {chatDispatch} = useContext(ChatContext);
     const {navData, navDispatch} = useContext(NavContext);
     const classes = useStyles();
 
@@ -48,7 +48,7 @@ export default function LeftNav({joinRoom,updateMembers}) {
         navDispatch({type:'LEFTDRAWER', open: false});
     }
 
-    const groups = chatData.groups.map( group => {return {name:group.groupName, id:group._id}});
+    const groups = groupData.map( group => {return {name:group.groupName, id:group._id}});
 
 
     //
@@ -86,8 +86,8 @@ export default function LeftNav({joinRoom,updateMembers}) {
     //
     // PENDING INVITES
     //
-    const username = chatData.user.username;
-    const pendingInvites = chatData.user.groupInvites;
+    const username = userData.username;
+    const pendingInvites = userData.groupInvites;
 
     const acceptInvite = async (groupId) => {
         try{
@@ -134,12 +134,12 @@ export default function LeftNav({joinRoom,updateMembers}) {
         }
     }
 
-    const leftNav = <div className={classes.root}>
+    const leftNav = <div className={classes.root} data-testid='left-nav'>
                         <div className={classes.paper}>
                             <UserCard username={username} />
                             <Divider className={classes.divider} variant='middle' />
                             <Groups openNewGroup={openNewGroup} setGroup={setGroup} groups={groups} />
-                            {chatData.user.groupInvites.length > 0 
+                            {userData.groupInvites.length > 0 
                                 ?   (<>
                                         <Divider className={classes.divider} variant='middle' />
                                         <GroupInvites pendingInvites={pendingInvites} 
@@ -156,7 +156,9 @@ export default function LeftNav({joinRoom,updateMembers}) {
                 {leftNav}
             </Hidden>
             <Hidden smUp>
-                <Drawer open={navData.leftNav.drawer} ModalProps={{ onBackdropClick: handleLeftClickAway }}>
+                <Drawer open={navData.leftNav.drawer} 
+                ModalProps={{ onBackdropClick: handleLeftClickAway}}
+                PaperProps={{'data-testid':'left-drawer'}}>
                     {leftNav}
                 </Drawer>
             </Hidden>

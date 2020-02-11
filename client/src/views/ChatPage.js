@@ -22,7 +22,7 @@ const useStyles = makeStyles({
 });
 
 let socket;
-function Chat({username, loggedIn, setUserData}){
+function Chat({loggedIn, setUserData}){
     const classes = useStyles();
     const history = useHistory();
     const {chatData, chatDispatch} = useContext(ChatContext);
@@ -102,7 +102,7 @@ function Chat({username, loggedIn, setUserData}){
     if(loaded){
         return(
             <div className={classes.root}>
-                <LeftNav username={username} joinRoom={joinRoom} updateMembers={updateMembers} />
+                <LeftNav userData={chatData.user} groupData={chatData.groups} joinRoom={joinRoom} updateMembers={updateMembers} />
                 {chatData.groups.length > 0 ? 
                     <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} userInfo={chatData.user}
                     newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}

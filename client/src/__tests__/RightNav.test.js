@@ -6,7 +6,7 @@ import {render, cleanup} from '@testing-library/react';
 import {createMuiTheme} from '@material-ui/core/styles';
 import {MuiThemeProvider} from '@material-ui/core/styles';
 
-afterEach(cleanup)
+afterEach(cleanup);
 
 const seedData = {"_id":"5e2a008c295fb74748745ab9",
                   "groupName":"New group",
@@ -28,19 +28,19 @@ const seedData = {"_id":"5e2a008c295fb74748745ab9",
                                }
                  }
 
+const component = <ChatProvider>
+                  <NavProvider>
+                        <RightNav currentGroup={seedData} />
+                  </NavProvider>
+                  </ChatProvider>
+
 describe('right nav when window size is md', ()=>{
-    const theme = createMuiTheme({props:{MuiWithWidth: {initialWidth:'md'}}});
-    const component =   <ChatProvider>
-                        <NavProvider>
-                        <MuiThemeProvider theme={theme}>
-                            <RightNav currentGroup={seedData} />
-                        </MuiThemeProvider>
-                        </NavProvider>
-                        </ChatProvider>
-
+    const theme = createMuiTheme({props:{MuiWithWidth: {initialWidth:'md'}}}); 
+                        
     it('should render properly and match snapshot', ()=>{
-        const {container, queryByTestId} = render(component);
-
+        const {container, queryByTestId} = render(<MuiThemeProvider theme={theme}>
+                                                        {component}
+                                                  </MuiThemeProvider>);
         expect(queryByTestId('rightnav-drawer')).toBeNull();
         expect(container).toMatchSnapshot();
     });
@@ -48,16 +48,10 @@ describe('right nav when window size is md', ()=>{
 
 describe('right nav when window size is sm', ()=>{
     const theme = createMuiTheme({props:{MuiWithWidth: {initialWidth:'sm'}}});
-    const component =   <ChatProvider>
-                        <NavProvider>
-                        <MuiThemeProvider theme={theme}>
-                            <RightNav currentGroup={seedData} />
-                        </MuiThemeProvider>
-                        </NavProvider>
-                        </ChatProvider>
-
     it('should render empty div and match snapshot', ()=>{
-        const {container} = render(component);
+        const {container} = render(<MuiThemeProvider theme={theme}>
+                                        {component}
+                                   </MuiThemeProvider>);
         expect(container).toMatchSnapshot();
     });
 })
