@@ -23,7 +23,7 @@ const useStyles = makeStyles({
 
 let socket;
 
-function Chat({loggedIn, setUserData}){
+function Chat({loggedIn, setLoggedIn}){
     const classes = useStyles();
     const history = useHistory();
     const {chatData, chatDispatch} = useContext(ChatContext);
