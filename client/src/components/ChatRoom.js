@@ -14,16 +14,17 @@ const useStyles = makeStyles({
     }
 });
 
-export default function ChatRoom({newMessage, currentGroup, selected, updateInvite, updateMembers, history, setLoggedIn}) {
+
+export default function ChatRoom({newMessage, currentGroup, selected, updateInvite, updateMembers, history, setUserData, userInfo}) {
     const classes = useStyles();
     return (
         <>
            <div className={classes.root}>
-                <Navbar history={history} setLoggedIn={setLoggedIn} />
-                <ChatWindow currentGroup={currentGroup} />
+                <Navbar history={history} setUserData={setUserData} />
+                <ChatWindow messages={currentGroup.messages} memberMap={currentGroup.memberMap} />
                 <ChatInput onConfirm={newMessage} selected={selected} />
             </div>
-            <RightNav currentGroup={currentGroup} updateInvite={updateInvite} updateMembers={updateMembers} />
+            <RightNav userID={userInfo._id} currentGroup={currentGroup} updateInvite={updateInvite} updateMembers={updateMembers} />
         </>
     )
 }

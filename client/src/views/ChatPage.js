@@ -22,7 +22,8 @@ const useStyles = makeStyles({
 });
 
 let socket;
-function Chat({loggedIn, setLoggedIn}){
+
+function Chat({loggedIn, setUserData}){
     const classes = useStyles();
     const history = useHistory();
     const {chatData, chatDispatch} = useContext(ChatContext);
@@ -80,6 +81,10 @@ function Chat({loggedIn, setLoggedIn}){
                 })
                 socket.emit('user', chatData.user._id)
             })
+
+            return function cleanup(){
+                socket.close();
+            }
         }
         //eslint-disable-next-line
     }, [loaded])
@@ -102,9 +107,9 @@ function Chat({loggedIn, setLoggedIn}){
     if(loaded){
         return(
             <div className={classes.root}>
-                <LeftNav username={chatData.user.username} joinRoom={joinRoom} updateMembers={updateMembers} />
+                <LeftNav userData={chatData.user} groupData={chatData.groups} joinRoom={joinRoom} updateMembers={updateMembers} />
                 {chatData.groups.length > 0 ? 
-                    <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} 
+                    <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} userInfo={chatData.user}
                     newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}
                     updateInvite={updateInvite} history={history} setLoggedIn={setLoggedIn} /> : ''}
                 

@@ -104,15 +104,15 @@ function Navbar({history, setLoggedIn}){
         <AppBar position="static" className={classes.nav}>
             <Toolbar className={classes.tool}>
                 <Hidden smUp>
-                    <IconButton onClick={handleLeftDrawer} size='small'>
+                    <IconButton data-testid='nav-group-nav' onClick={handleLeftDrawer} size='small'>
                         <MenuIcon />
                     </IconButton>
                 </Hidden>
 
-                <Typography>{chatData.selected.name}</Typography>
+                <Typography data-testid='nav-group-name'>{chatData.selected.name}</Typography>
 
                 <Hidden mdUp>
-                    <IconButton ref={anchorRef} aria-controls={open ? 'menu-list-grow': undefined} 
+                    <IconButton data-testid='nav-config' ref={anchorRef} aria-controls={open ? 'menu-list-grow': undefined} 
                     aria-haspopup='true' onClick={handleToggle} size='small'>
                         <SettingsIcon />
                     </IconButton>
@@ -126,8 +126,8 @@ function Navbar({history, setLoggedIn}){
                             <Paper className={classes.rightmenu}>
                                 <ClickAwayListener onClickAway={handleClose}>
                                     <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                                        <MenuItem onClick={e => {handleClose(e); handleRightDrawer(e)}}>Group Information</MenuItem>
-                                        <MenuItem onClick={e => {handleClose(e); handleAddMem(e);}}>Invite</MenuItem>
+                                        <MenuItem data-testid='nav-config-group-info' onClick={e => {handleClose(e); handleRightDrawer(e)}}>Group Information</MenuItem>
+                                        <MenuItem data-testid='nav-config-addmem' onClick={e => {handleClose(e); handleAddMem(e);}}>Invite</MenuItem>
                                         <MenuItem onClick={e=> {handleClose(e); handleLogOut(e);}}>Logout</MenuItem>
                                     </MenuList>
                                 </ClickAwayListener>
@@ -140,10 +140,10 @@ function Navbar({history, setLoggedIn}){
 
                 <Hidden smDown>
                     <div>
-                        <IconButton onClick={handleToggleInfo} size='small'>
+                        <IconButton data-testid='nav-toggle-right' onClick={handleToggleInfo} size='small'>
                             <GroupIcon />
                         </IconButton>
-                        <IconButton onClick={handleAddMem} size='small'>
+                        <IconButton data-testid='nav-addmem' onClick={handleAddMem} size='small'>
                             <PersonAddIcon />
                         </IconButton>
                         <Button onClick={handleLogOut}>Log Out</Button>

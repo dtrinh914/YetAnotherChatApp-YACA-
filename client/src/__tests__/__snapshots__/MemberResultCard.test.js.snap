@@ -1,0 +1,119 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<MemberResultCard /> with a pending member should match snapshot 1`] = `
+<div>
+  <li
+    class="MuiListItem-root makeStyles-root-32 MuiListItem-gutters"
+    data-testid="member-result-card"
+  >
+    <div
+      class="makeStyles-user-34"
+    >
+      <div
+        class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-33 MuiAvatar-colorDefault"
+      >
+        T
+      </div>
+      <span>
+        test_user
+      </span>
+    </div>
+    <button
+      class="MuiButtonBase-root MuiButton-root MuiButton-text"
+      data-testid="pending-icon"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="MuiButton-label"
+      >
+        Pending
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
+  </li>
+</div>
+`;
+
+exports[`<MemberResultCard /> with an active member should match snapshot 1`] = `
+<div>
+  <li
+    class="MuiListItem-root makeStyles-root-1 MuiListItem-gutters"
+    data-testid="member-result-card"
+  >
+    <div
+      class="makeStyles-user-3"
+    >
+      <div
+        class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-2 MuiAvatar-colorDefault"
+      >
+        T
+      </div>
+      <span>
+        test_user
+      </span>
+    </div>
+    <svg
+      aria-hidden="true"
+      class="MuiSvgIcon-root"
+      data-testid="active-icon"
+      focusable="false"
+      role="presentation"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"
+      />
+    </svg>
+  </li>
+</div>
+`;
+
+exports[`<MemberResultCard /> with any other person should match snapshot 1`] = `
+<div>
+  <li
+    class="MuiListItem-root makeStyles-root-96 MuiListItem-gutters"
+    data-testid="member-result-card"
+  >
+    <div
+      class="makeStyles-user-98"
+    >
+      <div
+        class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-97 MuiAvatar-colorDefault"
+      >
+        T
+      </div>
+      <span>
+        test_user
+      </span>
+    </div>
+    <button
+      class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall"
+      data-testid="add-button"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="MuiIconButton-label"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root makeStyles-add-99"
+          focusable="false"
+          role="presentation"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
+          />
+        </svg>
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
+  </li>
+</div>
+`;

@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should match snapshot 1`] = `
+<div>
+  <header
+    class="MuiPaper-root MuiAppBar-root MuiAppBar-positionStatic makeStyles-nav-1 MuiAppBar-colorPrimary MuiPaper-elevation4"
+  >
+    <div
+      class="MuiToolbar-root MuiToolbar-regular makeStyles-tool-2 MuiToolbar-gutters"
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+        data-testid="nav-group-name"
+      />
+    </div>
+  </header>
+</div>
+`;

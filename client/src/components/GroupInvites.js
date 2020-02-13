@@ -25,12 +25,12 @@ export default function GroupInvites({pendingInvites, acceptInvite, declineInvit
     return (
         <div className={classes.root} aria-label='group-invites'>
             <Typography className={classes.headerText}>Pending Invites</Typography>
-            <List className={classes.list}>
-                {pendingInvites.map(group => <GroupInviteItem key={group._id}
-                                                groupName={group.groupName}
-                                                groupId={group._id} 
-                                                acceptInvite={acceptInvite} 
-                                                declineInvite={declineInvite}/>)}
+            <List data-testid='group-invites-list' className={classes.list}>
+                {pendingInvites ? pendingInvites.map(group => <GroupInviteItem key={group._id}
+                                                                groupName={group.groupName}
+                                                                groupId={group._id} 
+                                                                acceptInvite={acceptInvite} 
+                                                                declineInvite={declineInvite}/>) : ''}
             </List>
         </div>
     )

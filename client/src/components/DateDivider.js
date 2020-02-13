@@ -30,7 +30,7 @@ export default function DateDivider({date}) {
     const classes = useStyle();
 
     return (
-        <div className={classes.root}>
+        <div className={classes.root} data-testid='date-divider'>
             <Typography className={classes.text}>{date}</Typography>
             <Divider className={classes.divider} />
         </div>

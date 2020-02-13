@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should match snapshot 1`] = `
+<div>
+  <div
+    class="makeStyles-root-1"
+  >
+    <div
+      class="MuiPaper-root makeStyles-paper-2 MuiPaper-elevation1 MuiPaper-rounded"
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        Add a Member
+      </p>
+      <form
+        data-testid="addmember-form"
+      >
+        <div
+          class="MuiInputBase-root MuiInput-root MuiInput-underline"
+        >
+          <input
+            class="MuiInputBase-input MuiInput-input"
+            data-testid="addmember-input"
+            id="username"
+            name="username"
+            placeholder="Username"
+            type="text"
+            value=""
+          />
+        </div>
+        <ul
+          class="MuiList-root MuiList-padding"
+        />
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-text"
+          data-testid="addmember-submit-button"
+          tabindex="0"
+          type="submit"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Search
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </form>
+      <button
+        class="MuiButtonBase-root MuiButton-root MuiButton-text"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiButton-label"
+        >
+          Close
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+  </div>
+</div>
+`;

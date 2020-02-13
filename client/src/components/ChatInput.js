@@ -25,6 +25,7 @@ function ChatInput({onConfirm, selected}){
         clearMessage();
         //eslint-disable-next-line
     },[selected]);
+
     function handleClick(){
         onConfirm(message);
         clearMessage();
@@ -39,8 +40,10 @@ function ChatInput({onConfirm, selected}){
 
     return(
         <div className={classes.root}>
-            <input className={classes.input} type="text" value={message} onChange={setMessage} onKeyPress={handleEnter} />
-            <Button className={classes.button} color="primary" variant="contained" onClick={handleClick}>Send</Button>
+            <input data-testid='message-input' className={classes.input} type="text" 
+                value={message} onChange={setMessage} onKeyPress={handleEnter} />
+            <Button data-testid='send-button' className={classes.button} 
+                color="primary" variant="contained" onClick={handleClick}>Send</Button>
         </div>
     );
 }

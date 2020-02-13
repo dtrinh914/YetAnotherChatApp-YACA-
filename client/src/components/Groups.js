@@ -34,11 +34,11 @@ function Groups({openNewGroup, groups, setGroup}){
         <div className={classes.root} aria-label='group-nav'>
             <div className={classes.header}>
                 <Typography className={classes.headerText}>Groups</Typography>
-                <IconButton className={classes.create} color='inherit' size='small' onClick={openNewGroup}>
+                <IconButton data-testid='add-group-button' className={classes.create} color='inherit' size='small' onClick={openNewGroup}>
                     <AddCircleOutlineIcon fontSize='inherit'/>
                 </IconButton>
             </div>
-            <List className={classes.list}>
+            <List data-testid='group-list' className={classes.list}>
             {groups.map( (group, index) => <Group id={group.id} name={group.name} 
             key={group.id} setGroup={setGroup} index={index} />)}    
             </List>

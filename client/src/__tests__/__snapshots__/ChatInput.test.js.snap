@@ -1,16 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should match snapshot 1`] = `
-<DocumentFragment>
+<div>
   <div
-    class="ChatInput"
+    class="makeStyles-root-1"
   >
-    <textarea
+    <input
+      class="makeStyles-input-2"
+      data-testid="message-input"
       type="text"
+      value=""
     />
-    <button>
-      Send
+    <button
+      class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-button-3 MuiButton-containedPrimary"
+      data-testid="send-button"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="MuiButton-label"
+      >
+        Send
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
     </button>
   </div>
-</DocumentFragment>
+</div>
 `;

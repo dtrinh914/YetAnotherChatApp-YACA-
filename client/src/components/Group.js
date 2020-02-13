@@ -6,8 +6,8 @@ function Group({name, id, index, setGroup}){
         setGroup(id, name, index);
     }
     return(
-        <ListItem style={{padding:'2px 15px 2px 30px', fontSize:'0.85rem'}} onClick={handleClick} button>
-            {name}
+        <ListItem data-testid='group-tab-button' style={{padding:'2px 15px 2px 30px', fontSize:'0.85rem'}} onClick={handleClick} button>
+            <span data-testid='group-tab-name'>{name}</span>
         </ListItem>
     );
 }

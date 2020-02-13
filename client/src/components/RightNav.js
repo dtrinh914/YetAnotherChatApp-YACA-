@@ -1,6 +1,7 @@
 import React, {useContext} from 'react';
 import AddMember from './AddMember';
 import GroupDescription from './GroupDescription';
+import GroupMembers from './GroupMembers';
 import Hidden from '@material-ui/core/Hidden';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
@@ -8,7 +9,7 @@ import {makeStyles} from '@material-ui/styles';
 import {NavContext} from '../contexts/navContext';
 import {ChatContext} from '../contexts/chatContext';
 import axios from 'axios';
-import GroupMembers from './GroupMembers';
+
 
 
 const useStyles = makeStyles({
@@ -36,18 +37,14 @@ const useStyles = makeStyles({
 });
 
 
-export default function RightNav({updateInvite, updateMembers}) {
+export default function RightNav({updateInvite, updateMembers, currentGroup, userId}) {
     const {navData, navDispatch} = useContext(NavContext);
-    const {chatData, chatDispatch} = useContext(ChatContext);
+    const {chatDispatch} = useContext(ChatContext);
     const classes = useStyles();
     const addMemStatus = navData.rightNav.addMem;
 
-    const groupIndex = chatData.selected.index;
-    const selectedGroupId = chatData.selected._id;
-    const currUserId = chatData.user._id;
-    const groupDescription = chatData.groups[groupIndex].description;
-    const groupMembers = chatData.groups[groupIndex].activeMembers;
-    const {activeMembers, pendingMembers, pendingRequests} = chatData.groups[groupIndex];
+    const selectedGroupId = currentGroup._id;
+    const {activeMembers, pendingMembers, pendingRequests, groupDescription} = currentGroup;
 
     const sendInvite = (userId) =>{
         axios.post('/api/groups/' + selectedGroupId + '/members',{userId: userId, 
@@ -71,7 +68,7 @@ export default function RightNav({updateInvite, updateMembers}) {
         let activeMembersId = activeMembers.map( member => member._id)
         for(let i = 0; i < results.length; i++){
             let current = results[i];
-            if(current._id === currUserId){
+            if(current._id === userId){
                 continue;
             }
             //check if current user is an active member 
@@ -101,18 +98,18 @@ export default function RightNav({updateInvite, updateMembers}) {
     const rightNav = <div className={classes.paper}>
                         <GroupDescription description={groupDescription} />
                         <Divider className={classes.divider} variant='middle' />
-                        <GroupMembers groupMembers={groupMembers} />
+                        <GroupMembers groupMembers={activeMembers} />
                      </div>
     return (
         <>
             <Hidden smDown >
-                <div className={navData.rightNav.root ? classes.root : classes.hidden}>
+                <div data-testid='right-nav' className={navData.rightNav.root ? classes.root : classes.hidden}>
                     {rightNav}
                 </div>
             </Hidden>
             <Hidden mdUp>
-                <Drawer open={navData.rightNav.drawer} anchor='right' ModalProps={{ onBackdropClick: handleClickAway }}>
-                    <div className={classes.root}>
+                <Drawer open={navData.rightNav.drawer} anchor='right' ModalProps={{onBackdropClick: handleClickAway }}>
+                    <div data-testid='right-nav-drawer' className={classes.root}>
                         {rightNav}
                     </div>
                 </Drawer>

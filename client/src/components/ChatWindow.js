@@ -21,13 +21,12 @@ const useStyle = makeStyles({
     }
 });
 
-function ChatWindow({currentGroup}){
+function ChatWindow({memberMap, messages}){
     const classes = useStyle();
 
     const formatMessages = (messages) => {
         let results = [];
         let dates = {};
-        let memberMap = currentGroup.memberMap;
         
         // loop through each message
         for(let i = 0; i < messages.length; i++){
@@ -50,13 +49,13 @@ function ChatWindow({currentGroup}){
     }
 
     return(
-        <Paper className={classes.paper}>
+        <Paper data-testid='chat-window' className={classes.paper}>
             <List className={classes.list}>
-                {formatMessages(currentGroup.messages).map( message => {
+                {formatMessages(messages).map( message => {
                     if(message.type === 'message'){
                         return <Message key={uuid()} message={message}/>
                     } else {
-                        return <DateDivider date={message.date} />
+                        return <DateDivider key={uuid()} date={message.date} />
                     }
                 })}   
             </List>

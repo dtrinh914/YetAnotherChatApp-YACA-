@@ -20,7 +20,7 @@ export default function GroupMembers({groupMembers}) {
         <div>
             <h2>Group Members</h2>
             <List className={classes.list}>
-                {groupMembers.map(member => <ListItem key={uuid()}>
+                {groupMembers.map(member => <ListItem key={uuid()} data-testid='group-member'>
                                                 <Avatar className={classes.avatar}>{member.username[0].toUpperCase()}</Avatar>
                                                 <span>{member.username}</span>
                                             </ListItem>)}

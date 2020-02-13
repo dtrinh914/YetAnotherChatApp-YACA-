@@ -1,11 +1,121 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should match snapshot 1`] = `
-<DocumentFragment>
+exports[`<ChatWindow> with seedData should match snapshot 1`] = `
+<div>
   <div
-    class="ChatWindow"
+    class="MuiPaper-root makeStyles-paper-1 MuiPaper-elevation1 MuiPaper-rounded"
+    data-testid="chat-window"
   >
-    <ul />
+    <ul
+      class="MuiList-root makeStyles-list-2 MuiList-padding"
+    >
+      <div
+        class="makeStyles-root-35"
+        data-testid="date-divider"
+      >
+        <p
+          class="MuiTypography-root makeStyles-text-36 MuiTypography-body1"
+        >
+          Wed January 22, 2020
+        </p>
+        <hr
+          class="MuiDivider-root makeStyles-divider-37"
+        />
+      </div>
+      <li
+        class="MuiListItem-root makeStyles-root-74 MuiListItem-gutters"
+        data-testid="message"
+      >
+        <div
+          class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-75 MuiAvatar-colorDefault"
+        >
+          T
+        </div>
+        <div>
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+            data-testid="username-time"
+          >
+            <strong>
+              test_user1
+            </strong>
+            <span
+              class="makeStyles-span-76"
+            >
+              02:02 PM
+            </span>
+          </p>
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+            data-testid="text-field"
+          >
+            This is message 1.
+          </p>
+        </div>
+      </li>
+      <li
+        class="MuiListItem-root makeStyles-root-74 MuiListItem-gutters"
+        data-testid="message"
+      >
+        <div
+          class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-75 MuiAvatar-colorDefault"
+        >
+          T
+        </div>
+        <div>
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+            data-testid="username-time"
+          >
+            <strong>
+              test_user2
+            </strong>
+            <span
+              class="makeStyles-span-76"
+            >
+              02:03 PM
+            </span>
+          </p>
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+            data-testid="text-field"
+          >
+            This is message 2.
+          </p>
+        </div>
+      </li>
+      <li
+        class="MuiListItem-root makeStyles-root-74 MuiListItem-gutters"
+        data-testid="message"
+      >
+        <div
+          class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-75 MuiAvatar-colorDefault"
+        >
+          T
+        </div>
+        <div>
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+            data-testid="username-time"
+          >
+            <strong>
+              test_user3
+            </strong>
+            <span
+              class="makeStyles-span-76"
+            >
+              02:04 PM
+            </span>
+          </p>
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+            data-testid="text-field"
+          >
+            This is message 3.
+          </p>
+        </div>
+      </li>
+    </ul>
   </div>
-</DocumentFragment>
+</div>
 `;
