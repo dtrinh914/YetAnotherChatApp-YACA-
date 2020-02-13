@@ -14,6 +14,7 @@ const useStyles = makeStyles({
     }
 });
 
+
 export default function ChatRoom({newMessage, currentGroup, selected, updateInvite, updateMembers, history, setUserData, userInfo}) {
     const classes = useStyles();
     return (

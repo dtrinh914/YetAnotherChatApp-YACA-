@@ -22,6 +22,7 @@ const useStyles = makeStyles({
 });
 
 let socket;
+
 function Chat({loggedIn, setUserData}){
     const classes = useStyles();
     const history = useHistory();
@@ -110,7 +111,7 @@ function Chat({loggedIn, setUserData}){
                 {chatData.groups.length > 0 ? 
                     <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} userInfo={chatData.user}
                     newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}
-                    updateInvite={updateInvite} history={history} setUserData={setUserData}/> : ''}
+                    updateInvite={updateInvite} history={history} setLoggedIn={setLoggedIn} /> : ''}
                 
             </div>
         );

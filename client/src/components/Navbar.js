@@ -39,7 +39,7 @@ const useStyles=makeStyles({
     }
 });
 
-function Navbar({history, setUserData}){
+function Navbar({history, setLoggedIn}){
     const {chatData} = useContext(ChatContext);
     const {navData, navDispatch} = useContext(NavContext);
     const classes = useStyles();
@@ -79,7 +79,7 @@ function Navbar({history, setUserData}){
         axios.get('/api/actions/logout', {withCredentials:true})
         .then(res => {
             if(res.data.loggedIn === false){
-                setUserData(res.data);
+                setLoggedIn(res.data);
                 history.push('/');
             }
         })

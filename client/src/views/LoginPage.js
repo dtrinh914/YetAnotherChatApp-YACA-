@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import './LoginPage.css'
 
-function LoginPage({loggedIn, setUserData}){
+function LoginPage({loggedIn, setLoggedIn}){
     const [username, setUsername] = useInput();
     const [password, setPassword] = useInput();
     let history = useHistory();
@@ -20,7 +20,7 @@ function LoginPage({loggedIn, setUserData}){
         })
         .then( response => {
             if(response.data.loggedIn){
-                setUserData(response.data);
+                setLoggedIn(response.data);
                 history.push('/chat');
             }
         }) 

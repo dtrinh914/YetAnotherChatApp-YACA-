@@ -9,23 +9,23 @@ import { ChatProvider } from './contexts/chatContext';
 import { NavProvider} from './contexts/navContext';
 
 function App() {
-  const [userData, setUserData] = useState({loggedIn:false});
+  const [loggedIn, setLoggedIn] = useState({loggedIn:false});
 
   useEffect(() =>{
     axios.get('/api/actions/loggedon', {withCredentials:true})
-      .then( res => setUserData(res.data) )
+      .then( res => setLoggedIn(res.data) )
       .catch( err => console.log(err) );
   }, [])
 
   return (
     <Switch>
       <Route exact path = '/'>
-        <LoginPage {...userData} setUserData={setUserData} />
+        <LoginPage {...loggedIn} setLoggedIn={setLoggedIn} />
       </Route>
       <Route exact path = '/chat'>
         <ChatProvider>
         <NavProvider>
-          <ChatPage {...userData} setUserData={setUserData} />
+          <ChatPage {...loggedIn}  setLoggedIn={setLoggedIn} />
         </NavProvider>
         </ChatProvider>
       </Route>
