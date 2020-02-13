@@ -4,7 +4,7 @@ exports[`right nav when window size is md should render properly and match snaps
 <div>
   <div
     class="makeStyles-root-1"
-    data-testid="rightnav-sidebar"
+    data-testid="right-nav"
   >
     <div
       class="makeStyles-paper-3"

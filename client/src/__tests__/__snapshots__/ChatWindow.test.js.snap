@@ -4,6 +4,7 @@ exports[`<ChatWindow> with seedData should match snapshot 1`] = `
 <div>
   <div
     class="MuiPaper-root makeStyles-paper-1 MuiPaper-elevation1 MuiPaper-rounded"
+    data-testid="chat-window"
   >
     <ul
       class="MuiList-root makeStyles-list-2 MuiList-padding"

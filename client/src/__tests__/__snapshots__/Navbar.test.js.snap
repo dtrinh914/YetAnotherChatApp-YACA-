@@ -10,6 +10,7 @@ exports[`should match snapshot 1`] = `
     >
       <p
         class="MuiTypography-root MuiTypography-body1"
+        data-testid="nav-group-name"
       />
     </div>
   </header>

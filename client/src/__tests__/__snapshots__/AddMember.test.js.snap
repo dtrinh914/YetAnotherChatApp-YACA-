@@ -13,7 +13,9 @@ exports[`should match snapshot 1`] = `
       >
         Add a Member
       </p>
-      <form>
+      <form
+        data-testid="addmember-form"
+      >
         <div
           class="MuiInputBase-root MuiInput-root MuiInput-underline"
         >

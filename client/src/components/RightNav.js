@@ -103,13 +103,13 @@ export default function RightNav({updateInvite, updateMembers, currentGroup, use
     return (
         <>
             <Hidden smDown >
-                <div data-testid='rightnav-sidebar' className={navData.rightNav.root ? classes.root : classes.hidden}>
+                <div data-testid='right-nav' className={navData.rightNav.root ? classes.root : classes.hidden}>
                     {rightNav}
                 </div>
             </Hidden>
             <Hidden mdUp>
-                <Drawer open={navData.rightNav.drawer} anchor='right' ModalProps={{ onBackdropClick: handleClickAway }}>
-                    <div data-testid='rightnav-drawer' className={classes.root}>
+                <Drawer open={navData.rightNav.drawer} anchor='right' ModalProps={{onBackdropClick: handleClickAway }}>
+                    <div data-testid='right-nav-drawer' className={classes.root}>
                         {rightNav}
                     </div>
                 </Drawer>

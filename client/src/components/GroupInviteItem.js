@@ -38,7 +38,7 @@ export default function GroupInviteItem({groupName, groupId, acceptInvite, decli
     }
 
     return (
-        <ListItem className={classes.root}>
+        <ListItem data-testid='group-invite-item' className={classes.root}>
             <Typography data-testid='group-invite-name' className={classes.text}>{groupName}</Typography>
             <div className={classes.buttons}>
                 <IconButton data-testid='group-invite-accept' size='small' onClick={handleAccept}>

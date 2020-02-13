@@ -79,6 +79,7 @@ function NewGroup({createNewGroup, close}){
         try{
             const res = await createNewGroup(newGroup, description);
             if(res === 1){
+                setLoading(false);
                 handleClose();
             } else if (res === 0){
                 handleError('A group with this name already exists.');
@@ -109,7 +110,7 @@ function NewGroup({createNewGroup, close}){
                     <Paper className={classes.paper}>
                         {loading ? <LinearProgress data-testid='newgroupform-loading' className={classes.loadbar} /> : ''}
 
-                        <form className={classes.form} onSubmit={handleSubmit}>
+                        <form data-testid='newgroupform' className={classes.form} onSubmit={handleSubmit}>
 
                             <TextField inputProps={{'data-testid': 'newgroupform-group-name-input'}} ref={nameInputRef} 
                             FormHelperTextProps = {{'data-testid': 'newgroupform-group-name-error'}}

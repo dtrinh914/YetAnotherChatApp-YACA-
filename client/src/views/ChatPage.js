@@ -80,6 +80,10 @@ function Chat({loggedIn, setUserData}){
                 })
                 socket.emit('user', chatData.user._id)
             })
+
+            return function cleanup(){
+                socket.close();
+            }
         }
         //eslint-disable-next-line
     }, [loaded])

@@ -62,7 +62,7 @@ export default function AddMember({sendInvite, filterResults, closeAddMem}) {
             <ClickAwayListener onClickAway={closeAddMem}>
                 <Paper className={classes.paper} >
                     <Typography>Add a Member</Typography>
-                    <form onSubmit={handleSubmit}>
+                    <form data-testid='addmember-form' onSubmit={handleSubmit}>
                         <Input inputProps={{'data-testid':'addmember-input'}} className={classes.input} id='username' 
                         name='username' placeholder='Username' value={username} onChange={setUsername} />
                         <List>

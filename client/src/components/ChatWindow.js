@@ -49,7 +49,7 @@ function ChatWindow({memberMap, messages}){
     }
 
     return(
-        <Paper className={classes.paper}>
+        <Paper data-testid='chat-window' className={classes.paper}>
             <List className={classes.list}>
                 {formatMessages(messages).map( message => {
                     if(message.type === 'message'){
