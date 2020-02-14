@@ -2,9 +2,11 @@ import React, {useEffect, useState, useContext} from 'react';
 import {useHistory} from 'react-router-dom';
 import LeftNav from '../components/LeftNav';
 import ChatRoom from '../components/ChatRoom';
+import Welcome from '../components/Welcome';
 import axios from 'axios';
 import io from 'socket.io-client';
 import {ChatContext} from '../contexts/chatContext';
+import {NavContext} from '../contexts/navContext';
 import {makeStyles} from '@material-ui/styles';
 
 
@@ -14,11 +16,6 @@ const useStyles = makeStyles({
         height: '100vh',
         width: '100vw'
     },
-    middle:{
-        display: 'flex',
-        flexGrow: 1,
-        flexDirection: 'column'
-    }
 });
 
 let socket;
@@ -26,6 +23,7 @@ let socket;
 function Chat({loggedIn, setLoggedIn}){
     const classes = useStyles();
     const history = useHistory();
+    const {navDispatch} = useContext(NavContext);
     const {chatData, chatDispatch} = useContext(ChatContext);
     const [loaded, setLoaded] = useState(false);
 
@@ -103,6 +101,10 @@ function Chat({loggedIn, setLoggedIn}){
     const updateMembers = (groupId) => {
         socket.emit('update_memberlist', groupId);
     }
+    const openNewGroup = () => {
+        navDispatch({type:'NEWGROUP', open:true});
+        navDispatch({type:'LEFTDRAWER', open: false});
+    }
 
     if(loaded){
         return(
@@ -111,8 +113,8 @@ function Chat({loggedIn, setLoggedIn}){
                 {chatData.groups.length > 0 ? 
                     <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} userInfo={chatData.user}
                     newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}
-                    updateInvite={updateInvite} history={history} setLoggedIn={setLoggedIn} /> : ''}
-                
+                    updateInvite={updateInvite} history={history} setLoggedIn={setLoggedIn} /> 
+                    : <Welcome setLoggedIn={setLoggedIn} openNewGroup={openNewGroup} />}
             </div>
         );
     } else {

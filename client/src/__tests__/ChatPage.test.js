@@ -1,6 +1,7 @@
 import React from 'react';
 import ChatPage from '../views/ChatPage';
 import INIT_SEED_DATA from '../util/INIT_SEED_DATA';
+import INIT_SEED_DATA_CLEAN from '../util/INIT_SEED_DATA_CLEAN';
 import MOCK_GROUP_DATA from '../util/MOCK_GROUP_DATA';
 import {BrowserRouter} from 'react-router-dom';
 import {ChatProvider} from '../contexts/chatContext';
@@ -26,6 +27,21 @@ afterEach(cleanup);
 describe('<ChatPage/> when the screen size is large', ()=>{
     afterEach(cleanup);
     const theme = createMuiTheme({props:{MuiWithWidth: {initialWidth:'lg'}}});
+
+    it('should display welcome page and open new group form', async()=>{
+        axiosMock.get.mockResolvedValueOnce(INIT_SEED_DATA_CLEAN);
+        const {queryByTestId} = render(<MuiThemeProvider theme={theme}>
+                                            {component}
+                                       </MuiThemeProvider>);
+
+        await wait(()=>{
+            expect(queryByTestId('newgroupform')).toBeNull();
+            expect(queryByTestId('welcome-container')).toBeTruthy();
+        });
+
+        fireEvent.click(queryByTestId('welcome-newgroup-button'));
+        expect(queryByTestId('newgroupform')).toBeTruthy();
+    });
 
     it('should toggle right nav when the toggle button is clicked', async () =>{
         //get init user data
