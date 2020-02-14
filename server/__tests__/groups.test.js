@@ -6,7 +6,7 @@ const app = require('../app');
 //mock config file to use test DB
 jest.mock('../config/config');
 
-let sessionCookie, seedGroupId, testUserId, anotherUserId;
+let sessionCookie, seedGroupId, deleteGroupId, testUserId, anotherUserId, anotherUserSession;
 
 beforeAll(async () => {
     // opens connection to test DB
@@ -16,10 +16,15 @@ beforeAll(async () => {
     await addUser('another_user', 'another_password');
 
     //logs in the test_user and stores sessionCookie
-    const response = await request(app)
+    let response = await request(app)
                                 .post('/api/actions/login')
                                 .send({username:'test_user', password: 'test_password'});
     sessionCookie = response.header['set-cookie'];
+
+    response = await request(app)
+                                .post('/api/actions/login')
+                                .send({username:'another_user', password: 'another_password'});
+    anotherUserSession = response.header['set-cookie'];
 
     //retreives the test users ID and stores the value
     findUserByUsername('test_user').then(response =>{
@@ -28,6 +33,10 @@ beforeAll(async () => {
         //creates a test group and stores group ID value
         addGroup('seed_group', 'a fake group', testUserId).then(response => {
             seedGroupId = response.data[0]._id;
+         })
+
+         addGroup('delete_group', 'a group to be deleted', testUserId).then(response => {
+            deleteGroupId = response.data[0]._id;
          })
     });
     findUserByUsername('another_user').then(response =>{
@@ -94,6 +103,29 @@ describe('GET /api/groups/:id', () => {
         const response = await request(app)
                                     .get(`/api/groups/${seedGroupId}`);
         expect(response.status).toBe(302);
+    });
+});
+
+describe('DELETE /api/groups/:id', ()=> {
+    it('should return access denied', async ()=>{
+        const response = await request(app)
+                                    .delete(`/api/groups/${deleteGroupId}`)
+                                    .set('Cookie', anotherUserSession);
+        expect(response.text).toContain('Access denied.');
+    });
+
+    it('should return status:-1', async ()=>{
+        const response = await request(app)
+                                    .delete(`/api/groups/notagroupid`)
+                                    .set('Cookie', sessionCookie);
+        expect(response.text).toContain('"status":-1');
+    });
+    
+    it('should return status:1', async ()=>{
+        const response = await request(app)
+                                    .delete(`/api/groups/${deleteGroupId}`)
+                                    .set('Cookie', sessionCookie);
+        expect(response.text).toContain('"status":1');
     });
 });
 

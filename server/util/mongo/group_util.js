@@ -113,6 +113,18 @@ const getGroupInfo = async (groupId) =>{
     }
 }
 
+//delete group
+const deleteGroup = async (groupId) => {
+    try{
+        const client = getClient();
+        const groupCol = client.db(DB).collection('groups');
+        await groupCol.findOneAndDelete({_id:ObjectId(groupId)});
+        return {status:1};
+    } catch(err){
+        errorHandler(err);
+    }
+};
+
 
 //
 // GROUP MIDDLEWARE FUNCTIONS
@@ -253,7 +265,7 @@ const hasGroupInvite = async (userObjId, groupObjId) => {
     }
 }
 
-module.exports = {addGroup, storeGroupMsg, getGroupInfo,
+module.exports = {addGroup, storeGroupMsg, getGroupInfo, deleteGroup,
                   removeMember, 
                   isGroupMember, isAdmin, isCreator,
                   sendGroupInvite, acceptGroupInvite, declineGroupInvite}

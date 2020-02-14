@@ -23,7 +23,7 @@ const closeConnection = () => {
 }
 
 const errorHandler = (err) => {
-    throw {data: err, status: -1}
+    throw {data: err.message, status: -1}
 }
 
 module.exports = {getClient, openConnection, closeConnection, errorHandler};

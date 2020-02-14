@@ -5,46 +5,35 @@ const verifyGroupMember = (req,res,next) => {
     isGroupMember(req.user._id, req.params.id).then( response => {
         if(response.status === 1){
             next();
-        } else if(response.status === 0){
-            accessDenied();
         } else {
-            errorHandler();
+            res.json({data:'Access denied.' , status:-1})
         }
     })
+    .catch(()=>res.json({data:"There's an error processing your request." , status:-1}));
 }
 
 // check if a user is a group admin
-const verifyAdmin = () => {
+const verifyAdmin = (req, res, next) => {
     isAdmin(req.user._id, req.params.id).then( response => {
         if(response.status === 1){
             next();
-        } else if(response.status === 0){
-            accessDenied();
         } else {
-            errorHandler();
+            res.json({data:'Access denied.' , status:-1})
         }
     })
+    .catch(()=>res.json({data:"There's an error processing your request." , status:-1}));
 }
 
 //check if a user is a creator
-const verifyCreator = () => {
+const verifyCreator = (req, res, next) => {
     isCreator(req.user._id, req.params.id).then( response => {
         if(response.status === 1){
             next();
-        } else if(response.status === 0){
-            accessDenied();
         } else {
-            errorHandler();
-        }
+            res.json({data:'Access denied.' , status:-1})
+        } 
     })
+    .catch(()=>res.json({data:"There's an error processing your request." , status:-1}));
 }
-
-const accessDenied = () => {
-    console.log('You do not have permission');
-}
-const errorHandler = () => {
-    console.log(err)
-}
-
 
 module.exports = {verifyGroupMember, verifyAdmin, verifyCreator};
