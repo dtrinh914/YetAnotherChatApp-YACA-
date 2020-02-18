@@ -118,7 +118,11 @@ const deleteGroup = async (groupId) => {
     try{
         const client = getClient();
         const groupCol = client.db(DB).collection('groups');
+        const userCol = client.db(DB).collection('users');
+    
         await groupCol.findOneAndDelete({_id:ObjectId(groupId)});
+        await userCol.updateMany({}, {$pull: {groups:ObjectId(groupId)}});
+
         return {status:1};
     } catch(err){
         errorHandler(err);
