@@ -26,7 +26,7 @@ export default function ChatRoom({newMessage, currentGroup, selected, updateInvi
                 <ChatWindow messages={currentGroup.messages} memberMap={currentGroup.memberMap} />
                 <ChatInput onConfirm={newMessage} selected={selected} />
             </div>
-            <RightNav userID={userInfo._id} currentGroup={currentGroup} updateInvite={updateInvite} updateMembers={updateMembers} />
+            <RightNav currUserId={userInfo._id} currentGroup={currentGroup} updateInvite={updateInvite} updateMembers={updateMembers} />
         </>
     )
 }

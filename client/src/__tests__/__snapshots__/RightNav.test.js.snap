@@ -68,11 +68,13 @@ exports[`right nav when window size is md should render properly and match snaps
     </div>
   </div>
   
+  
 </div>
 `;
 
 exports[`right nav when window size is sm should render empty div and match snapshot 1`] = `
 <div>
+  
   
 </div>
 `;

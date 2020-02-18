@@ -38,7 +38,7 @@ const useStyles = makeStyles({
 });
 
 
-export default function RightNav({updateInvite, updateMembers, currentGroup, userId}) {
+export default function RightNav({updateInvite, updateMembers, currentGroup, currUserId}) {
     const {navData, navDispatch} = useContext(NavContext);
     const {chatDispatch} = useContext(ChatContext);
     const classes = useStyles();
@@ -70,7 +70,7 @@ export default function RightNav({updateInvite, updateMembers, currentGroup, use
         let activeMembersId = activeMembers.map( member => member._id)
         for(let i = 0; i < results.length; i++){
             let current = results[i];
-            if(current._id === userId){
+            if(current._id === currUserId){
                 continue;
             }
             //check if current user is an active member 
@@ -121,7 +121,7 @@ export default function RightNav({updateInvite, updateMembers, currentGroup, use
                 </Drawer>
             </Hidden>
             {addMemStatus ? 
-                <AddMember closeAddMem={closeAddMem} sendInvite={sendInvite} 
+                <AddMember closeAddMem={closeAddMem} sendInvite={sendInvite}
                 filterResults={filterResults}/> : ''}
             {groupSettingsStatus ? <GroupSettingsForm groupName={currentGroup.groupName} 
                                     groupId={selectedGroupId} close={closeGroupSettings} /> : ''}
