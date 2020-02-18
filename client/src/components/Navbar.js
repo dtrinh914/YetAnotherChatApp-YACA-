@@ -15,6 +15,7 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import GroupIcon from '@material-ui/icons/Group';
 import MenuIcon from '@material-ui/icons/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
+import EditAttributesIcon from '@material-ui/icons/EditAttributes';
 import {makeStyles} from '@material-ui/styles';
 import axios from 'axios';
 import {ChatContext} from '../contexts/chatContext';
@@ -39,7 +40,7 @@ const useStyles=makeStyles({
     }
 });
 
-function Navbar({history, setLoggedIn}){
+function Navbar({history, setLoggedIn, isCreator, isAdmin}){
     const {chatData} = useContext(ChatContext);
     const {navData, navDispatch} = useContext(NavContext);
     const classes = useStyles();
@@ -48,32 +49,33 @@ function Navbar({history, setLoggedIn}){
 
     const handleToggle = () => {
         setOpen(prevOpen => !prevOpen);
-      };
+    };
     
-      const handleClose = event => {
+    const handleClose = event => {
         if (anchorRef.current && anchorRef.current.contains(event.target)) {
-          return;
+            return;
         }
-    
+
         setOpen(false);
-      };
+    };
     
-      function handleListKeyDown(event) {
+    function handleListKeyDown(event) {
         if (event.key === 'Tab') {
-          event.preventDefault();
-          setOpen(false);
+            event.preventDefault();
+            setOpen(false);
         }
-      }
-    
-      // return focus to the button when we transitioned from !open -> open
-      const prevOpen = React.useRef(open);
-      useEffect(() => {
+    }
+
+    // return focus to the button when we transitioned from !open -> open
+    const prevOpen = React.useRef(open);
+
+    useEffect(() => {
         if (prevOpen.current === true && open === false) {
-          anchorRef.current.focus();
+            anchorRef.current.focus();
         }
-    
+
         prevOpen.current = open;
-      }, [open]);
+    }, [open]);
 
     const handleLogOut = () => {
         axios.get('/api/actions/logout', {withCredentials:true})
@@ -97,8 +99,19 @@ function Navbar({history, setLoggedIn}){
     }
     
     const handleToggleInfo = () => {
-        navDispatch({type:'RIGHT', open:!navData.rightNav.root})
+        navDispatch({type:'RIGHT', open:!navData.rightNav.root});
     }
+
+    const handleGroupSettings = () => {
+        navDispatch({type:'GROUPSETTINGS', open:true});
+    }
+    
+    const creatorButtons = <IconButton size='small' onClick={handleGroupSettings}>
+                                <EditAttributesIcon />
+                           </IconButton>;
+
+    const creatorMenuItems = <MenuItem data-testid='nav-config-groupsettings'
+                                onClick={e => {handleClose(e); handleGroupSettings(e);}}>Group Settings</MenuItem>
 
     return(
         <AppBar position="static" className={classes.nav}>
@@ -126,8 +139,13 @@ function Navbar({history, setLoggedIn}){
                             <Paper className={classes.rightmenu}>
                                 <ClickAwayListener onClickAway={handleClose}>
                                     <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                                        <MenuItem data-testid='nav-config-group-info' onClick={e => {handleClose(e); handleRightDrawer(e)}}>Group Information</MenuItem>
-                                        <MenuItem data-testid='nav-config-addmem' onClick={e => {handleClose(e); handleAddMem(e);}}>Invite</MenuItem>
+                                        <MenuItem data-testid='nav-config-group-info' 
+                                            onClick={e => {handleClose(e); handleRightDrawer(e)}}>
+                                                Group Information
+                                        </MenuItem>
+                                        <MenuItem data-testid='nav-config-addmem' 
+                                            onClick={e => {handleClose(e); handleAddMem(e);}}>Invite</MenuItem>
+                                        {isCreator ? creatorMenuItems : ''}
                                         <MenuItem onClick={e=> {handleClose(e); handleLogOut(e);}}>Logout</MenuItem>
                                     </MenuList>
                                 </ClickAwayListener>
@@ -145,7 +163,8 @@ function Navbar({history, setLoggedIn}){
                         </IconButton>
                         <IconButton data-testid='nav-addmem' onClick={handleAddMem} size='small'>
                             <PersonAddIcon />
-                        </IconButton>
+                         </IconButton>
+                        {isCreator ? creatorButtons : ''}
                         <Button onClick={handleLogOut}>Log Out</Button>
                     </div>
                 </Hidden>

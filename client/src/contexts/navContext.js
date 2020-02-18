@@ -5,7 +5,8 @@ const initialState = {
     rightNav:{
         root:true,
         drawer: false,
-        addMem:false
+        addMem:false,
+        groupSettings: false
     },
     leftNav:{
         root: true,

@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import AddMember from './AddMember';
 import GroupDescription from './GroupDescription';
 import GroupMembers from './GroupMembers';
+import GroupSettingsForm from './GroupSettingsForm';
 import Hidden from '@material-ui/core/Hidden';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
@@ -42,6 +43,7 @@ export default function RightNav({updateInvite, updateMembers, currentGroup, use
     const {chatDispatch} = useContext(ChatContext);
     const classes = useStyles();
     const addMemStatus = navData.rightNav.addMem;
+    const groupSettingsStatus = navData.rightNav.groupSettings;
 
     const selectedGroupId = currentGroup._id;
     const {activeMembers, pendingMembers, pendingRequests, groupDescription} = currentGroup;
@@ -59,7 +61,7 @@ export default function RightNav({updateInvite, updateMembers, currentGroup, use
             .catch(err => {
                 console.log(err);
             })
-    }
+    };
 
     //filter the search results based on if the user is the current user, already a member,
     //or has a pending invite
@@ -85,15 +87,19 @@ export default function RightNav({updateInvite, updateMembers, currentGroup, use
             filtered.push(current)
         }
         return filtered;
-    }
+    };
     
     const closeAddMem = () => {
         navDispatch({type:'ADDMEM', open:false});
-    }
+    };
+
+    const closeGroupSettings = () => {
+        navDispatch({type:'GROUPSETTINGS', open:false});
+    };
     
     const handleClickAway = () => {
         navDispatch({type:'RIGHTDRAWER', open:false});
-    }
+    };
 
     const rightNav = <div className={classes.paper}>
                         <GroupDescription description={groupDescription} />
@@ -117,6 +123,8 @@ export default function RightNav({updateInvite, updateMembers, currentGroup, use
             {addMemStatus ? 
                 <AddMember closeAddMem={closeAddMem} sendInvite={sendInvite} 
                 filterResults={filterResults}/> : ''}
+            {groupSettingsStatus ? <GroupSettingsForm groupName={currentGroup.groupName} 
+                                    groupId={selectedGroupId} close={closeGroupSettings} /> : ''}
         </>
     )
 }
