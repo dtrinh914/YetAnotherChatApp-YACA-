@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const isLoggedIn = require('../middleware/isLoggedIn');
 const {verifyGroupMember, verifyCreator} = require('../middleware/groupsMiddleware')
-const {addGroup, getGroupInfo, sendGroupInvite, deleteGroup} = require('../util/mongoUtil');
+const {addGroup, getGroupInfo, sendGroupInvite, deleteGroup, updateGroup} = require('../util/mongoUtil');
 
 // route to add a new group to the database
 router.post('/', isLoggedIn, (req,res) => {
@@ -23,6 +23,16 @@ router.get('/:id', isLoggedIn, (req,res) => {
     const groupId = req.params.id; 
     getGroupInfo(groupId)
         .then(response => res.json(response))
+        .catch(err => res.json(err));
+});
+
+//route to edit specific group description
+router.put('/:id', isLoggedIn, verifyCreator, (req,res) => {
+    const groupId = req.params.id;
+    const groupDescription = req.body.groupDescription;
+
+    updateGroup(groupId, groupDescription)
+        .then( response => res.json(response))
         .catch(err => res.json(err));
 });
 
