@@ -26,12 +26,13 @@ export default function GroupDeleteForm({groupName, deleteGroup, selectMain}) {
 
     return (
         <>
-            <Typography>Are you sure you want to delete {groupName}?</Typography>
+            <Typography data-testid='group-delete-name'>Are you sure you want to delete {groupName}?</Typography>
             <div className={classes.controls}>
-                <Button className={classes.confirmBtn} onClick={handleDelete} color='primary' variant='outlined'>
+                <Button data-testid='group-delete-confirm' className={classes.confirmBtn}
+                 onClick={handleDelete} color='primary' variant='outlined'>
                     <CheckIcon />
                 </Button>
-                <Button color='secondary' variant='outlined' onClick={selectMain}>
+                <Button data-testid='group-delete-deny' color='secondary' variant='outlined' onClick={selectMain}>
                     <CloseIcon />
                 </Button>
             </div>

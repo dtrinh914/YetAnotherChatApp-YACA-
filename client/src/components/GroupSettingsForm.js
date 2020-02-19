@@ -4,7 +4,6 @@ import GroupDeleteForm from './GroupDeleteForm';
 import Paper from '@material-ui/core/Paper';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import {makeStyles} from '@material-ui/styles';
-import axios from 'axios';
 
 const useStyles = makeStyles({
     root:{
@@ -34,7 +33,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function GroupSettingsForm({groupName, groupId, close}) {
+export default function GroupSettingsForm({groupName, close, deleteGroup}) {
     const classes = useStyles();
     const [view, switchView] = useState('main');
 
@@ -45,16 +44,6 @@ export default function GroupSettingsForm({groupName, groupId, close}) {
     const selectMain = () => {
         switchView('main')
     };
-
-    const deleteGroup = () => {
-        axios.delete(`api/groups/${groupId}`, {withCredentials:true})
-             .then( res => {
-                 if(res.data.status === 1){
-                    close();
-                 }
-             })
-             .catch(err => console.log(err))
-    }
 
     const currentView = () => {
         if(view === 'delete'){

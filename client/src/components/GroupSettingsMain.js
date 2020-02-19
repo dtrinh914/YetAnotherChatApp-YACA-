@@ -5,11 +5,11 @@ import Button from '@material-ui/core/Button';
 export default function GroupSettingsMain({selectDelete, close}) {
     return (
         <>
-            <Typography variant='h3'>Group Settings</Typography>
+            <Typography data-testid='group-settings-header' variant='h3'>Group Settings</Typography>
             <Button>Edit Group Description</Button>
             <Button>Edit Edit Member List</Button>
-            <Button onClick={selectDelete}>Delete Group</Button>
-            <Button onClick={close}>Close</Button>
+            <Button data-testid='group-settings-delete' onClick={selectDelete}>Delete Group</Button>
+            <Button data-testid='group-settings-close' onClick={close}>Close</Button>
         </>
     )
 }

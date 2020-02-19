@@ -38,7 +38,7 @@ const useStyles = makeStyles({
 });
 
 
-export default function RightNav({updateInvite, updateMembers, currentGroup, currUserId}) {
+export default function RightNav({updateInvite, updateMembers, currentGroup, currUserId, removeGroup}) {
     const {navData, navDispatch} = useContext(NavContext);
     const {chatDispatch} = useContext(ChatContext);
     const classes = useStyles();
@@ -88,6 +88,20 @@ export default function RightNav({updateInvite, updateMembers, currentGroup, cur
         }
         return filtered;
     };
+
+    const deleteGroup = () => {
+        axios.delete(`api/groups/${selectedGroupId}`, {withCredentials:true})
+             .then( res => {
+                 if(res.data.status === 1){
+                    //send message to clients in group via socket connection
+                    removeGroup(selectedGroupId);
+                    chatDispatch({type:'REMOVE_GROUP', groupId:selectedGroupId});
+                    //close menu
+                    closeGroupSettings();
+                 }
+             })
+             .catch(err => console.log(err))
+    }
     
     const closeAddMem = () => {
         navDispatch({type:'ADDMEM', open:false});
@@ -123,8 +137,8 @@ export default function RightNav({updateInvite, updateMembers, currentGroup, cur
             {addMemStatus ? 
                 <AddMember closeAddMem={closeAddMem} sendInvite={sendInvite}
                 filterResults={filterResults}/> : ''}
-            {groupSettingsStatus ? <GroupSettingsForm groupName={currentGroup.groupName} 
-                                    groupId={selectedGroupId} close={closeGroupSettings} /> : ''}
+            {groupSettingsStatus ? <GroupSettingsForm deleteGroup={deleteGroup} groupName={currentGroup.groupName} 
+                                        close={closeGroupSettings} /> : ''}
         </>
     )
 }

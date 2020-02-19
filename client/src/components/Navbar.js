@@ -106,7 +106,7 @@ function Navbar({history, setLoggedIn, isCreator, isAdmin}){
         navDispatch({type:'GROUPSETTINGS', open:true});
     }
     
-    const creatorButtons = <IconButton size='small' onClick={handleGroupSettings}>
+    const creatorButtons = <IconButton data-testid='nav-groupsettings' size='small' onClick={handleGroupSettings}>
                                 <EditAttributesIcon />
                            </IconButton>;
 
