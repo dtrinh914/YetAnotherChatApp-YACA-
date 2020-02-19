@@ -41,6 +41,16 @@ function reducer(state, action){
         // changes the current view of the chat page {type:'CHANGE_GROUP, selected:*, name:*, index:*}
         case "CHANGE_GROUP":
             return {...state, selected: {_id: action.selected, name:action.name, type:'group', index:action.index}}
+        // updates group description {type: 'UPDATE_GROUP', groupId:*, groupDescription:*}
+        case "UPDATE_GROUP":
+            newGroupState = state.groups.map( group => {
+                if(group._id === action.groupId){
+                    return {...group, description: action.groupDescription}
+                } else {
+                    return group; 
+                }
+            });
+            return {...state, groups:newGroupState};
         case "REMOVE_GROUP":
             newGroupState = state.groups.filter(group => group._id !== action.groupId);
             

@@ -38,6 +38,10 @@ openConnection()
             socket.in(groupId).broadcast.emit('update_memberlist', groupId);
         });
 
+        socket.on('update_group', (groupId, groupDescription) => {
+            socket.in(groupId).broadcast.emit('update_group', groupId, groupDescription);
+        });
+
         //broadcast to clients in group and then leaves group channel
         socket.on('remove_group', (groupId) => {
             socket.in(groupId).broadcast.emit('remove_group', groupId);

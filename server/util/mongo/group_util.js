@@ -41,8 +41,6 @@ const addGroup =  async (groupName, description, userId) => {
     }
 }
 
-//remove group from database
-
 //remove user from group
 const removeMember = async (userId, groupId) => {
     try{
@@ -120,8 +118,9 @@ const deleteGroup = async (groupId) => {
         const groupCol = client.db(DB).collection('groups');
         const userCol = client.db(DB).collection('users');
     
-        await groupCol.findOneAndDelete({_id:ObjectId(groupId)});
-        await userCol.updateMany({}, {$pull: {groups:ObjectId(groupId)}});
+        const response = await groupCol.findOneAndDelete({_id:ObjectId(groupId)});
+        const activeMemberIds = response.value.activeMembers.map(id => ObjectId(id));
+        await userCol.updateMany({_id:{$in:activeMemberIds}}, {$pull: {groups:ObjectId(groupId)}});
 
         return {status:1};
     } catch(err){
@@ -129,6 +128,17 @@ const deleteGroup = async (groupId) => {
     }
 };
 
+//update group
+const updateGroup = async (groupId, groupDescription) => {
+    try{
+        const client = getClient();
+        const groupCol = client.db(DB).collection('groups');
+        await groupCol.updateOne({_id:ObjectId(groupId)}, {$set:{description: groupDescription}});
+        return {status:1};
+    } catch(err){
+        errorHandler(err);
+    }
+};
 
 //
 // GROUP MIDDLEWARE FUNCTIONS
@@ -260,16 +270,18 @@ const hasGroupInvite = async (userObjId, groupObjId) => {
     try{
         const client = getClient();
         const userCol = client.db(DB).collection('users');
+        const groupCol = client.db(DB).collection('groups');
         
         const hasInvite = await userCol.find({_id:userObjId, groupInvites:groupObjId}).count();
+        const isPendingMember = await groupCol.find({_id:groupObjId, pendingMembers:userObjId}).count();
         // returns 1 if user has invite and 0 if the user does not have invite
-        return hasInvite;
+        return hasInvite && isPendingMember;
     } catch(err){
         errorHandler(err);
     }
 }
 
 module.exports = {addGroup, storeGroupMsg, getGroupInfo, deleteGroup,
-                  removeMember, 
+                  updateGroup, removeMember, 
                   isGroupMember, isAdmin, isCreator,
                   sendGroupInvite, acceptGroupInvite, declineGroupInvite}

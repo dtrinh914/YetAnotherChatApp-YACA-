@@ -106,6 +106,33 @@ describe('GET /api/groups/:id', () => {
     });
 });
 
+describe('PUT /api/groups/:id', ()=> {
+    it('should return access denied', async ()=>{
+        const response = await request(app)
+                                    .put(`/api/groups/${seedGroupId}`)
+                                    .set('Cookie', anotherUserSession)
+                                    .send({groupDescription:'Updated group description.'});
+        expect(response.text).toContain('Access denied.');
+    });
+
+    it('should return status:-1', async ()=>{
+        const response = await request(app)
+                                    .put(`/api/groups/notagroupid`)
+                                    .set('Cookie', sessionCookie)
+                                    .send({groupDescription:'Updated group description.'});
+        expect(response.text).toContain('"status":-1');
+    });
+    
+    it('should return status:1', async ()=>{
+        const response = await request(app)
+                                    .put(`/api/groups/${seedGroupId}`)
+                                    .set('Cookie', sessionCookie)
+                                    .send({groupDescription:'Updated group description.'});
+        expect(response.text).toContain('"status":1');
+    });
+});
+
+
 describe('DELETE /api/groups/:id', ()=> {
     it('should return access denied', async ()=>{
         const response = await request(app)

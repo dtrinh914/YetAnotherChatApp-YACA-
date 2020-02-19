@@ -105,6 +105,9 @@ export default function LeftNav({userData, groupData, joinRoom, updateMembers}) 
                     updateMembers(groupId);
                 }
             }
+            else if(res.data.status === 0){
+                chatDispatch({type:'DECLINE_INVITE', id:groupId});
+            }
         } catch (err) {
             console.log(err);
         }
@@ -118,6 +121,9 @@ export default function LeftNav({userData, groupData, joinRoom, updateMembers}) 
             if(res.data.status === 1){
                 chatDispatch({type:'DECLINE_INVITE', id:groupId});
                 updateMembers(groupId);
+            }
+            else if(res.data.status === 0){
+                chatDispatch({type:'DECLINE_INVITE', id:groupId});
             }
         })
         .catch(err => console.log(err));

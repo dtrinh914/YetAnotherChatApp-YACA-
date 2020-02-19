@@ -180,11 +180,39 @@ describe('<ChatPage/> when the screen size is large', ()=>{
         });
     });
 
+    it('should change the group description', async () => {
+        axiosMock.get.mockResolvedValueOnce(seedData);
+        const {getByTestId, queryByTestId} = render(<MuiThemeProvider theme={theme}>
+                                                                            {component}
+                                                                      </MuiThemeProvider>);
+        
+        await wait(()=> {
+            //should have group settings icon
+            expect(getByTestId('group-description').textContent).toBe('A description of test_group1');
+            expect(queryByTestId('nav-groupsettings')).toBeTruthy();
+        });
+
+        //open group settings menu, click edit group description button
+        fireEvent.click(getByTestId('nav-groupsettings'));
+        fireEvent.click(getByTestId('group-settings-editgroup'));
+
+        //change group description and confirm change
+        axiosMock.put.mockResolvedValueOnce({data:{status:1}});
+        const newDescription = 'Changed the description.';
+
+        fireEvent.change(getByTestId('group-edit-description'), {target:{value:newDescription}});
+        fireEvent.click(getByTestId('group-edit-confirm'));
+        
+        await wait(()=>{
+            expect(getByTestId('group-description').textContent).toBe(newDescription);
+        });
+    });
+
     it('should delete group', async () => {
         axiosMock.get.mockResolvedValueOnce(seedData);
         const {getByTestId, queryByTestId, queryAllByTestId} = render(<MuiThemeProvider theme={theme}>
-                                                                {component}
-                                                         </MuiThemeProvider>);
+                                                                            {component}
+                                                                      </MuiThemeProvider>);
         
         await wait(()=> {
             //should have group settings icon
