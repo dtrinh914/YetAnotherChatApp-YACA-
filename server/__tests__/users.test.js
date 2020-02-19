@@ -88,11 +88,11 @@ describe('/api/users/search/:username', () =>{
 });
 
 describe('/api/users/pendinginvites', ()=>{
-    it('should return', async() => {
+    it('should return status:1', async() => {
         const response = await request(app)
                                     .get('/api/users/pendinginvites')
                                     .set('Cookie', sessionCookie)
-        expect(response.text).toContain('"username":"test_user"');
+        expect(response.text).toContain('"status":1');
     });
 
     it('should return 302', async () => {

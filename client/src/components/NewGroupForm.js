@@ -19,9 +19,6 @@ const useStyles = makeStyles({
         alignItems: 'center',
         background: 'rgba(0,0,0,0.4)'
     },
-    hidden:{
-        display: 'none',
-    },
     paper:{
         width: '70%',
         maxWidth: '500px',

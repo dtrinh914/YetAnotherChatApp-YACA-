@@ -109,32 +109,36 @@ const loginUser = async (username, password) => {
 }
 
 const findUserById = async (id) => {
-    const client = getClient();
-    const userCol = client.db(DB).collection('users');
+    try{
+        const client = getClient();
+        const userCol = client.db(DB).collection('users');
 
-    const userData = await userCol.aggregate([  //retrieves user info based on id
-        {$match: {_id: ObjectId(id)}},
-        //joins groupInvite field
-        {$lookup:{
-            from:'groups',
-            let: {groupInvites:'$groupInvites'},
-            pipeline:[
-                {$match: {$expr:{$in:['$_id', '$$groupInvites']}}},
-                {$project: {_id: 1, 
-                            groupName:1,
-                            description: 1}},
-                { '$addFields': {
-                    'sort': {
-                        '$indexOfArray': [ '$$groupInvites', '$_id' ]
-                    }
-                }},
-                { '$sort': { 'sort': 1 } },
-                { '$addFields': { 'sort': '$$REMOVE' }}
-            ],
-            as: 'groupInvites'
-        }},
-    ]).toArray();
-    return userData[0];
+        const userData = await userCol.aggregate([  //retrieves user info based on id
+            {$match: {_id: ObjectId(id)}},
+            //joins groupInvite field
+            {$lookup:{
+                from:'groups',
+                let: {groupInvites:'$groupInvites'},
+                pipeline:[
+                    {$match: {$expr:{$in:['$_id', '$$groupInvites']}}},
+                    {$project: {_id: 1, 
+                                groupName:1,
+                                description: 1}},
+                    { '$addFields': {
+                        'sort': {
+                            '$indexOfArray': [ '$$groupInvites', '$_id' ]
+                        }
+                    }},
+                    { '$sort': { 'sort': 1 } },
+                    { '$addFields': { 'sort': '$$REMOVE' }}
+                ],
+                as: 'groupInvites'
+            }},
+        ]).toArray();
+        return userData[0];
+    } catch{
+        errorHandler(err);
+    }
 }
 
 const findUserByUsername = async(name) => {

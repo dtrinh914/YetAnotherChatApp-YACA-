@@ -64,12 +64,16 @@ function Chat({loggedIn, setLoggedIn}){
             socket.on('update_memberlist', (groupId) => {
                 axios.get('/api/groups/'+ groupId + '/members', {withCredentials:true})
                 .then(res => {
-                    console.log(res);
                     if(res.data.status === 1){
                         chatDispatch({type:'UPDATE_MEMBERS', groupId:groupId, payload:res.data.data}) 
                     }
                 })
                 .catch(err => console.log(err)); 
+            });
+
+            //listener to remove group
+            socket.on('remove_group', (groupId) => {
+                chatDispatch({type:'REMOVE_GROUP', groupId:groupId});
             });
 
             //on connect joins the rooms on the client side
@@ -78,7 +82,7 @@ function Chat({loggedIn, setLoggedIn}){
                     socket.emit('room', group._id)
                 })
                 socket.emit('user', chatData.user._id)
-            })
+            });
 
             return function cleanup(){
                 socket.close();
@@ -101,6 +105,11 @@ function Chat({loggedIn, setLoggedIn}){
     const updateMembers = (groupId) => {
         socket.emit('update_memberlist', groupId);
     }
+
+    const removeGroup = (groupId) => {
+        socket.emit('remove_group', groupId);
+    }
+
     const openNewGroup = () => {
         navDispatch({type:'NEWGROUP', open:true});
         navDispatch({type:'LEFTDRAWER', open: false});
@@ -113,7 +122,7 @@ function Chat({loggedIn, setLoggedIn}){
                 {chatData.groups.length > 0 ? 
                     <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} userInfo={chatData.user}
                     newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}
-                    updateInvite={updateInvite} history={history} setLoggedIn={setLoggedIn} /> 
+                    removeGroup={removeGroup} updateInvite={updateInvite} history={history} setLoggedIn={setLoggedIn} /> 
                     : <Welcome setLoggedIn={setLoggedIn} openNewGroup={openNewGroup} />}
             </div>
         );

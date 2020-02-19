@@ -180,6 +180,30 @@ describe('<ChatPage/> when the screen size is large', ()=>{
         });
     });
 
+    it('should delete group', async () => {
+        axiosMock.get.mockResolvedValueOnce(seedData);
+        const {getByTestId, queryByTestId, queryAllByTestId} = render(<MuiThemeProvider theme={theme}>
+                                                                {component}
+                                                         </MuiThemeProvider>);
+        
+        await wait(()=> {
+            //should have group settings icon
+            expect(queryByTestId('nav-groupsettings')).toBeTruthy();
+            expect(queryAllByTestId('group-tab-button').length).toBe(2);
+        });
+
+        axiosMock.delete.mockResolvedValueOnce({data:{status:1}});
+
+        //open group settings menu, click delete, and confirm
+        fireEvent.click(getByTestId('nav-groupsettings'));
+        fireEvent.click(getByTestId('group-settings-delete'));
+        fireEvent.click(getByTestId('group-delete-confirm'));
+
+        await wait(()=>{
+            expect(queryAllByTestId('group-tab-button').length).toBe(1);
+        })
+    });
+
     it('should open add member container', async () => {
         axiosMock.get.mockResolvedValueOnce(seedData);
         const {queryByTestId} = render(<MuiThemeProvider theme={theme}>

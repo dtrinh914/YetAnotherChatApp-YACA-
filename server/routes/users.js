@@ -31,13 +31,7 @@ router.get('/search/:username', isLoggedIn, (req,res) => {
 // route to get all of a users pending invites
 router.get('/pendinginvites', isLoggedIn, (req,res) => {
     findUserById(req.user._id)
-        .then(response => {
-            if(response.status === 1){
-                res.json({data:response.data.user.groupInvites, status: 1});
-            } else {
-                res.json(response);
-            }
-        })
+        .then( response => res.json({data:response.groupInvites, status: 1}))
         .catch((err) => res.json(err));
 });
 

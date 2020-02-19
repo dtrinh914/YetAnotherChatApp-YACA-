@@ -41,6 +41,24 @@ function reducer(state, action){
         // changes the current view of the chat page {type:'CHANGE_GROUP, selected:*, name:*, index:*}
         case "CHANGE_GROUP":
             return {...state, selected: {_id: action.selected, name:action.name, type:'group', index:action.index}}
+        case "REMOVE_GROUP":
+            newGroupState = state.groups.filter(group => group._id !== action.groupId);
+            
+            //check if the current selection is the deleted group
+            if(state.selected._id === action.groupId && newGroupState.length > 0){
+                //if it is set the current selection to the group at the zeroth index
+                const currGroup = newGroupState[0];
+                newSelectedState = {_id: currGroup._id, name:currGroup.groupName, type:'group', index:0}
+                return {...state, groups:newGroupState, selected:newSelectedState};
+            }
+
+            // if there is no more groups and groups is currently selected then set selected to be empty
+            if(state.selected.type === 'group' && newGroupState.length === 0){
+                newSelectedState = {_id: '', name: '', type: '', index: ''};
+                return {...state, groups:newGroupState, selected:newSelectedState};
+            }
+
+            return {...state, groups:newGroupState};
         // adds a new member to a group {type:'ADD_MEMBER', groupId:*, memberId:*}
         case "ADD_MEMBER":
             newGroupState = state.groups.map( group => {

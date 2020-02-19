@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import AddMember from './AddMember';
 import GroupDescription from './GroupDescription';
 import GroupMembers from './GroupMembers';
+import GroupSettingsForm from './GroupSettingsForm';
 import Hidden from '@material-ui/core/Hidden';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
@@ -37,11 +38,12 @@ const useStyles = makeStyles({
 });
 
 
-export default function RightNav({updateInvite, updateMembers, currentGroup, userId}) {
+export default function RightNav({updateInvite, updateMembers, currentGroup, currUserId, removeGroup}) {
     const {navData, navDispatch} = useContext(NavContext);
     const {chatDispatch} = useContext(ChatContext);
     const classes = useStyles();
     const addMemStatus = navData.rightNav.addMem;
+    const groupSettingsStatus = navData.rightNav.groupSettings;
 
     const selectedGroupId = currentGroup._id;
     const {activeMembers, pendingMembers, pendingRequests, groupDescription} = currentGroup;
@@ -59,7 +61,7 @@ export default function RightNav({updateInvite, updateMembers, currentGroup, use
             .catch(err => {
                 console.log(err);
             })
-    }
+    };
 
     //filter the search results based on if the user is the current user, already a member,
     //or has a pending invite
@@ -68,7 +70,7 @@ export default function RightNav({updateInvite, updateMembers, currentGroup, use
         let activeMembersId = activeMembers.map( member => member._id)
         for(let i = 0; i < results.length; i++){
             let current = results[i];
-            if(current._id === userId){
+            if(current._id === currUserId){
                 continue;
             }
             //check if current user is an active member 
@@ -85,15 +87,33 @@ export default function RightNav({updateInvite, updateMembers, currentGroup, use
             filtered.push(current)
         }
         return filtered;
+    };
+
+    const deleteGroup = () => {
+        axios.delete(`api/groups/${selectedGroupId}`, {withCredentials:true})
+             .then( res => {
+                 if(res.data.status === 1){
+                    //send message to clients in group via socket connection
+                    removeGroup(selectedGroupId);
+                    chatDispatch({type:'REMOVE_GROUP', groupId:selectedGroupId});
+                    //close menu
+                    closeGroupSettings();
+                 }
+             })
+             .catch(err => console.log(err))
     }
     
     const closeAddMem = () => {
         navDispatch({type:'ADDMEM', open:false});
-    }
+    };
+
+    const closeGroupSettings = () => {
+        navDispatch({type:'GROUPSETTINGS', open:false});
+    };
     
     const handleClickAway = () => {
         navDispatch({type:'RIGHTDRAWER', open:false});
-    }
+    };
 
     const rightNav = <div className={classes.paper}>
                         <GroupDescription description={groupDescription} />
@@ -115,8 +135,10 @@ export default function RightNav({updateInvite, updateMembers, currentGroup, use
                 </Drawer>
             </Hidden>
             {addMemStatus ? 
-                <AddMember closeAddMem={closeAddMem} sendInvite={sendInvite} 
+                <AddMember closeAddMem={closeAddMem} sendInvite={sendInvite}
                 filterResults={filterResults}/> : ''}
+            {groupSettingsStatus ? <GroupSettingsForm deleteGroup={deleteGroup} groupName={currentGroup.groupName} 
+                                        close={closeGroupSettings} /> : ''}
         </>
     )
 }

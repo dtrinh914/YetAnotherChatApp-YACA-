@@ -35,7 +35,13 @@ openConnection()
         //receives msg from client to update a group's member list
         //and sends msg to all client in a group to update their member list
         socket.on('update_memberlist', (groupId) => {
-            socket.in(groupId).broadcast.emit('update_memberlist', (groupId));
+            socket.in(groupId).broadcast.emit('update_memberlist', groupId);
+        });
+
+        //broadcast to clients in group and then leaves group channel
+        socket.on('remove_group', (groupId) => {
+            socket.in(groupId).broadcast.emit('remove_group', groupId);
+            socket.leave(groupId); 
         });
     
         //Receives messages sent by client and broadcast messages to the specific room
