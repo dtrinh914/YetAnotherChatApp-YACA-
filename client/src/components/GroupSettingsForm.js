@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import GroupSettingsMain from './GroupSettingsMain';
+import GroupEditForm from './GroupEditForm';
 import GroupDeleteForm from './GroupDeleteForm';
 import Paper from '@material-ui/core/Paper';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
@@ -33,9 +34,13 @@ const useStyles = makeStyles({
     }
 });
 
-export default function GroupSettingsForm({groupName, close, deleteGroup}) {
+export default function GroupSettingsForm({groupName, groupDescription, close, editGroup, deleteGroup}) {
     const classes = useStyles();
     const [view, switchView] = useState('main');
+
+    const selectEdit = () => {
+        switchView('edit');
+    };
 
     const selectDelete = () => {
         switchView('delete');
@@ -48,8 +53,12 @@ export default function GroupSettingsForm({groupName, close, deleteGroup}) {
     const currentView = () => {
         if(view === 'delete'){
             return (<GroupDeleteForm groupName={groupName} deleteGroup={deleteGroup}  selectMain={selectMain} />);
-        } else {
-            return (<GroupSettingsMain close={close} selectDelete={selectDelete} />);
+        }
+        else if(view === 'edit'){
+            return (<GroupEditForm groupName={groupName} groupDescription={groupDescription} editGroup={editGroup} selectMain={selectMain} />);
+        } 
+        else {
+            return (<GroupSettingsMain close={close} selectEdit={selectEdit} selectDelete={selectDelete} />);
         }
     };
 

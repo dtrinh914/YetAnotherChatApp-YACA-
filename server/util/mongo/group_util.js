@@ -270,10 +270,12 @@ const hasGroupInvite = async (userObjId, groupObjId) => {
     try{
         const client = getClient();
         const userCol = client.db(DB).collection('users');
+        const groupCol = client.db(DB).collection('groups');
         
         const hasInvite = await userCol.find({_id:userObjId, groupInvites:groupObjId}).count();
+        const isPendingMember = await groupCol.find({_id:groupObjId, pendingMembers:userObjId}).count();
         // returns 1 if user has invite and 0 if the user does not have invite
-        return hasInvite;
+        return hasInvite && isPendingMember;
     } catch(err){
         errorHandler(err);
     }

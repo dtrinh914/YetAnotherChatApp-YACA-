@@ -65,10 +65,15 @@ function Chat({loggedIn, setLoggedIn}){
                 axios.get('/api/groups/'+ groupId + '/members', {withCredentials:true})
                 .then(res => {
                     if(res.data.status === 1){
-                        chatDispatch({type:'UPDATE_MEMBERS', groupId:groupId, payload:res.data.data}) 
+                        chatDispatch({type:'UPDATE_MEMBERS', groupId:groupId, payload:res.data.data}) ;
                     }
                 })
                 .catch(err => console.log(err)); 
+            });
+
+            //listener to update group data
+            socket.on('update_group', (groupId, groupDescription) => {
+                chatDispatch({type:'UPDATE_GROUP', groupId:groupId, groupDescription: groupDescription});
             });
 
             //listener to remove group
@@ -106,6 +111,10 @@ function Chat({loggedIn, setLoggedIn}){
         socket.emit('update_memberlist', groupId);
     }
 
+    const updateGroup = (groupId, groupDescription) => {
+        socket.emit('update_group', groupId, groupDescription)
+    }
+
     const removeGroup = (groupId) => {
         socket.emit('remove_group', groupId);
     }
@@ -122,7 +131,7 @@ function Chat({loggedIn, setLoggedIn}){
                 {chatData.groups.length > 0 ? 
                     <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} userInfo={chatData.user}
                     newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}
-                    removeGroup={removeGroup} updateInvite={updateInvite} history={history} setLoggedIn={setLoggedIn} /> 
+                    updateGroup={updateGroup} removeGroup={removeGroup} updateInvite={updateInvite} history={history} setLoggedIn={setLoggedIn} /> 
                     : <Welcome setLoggedIn={setLoggedIn} openNewGroup={openNewGroup} />}
             </div>
         );

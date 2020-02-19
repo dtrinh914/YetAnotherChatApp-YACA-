@@ -10,7 +10,9 @@ exports[`right nav when window size is md should render properly and match snaps
       class="makeStyles-paper-3"
     >
       <div>
-        <p>
+        <p
+          data-testid="group-description"
+        >
           [No description has been written]
         </p>
       </div>
