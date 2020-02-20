@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const isLoggedIn = require('../middleware/isLoggedIn');
 const {verifyGroupMember, verifyCreator} = require('../middleware/groupsMiddleware')
-const {addGroup, getGroupInfo, sendGroupInvite, deleteGroup, updateGroup} = require('../util/mongoUtil');
+const {addGroup, getGroupInfo, sendGroupInvite, deleteGroup, updateGroup, removeMembers} = require('../util/mongoUtil');
 
 // route to add a new group to the database
 router.post('/', isLoggedIn, (req,res) => {
@@ -67,7 +67,32 @@ router.get('/:id/members', isLoggedIn, verifyGroupMember, (req,res) => {
 router.post('/:id/members', isLoggedIn, verifyGroupMember, (req,res) => {
     const userId = req.body.userId;
     const groupId = req.params.id;
-    sendGroupInvite(userId, groupId).then(response => res.json(response));
+    sendGroupInvite(userId, groupId)
+        .then(response => res.json(response))
+        .catch(err => res.json(err));
+});
+
+// route to remove members from a group
+router.delete('/:id/members', isLoggedIn, verifyCreator, (req,res) => {
+    const userIds = req.body.userIds;
+    const groupId = req.params.id;
+
+    //check if the creator id is within the array 
+    function creatorInArray(ids, user){
+        for(let i = 0; i < ids.length; i++){
+            //need to type coerce ids because of mongo ObjectId wrapper
+            if(ids[i] == user) return true;
+        }
+        return false;
+    };
+
+    if(creatorInArray(userIds, req.user._id)){
+        res.json({data:'The group creator cannot be removed from the group.',status:0})
+    } else {
+        removeMembers(userIds, groupId)
+            .then(response => res.json(response))
+            .catch(err => res.json(err));
+    }
 });
 
 module.exports = router;
