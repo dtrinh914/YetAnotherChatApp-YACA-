@@ -15,7 +15,7 @@ const useStyles = makeStyles({
 });
 
 
-export default function ChatRoom({newMessage, currentGroup, selected, updateInvite, updateGroup, 
+export default function ChatRoom({newMessage, currentGroup, selected, updateInvite, updateGroup, leaveRoom,
                                   updateMembers, removeUsers, history, setLoggedIn, userInfo, removeGroup}) {
     const classes = useStyles();
     const isCreator = currentGroup.creator === userInfo._id ? true : false;
@@ -27,7 +27,7 @@ export default function ChatRoom({newMessage, currentGroup, selected, updateInvi
                 <ChatWindow messages={currentGroup.messages} memberMap={currentGroup.memberMap} />
                 <ChatInput onConfirm={newMessage} selected={selected} />
             </div>
-            <RightNav currUserId={userInfo._id} currentGroup={currentGroup} updateInvite={updateInvite} 
+            <RightNav currUserId={userInfo._id} currentGroup={currentGroup} updateInvite={updateInvite}  leaveRoom={leaveRoom}
                 updateGroup={updateGroup} removeGroup={removeGroup} updateMembers={updateMembers} removeUsers={removeUsers} />
         </>
     )

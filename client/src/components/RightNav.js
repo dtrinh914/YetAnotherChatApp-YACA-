@@ -3,6 +3,7 @@ import AddMember from './AddMember';
 import GroupDescription from './GroupDescription';
 import GroupMembers from './GroupMembers';
 import GroupSettingsForm from './GroupSettingsForm';
+import ConfirmationWindow from './ConfirmationWindow';
 import Hidden from '@material-ui/core/Hidden';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
@@ -10,6 +11,7 @@ import {makeStyles} from '@material-ui/styles';
 import {NavContext} from '../contexts/navContext';
 import {ChatContext} from '../contexts/chatContext';
 import axios from 'axios';
+
 
 
 
@@ -38,16 +40,18 @@ const useStyles = makeStyles({
 });
 
 
-export default function RightNav({updateInvite, updateMembers, updateGroup, removeGroup, removeUsers, currentGroup, currUserId}) {
+export default function RightNav({updateInvite, updateMembers, updateGroup, removeGroup, removeUsers, leaveRoom, currentGroup, currUserId}) {
     const {navData, navDispatch} = useContext(NavContext);
     const {chatDispatch} = useContext(ChatContext);
     const classes = useStyles();
     const addMemStatus = navData.rightNav.addMem;
     const groupSettingsStatus = navData.rightNav.groupSettings;
+    const leaveGroupStatus = navData.rightNav.leaveGroup;
     const groupDescription = currentGroup.description;
 
     const selectedGroupId = currentGroup._id;
     const {activeMembers, pendingMembers, pendingRequests, creator} = currentGroup;
+    const leaveGroupText = `Are you sure you want to leave ${currentGroup.groupName}?`
 
     const sendInvite = (userId) =>{
         axios.post('/api/groups/' + selectedGroupId + '/members',{userId: userId, 
@@ -134,6 +138,23 @@ export default function RightNav({updateInvite, updateMembers, updateGroup, remo
     const closeGroupSettings = () => {
         navDispatch({type:'GROUPSETTINGS', open:false});
     };
+
+    const closeLeaveGroup = () => {
+        navDispatch({type:'LEAVEGROUP',  open:false});
+    }
+
+    const handleLeaveGroup = () => {
+        axios.delete(`api/groups/${selectedGroupId}/members/leave`, {withCredentials:true})
+             .then(res => {
+                if(res.data.status === 1){
+                    updateMembers(selectedGroupId);
+                    leaveRoom(selectedGroupId);
+                    chatDispatch({type:'REMOVE_GROUP', groupId:selectedGroupId});
+                    closeLeaveGroup();
+                }
+             })
+             .catch(err => console.log(err));
+    }
     
     const handleClickAway = () => {
         navDispatch({type:'RIGHTDRAWER', open:false});
@@ -165,6 +186,7 @@ export default function RightNav({updateInvite, updateMembers, updateGroup, remo
                                         deleteMembers={deleteMembers} creator={creator} 
                                         groupName={currentGroup.groupName} groupDescription={groupDescription} 
                                         close={closeGroupSettings} /> : ''}
+            {leaveGroupStatus ? <ConfirmationWindow text={leaveGroupText} handleConfirm={handleLeaveGroup} handleClose={closeLeaveGroup} /> : ''}
         </>
     )
 }

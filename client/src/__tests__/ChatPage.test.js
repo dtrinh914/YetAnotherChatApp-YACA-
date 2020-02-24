@@ -253,6 +253,31 @@ describe('<ChatPage/> when the screen size is large', ()=>{
         fireEvent.click(getByTestId('group-editmembers-confirm'));
     });
 
+    it('should open second group tab and leave group', async() => {
+        axiosMock.get.mockResolvedValueOnce(seedData);
+        const {getByTestId, queryAllByTestId} = render(<MuiThemeProvider theme={theme}>
+                                                                            {component}
+                                                                      </MuiThemeProvider>);
+        await wait(()=> {
+            //should have 2 groups in group tabs
+            expect(queryAllByTestId('group-tab-button').length).toBe(2);
+        });
+
+        //click on 2nd group tab
+        fireEvent.click(queryAllByTestId('group-tab-button')[1]);
+        //click leave group button on nav
+        fireEvent.click(getByTestId('nav-leavegroup'));
+
+        axiosMock.delete.mockResolvedValueOnce({data:{status:1}});
+        //click confirm
+        fireEvent.click(getByTestId('confirmation-confirm'));
+
+        await wait(()=>{
+            //should only have one group
+            expect(queryAllByTestId('group-tab-button').length).toBe(1);
+        });
+    })
+
     it('should open add member container', async () => {
         axiosMock.get.mockResolvedValueOnce(seedData);
         const {queryByTestId} = render(<MuiThemeProvider theme={theme}>

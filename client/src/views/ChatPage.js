@@ -78,6 +78,7 @@ function Chat({loggedIn, setLoggedIn}){
 
             //listener to remove group
             socket.on('remove_group', (groupId) => {
+                socket.emit('leave_room', groupId);
                 chatDispatch({type:'REMOVE_GROUP', groupId:groupId});
             });
 
@@ -128,6 +129,10 @@ function Chat({loggedIn, setLoggedIn}){
         socket.emit('remove_users', userIds, groupId);
     }
 
+    const leaveRoom = (groupId) => {
+        socket.emit('leave_room', groupId);
+    }
+
     if(loaded){
         return(
             <div className={classes.root}>
@@ -135,7 +140,8 @@ function Chat({loggedIn, setLoggedIn}){
                 {chatData.groups.length > 0 ? 
                     <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} userInfo={chatData.user}
                     newMessage={newMessage} updateMembers={updateMembers} removeUsers={removeUsers} selected={chatData.selected}
-                    updateGroup={updateGroup} removeGroup={removeGroup} updateInvite={updateInvite} history={history} setLoggedIn={setLoggedIn} /> 
+                    updateGroup={updateGroup} removeGroup={removeGroup} leaveRoom={leaveRoom} 
+                    updateInvite={updateInvite} history={history} setLoggedIn={setLoggedIn} /> 
                     : <Welcome setLoggedIn={setLoggedIn} openNewGroup={openNewGroup} />}
             </div>
         );
