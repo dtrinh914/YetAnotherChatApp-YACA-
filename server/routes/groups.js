@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const isLoggedIn = require('../middleware/isLoggedIn');
 const {verifyGroupMember, verifyCreator} = require('../middleware/groupsMiddleware')
-const {addGroup, getGroupInfo, sendGroupInvite, deleteGroup, updateGroup, removeMembers} = require('../util/mongoUtil');
+const {addGroup, getGroupInfo, sendGroupInvite, deleteGroup, updateGroup, isCreator, removeMembers} = require('../util/mongoUtil');
 
 // route to add a new group to the database
 router.post('/', isLoggedIn, (req,res) => {
@@ -93,6 +93,24 @@ router.delete('/:id/members', isLoggedIn, verifyCreator, (req,res) => {
             .then(response => res.json(response))
             .catch(err => res.json(err));
     }
+});
+
+// route for user to leave a group
+router.delete('/:id/members/leave', isLoggedIn, (req,res) => {
+    const groupId = req.params.id;
+    const userId = req.user._id;
+    //creator cannot leave group
+    isCreator(userId, groupId)
+        .then(response => {
+            if(response.status === 1){
+                res.json({data:'The group creator cannot leave the group.', status: 0});
+            } else {
+                removeMembers([userId], groupId)
+                    .then(response => res.json(response))
+                    .catch(err => res.json(err));
+            }
+        })
+        .catch(err => res.json(err));
 });
 
 module.exports = router;

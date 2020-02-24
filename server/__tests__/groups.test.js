@@ -241,3 +241,30 @@ describe('DELETE /api/groups/:id/members', () =>{
         expect(response.text).toContain('"status":1');
     });
 });
+
+describe('DELETE /api/groups/:id/members/leave', () =>{
+    it('should return status:-1', async ()=>{
+        const response = await request(app)
+                                    .delete(`/api/groups/notagroupid/members/leave`)
+                                    .set('Cookie', sessionCookie)
+        expect(response.text).toContain('"status":-1');
+    });
+    
+    it('should return status:0', async ()=>{
+        const response = await request(app)
+                                    .delete(`/api/groups/${seedGroupId}/members/leave`)
+                                    .set('Cookie', sessionCookie)
+        expect(response.text).toContain('"status":0');
+    });
+
+    it('should return status:1', async ()=>{
+        //have another user join the group
+        acceptGroupInvite(anotherUserId, seedGroupId);
+
+        //delete another user from group
+        const response = await request(app)
+                                    .delete(`/api/groups/${seedGroupId}/members/leave`)
+                                    .set('Cookie', anotherUserSession)
+        expect(response.text).toContain('"status":1');
+    });
+});
