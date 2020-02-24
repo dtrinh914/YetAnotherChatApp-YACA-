@@ -232,6 +232,27 @@ describe('<ChatPage/> when the screen size is large', ()=>{
         })
     });
 
+    it('should delete one member', async() => {
+        axiosMock.get.mockResolvedValueOnce(seedData);
+        const {getByTestId, queryByTestId, queryAllByTestId} = render(<MuiThemeProvider theme={theme}>
+                                                                            {component}
+                                                                      </MuiThemeProvider>);
+        await wait(()=> {
+            //should have group settings icon
+            expect(queryByTestId('nav-groupsettings')).toBeTruthy();
+        });
+
+        fireEvent.click(getByTestId('nav-groupsettings'));
+        fireEvent.click(getByTestId('group-settings-editmembers'));
+
+        const checkBoxes = queryAllByTestId('memberlistitem-checkbox');
+
+        expect(checkBoxes.length).toBe(2);
+
+        fireEvent.click(checkBoxes[0]);
+        fireEvent.click(getByTestId('group-editmembers-confirm'));
+    });
+
     it('should open add member container', async () => {
         axiosMock.get.mockResolvedValueOnce(seedData);
         const {queryByTestId} = render(<MuiThemeProvider theme={theme}>
@@ -243,7 +264,7 @@ describe('<ChatPage/> when the screen size is large', ()=>{
 
         fireEvent.click(queryByTestId('nav-addmem'));
         expect(queryByTestId('addmember-form')).toBeTruthy();
-    })
+    });
 })
 
 describe('<ChatPage/> when the screen size is small', ()=>{

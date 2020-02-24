@@ -4,9 +4,11 @@ import {cleanup, render, fireEvent} from '@testing-library/react';
 
 afterEach(cleanup);
 
+const mockMembers=[{_id:'123', username:'test_user1'},{_id:'1234', username:'test_user2'},{_id:'12345', username:'test_user3'}]
+
 const mockFunction = () => {console.log('Triggers')};
-const component = <GroupSettingsForm close={mockFunction} deleteGroup={mockFunction} editGroup={mockFunction}
-                    groupName='test_group' groupDescription='test_description' />
+const component = <GroupSettingsForm close={mockFunction} deleteGroup={mockFunction} editGroup={mockFunction} deleteMembers={mockFunction}
+                    groupName='test_group' groupMembers={mockMembers} creator='123' groupDescription='test_description' />
 
 test('should render close button that triggers console', ()=>{
     const {getByTestId} = render(component);
@@ -59,5 +61,38 @@ test('should open edit menu, change description, confirm, and trigger mock funct
     expect(descriptionInput.value).toBe('new_description');
 
     fireEvent.click(getByTestId('group-edit-confirm'));
+    expect(spy).toHaveBeenCalled();
+});
+
+test('should open member edit menu and go back to main menu', async()=>{
+    const {getByTestId, queryByTestId} = render(component);
+    fireEvent.click(getByTestId('group-settings-editmembers'));
+
+    expect(getByTestId('group-editmembers-list').children.length).toBe(2);
+
+    fireEvent.click(getByTestId('group-editmembers-back'));
+
+    expect(queryByTestId('group-settings-header')).toBeTruthy();
+});
+
+test('should open member edit menu, check both member items, confirm, and trigger mock function', () => {
+    const {getByTestId, queryAllByTestId} = render(component);
+    const spy = jest.spyOn(console, 'log');
+
+    fireEvent.click(getByTestId('group-settings-editmembers'));
+    
+    const checkBoxes = queryAllByTestId('memberlistitem-checkbox');
+
+    expect(checkBoxes[0].value).toBe('false');
+    expect(checkBoxes[1].value).toBe('false');
+
+    fireEvent.click(checkBoxes[0]);
+    fireEvent.click(checkBoxes[1]);
+
+    expect(checkBoxes[0].value).toBe('true');
+    expect(checkBoxes[1].value).toBe('true');
+
+    fireEvent.click(getByTestId('group-editmembers-confirm'));
+
     expect(spy).toHaveBeenCalled();
 });

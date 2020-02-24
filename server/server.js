@@ -18,7 +18,7 @@ openConnection()
         });
     
         //joins room specified by the client
-        socket.on('room', (room) => {
+        socket.on('join_room', (room) => {
             socket.join(room);
         });
     
@@ -29,13 +29,20 @@ openConnection()
     
         //tells a specific user to update their pending invite list
         socket.on('update_pendinglist', (userId) => {
-            socket.in(userId).broadcast.emit('update_pendinglist');
+            socket.in(userId).emit('update_pendinglist');
+        });
+
+        //tells a set of users to leave the group
+        socket.on('remove_users', (userIds, groupId) => {
+            userIds.forEach(id =>{
+                socket.in(id).emit('remove_group', groupId)
+            });
         });
     
         //receives msg from client to update a group's member list
         //and sends msg to all client in a group to update their member list
         socket.on('update_memberlist', (groupId) => {
-            socket.in(groupId).broadcast.emit('update_memberlist', groupId);
+            io.in(groupId).emit('update_memberlist', groupId);
         });
 
         socket.on('update_group', (groupId, groupDescription) => {

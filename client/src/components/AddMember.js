@@ -59,7 +59,7 @@ export default function AddMember({sendInvite, filterResults, closeAddMem}) {
 
     return (
         <div className={classes.root}>
-            <ClickAwayListener onClickAway={closeAddMem}>
+            <ClickAwayListener onClickAway={closeAddMem} mouseEvent='onMouseDown'>
                 <Paper className={classes.paper} >
                     <Typography>Add a Member</Typography>
                     <form data-testid='addmember-form' onSubmit={handleSubmit}>
