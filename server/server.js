@@ -21,6 +21,11 @@ openConnection()
         socket.on('join_room', (room) => {
             socket.join(room);
         });
+
+        //leave room specified by the client
+        socket.on('leave_room', (room) => {
+            socket.leave(room);
+        });
     
         //creates a room specific for each user
         socket.on('user', (userId) => {

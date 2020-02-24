@@ -5,10 +5,14 @@ function reducer(state, action){
         case 'ADDMEM':
             prevRightNav = state.rightNav;
             return {...state, rightNav:{...prevRightNav, addMem:action.open}};
-        //Shows group settings menu
+        //open/close group settings menu
         case 'GROUPSETTINGS':
             prevRightNav = state.rightNav;
             return {...state, rightNav:{...prevRightNav, groupSettings:action.open}};
+        //open/close leave group window
+        case 'LEAVEGROUP':
+            prevRightNav = state.rightNav;
+            return {...state, rightNav:{...prevRightNav, leaveGroup:action.open}};
         //opens/close right nav
         case 'RIGHT':
             prevRightNav = state.rightNav;

@@ -6,7 +6,8 @@ const initialState = {
         root:true,
         drawer: false,
         addMem:false,
-        groupSettings: false
+        groupSettings: false,
+        leaveGroup: false
     },
     leftNav:{
         root: true,

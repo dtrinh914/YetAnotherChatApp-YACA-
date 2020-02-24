@@ -16,6 +16,7 @@ import GroupIcon from '@material-ui/icons/Group';
 import MenuIcon from '@material-ui/icons/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
 import EditAttributesIcon from '@material-ui/icons/EditAttributes';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import {makeStyles} from '@material-ui/styles';
 import axios from 'axios';
 import {ChatContext} from '../contexts/chatContext';
@@ -86,32 +87,42 @@ function Navbar({history, setLoggedIn, isCreator, isAdmin}){
             }
         })
         .catch((err) => console.log(err));
-    }
+    };
     const handleAddMem = () => {
         navDispatch({type:'ADDMEM', open:true});
-    }
+    };
     const handleLeftDrawer = () => {
         navDispatch({type:'LEFTDRAWER', open:true})
-    }
+    };
 
     const handleRightDrawer = () => {
         navDispatch({type:'RIGHTDRAWER', open:true});
-    }
+    };
     
     const handleToggleInfo = () => {
         navDispatch({type:'RIGHT', open:!navData.rightNav.root});
-    }
+    };
 
     const handleGroupSettings = () => {
         navDispatch({type:'GROUPSETTINGS', open:true});
-    }
+    };
+    
+    const handleLeaveGroup = () => {
+        navDispatch({type:'LEAVEGROUP', open:true});
+    };
     
     const creatorButtons = <IconButton data-testid='nav-groupsettings' size='small' onClick={handleGroupSettings}>
                                 <EditAttributesIcon />
                            </IconButton>;
+    const memberButtons = <IconButton data-testid='nav-leavegroup' size='small' onClick={handleLeaveGroup}>
+                                <ExitToAppIcon />
+                          </IconButton>;
 
     const creatorMenuItems = <MenuItem data-testid='nav-config-groupsettings'
-                                onClick={e => {handleClose(e); handleGroupSettings(e);}}>Group Settings</MenuItem>
+                                onClick={e => {handleClose(e); handleGroupSettings();}}>Group Settings</MenuItem>
+    
+    const memberMenuItems = <MenuItem data-testid='nav-config-leavegroup'
+                             onClick={e => {handleClose(e); handleLeaveGroup();}}>Leave Group</MenuItem>
 
     return(
         <AppBar position="static" className={classes.nav}>
@@ -145,7 +156,7 @@ function Navbar({history, setLoggedIn, isCreator, isAdmin}){
                                         </MenuItem>
                                         <MenuItem data-testid='nav-config-addmem' 
                                             onClick={e => {handleClose(e); handleAddMem(e);}}>Invite</MenuItem>
-                                        {isCreator ? creatorMenuItems : ''}
+                                        {isCreator ? creatorMenuItems : memberMenuItems}
                                         <MenuItem onClick={e=> {handleClose(e); handleLogOut(e);}}>Logout</MenuItem>
                                     </MenuList>
                                 </ClickAwayListener>
@@ -164,7 +175,7 @@ function Navbar({history, setLoggedIn, isCreator, isAdmin}){
                         <IconButton data-testid='nav-addmem' onClick={handleAddMem} size='small'>
                             <PersonAddIcon />
                          </IconButton>
-                        {isCreator ? creatorButtons : ''}
+                        {isCreator ? creatorButtons : memberButtons}
                         <Button onClick={handleLogOut}>Log Out</Button>
                     </div>
                 </Hidden>
