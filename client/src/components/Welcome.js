@@ -61,7 +61,7 @@ export default function Welcome({setLoggedIn, openNewGroup}) {
             </Paper>
             
             <div className={classes.body}>
-                <Typography className={classes.heading} variant='h1'>Welcome!</Typography>
+                <Typography className={classes.heading} variant='h2'>Welcome!</Typography>
                 <Typography className={classes.heading} variant='h4'>To get started:</Typography>
                 <Button data-testid='welcome-newgroup-button' className={classes.button} color='primary' variant='contained' onClick={openNewGroup}>Click here to create your first group!</Button>
             </div>

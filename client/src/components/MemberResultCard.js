@@ -1,6 +1,6 @@
 import React from 'react';
+import MemberItem from './MemberItem';
 import ListItem from '@material-ui/core/ListItem';
-import Avatar from '@material-ui/core/Avatar';
 import {makeStyles} from '@material-ui/styles';
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton';
@@ -13,15 +13,6 @@ const useStyles = makeStyles({
         display:'flex',
         alignItems: 'center',
         justifyContent: 'space-between'
-    },
-    avatar:{
-        fontSize: '0.9rem',
-        width: '20px',
-        height: '20px',
-        marginRight: '10px'
-    },
-    user:{
-        display:'flex'
     },
     add:{
         fontSize: '1rem'
@@ -53,10 +44,7 @@ export default function MemberResultCard({username, userId, status, sendInvite})
 
     return (
         <ListItem data-testid='member-result-card' className={classes.root}>
-            <div className={classes.user}>
-                <Avatar className={classes.avatar}>{username[0].toUpperCase()}</Avatar>
-                <span>{username}</span>
-            </div>
+            <MemberItem username={username} />
             {statusButton}
         </ListItem>
     )

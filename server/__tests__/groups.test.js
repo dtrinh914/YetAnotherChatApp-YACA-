@@ -1,5 +1,5 @@
 const request = require('supertest');
-const {openConnection, getClient, addUser, addGroup, findUserByUsername, closeConnection} = require('../util/mongoUtil');
+const {openConnection, getClient, addUser, addGroup, findUserByUsername, acceptGroupInvite, closeConnection} = require('../util/mongoUtil');
 const {clearRedis, closeRedis} = require('../util/redisUtil');
 const app = require('../app');
 
@@ -201,5 +201,43 @@ describe('POST /api/groups/:id/members', () =>{
                                     .post(`/api/groups/${seedGroupId}/members`)
                                     .send({userId: anotherUserId});
         expect(response.status).toBe(302);
+    });
+});
+
+describe('DELETE /api/groups/:id/members', () =>{
+    it('should return access denied', async ()=>{
+        const response = await request(app)
+                                    .delete(`/api/groups/${seedGroupId}/members`)
+                                    .set('Cookie', anotherUserSession)
+                                    .send({userIds:[testUserId]});
+        expect(response.text).toContain('Access denied.');
+    });
+
+    it('should return status:-1', async ()=>{
+        const response = await request(app)
+                                    .delete(`/api/groups/notagroupid/members`)
+                                    .set('Cookie', sessionCookie)
+                                    .send({userIds:[testUserId]});
+        expect(response.text).toContain('"status":-1');
+    });
+    
+    it('should return status:0', async ()=>{
+        const response = await request(app)
+                                    .delete(`/api/groups/${seedGroupId}/members`)
+                                    .set('Cookie', sessionCookie)
+                                    .send({userIds:[testUserId]});
+        expect(response.text).toContain('"status":0');
+    });
+
+    it('should return status:1', async ()=>{
+        //have another user join the group
+        acceptGroupInvite(anotherUserId, seedGroupId);
+
+        //delete another user from group
+        const response = await request(app)
+                                    .delete(`/api/groups/${seedGroupId}/members`)
+                                    .set('Cookie', sessionCookie)
+                                    .send({userIds:[anotherUserId]});
+        expect(response.text).toContain('"status":1');
     });
 });

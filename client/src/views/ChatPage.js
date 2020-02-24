@@ -84,7 +84,7 @@ function Chat({loggedIn, setLoggedIn}){
             //on connect joins the rooms on the client side
             socket.on('connect', () => {
                 chatData.groups.forEach(group => {
-                    socket.emit('room', group._id)
+                    socket.emit('join_room', group._id)
                 })
                 socket.emit('user', chatData.user._id)
             });
@@ -102,7 +102,7 @@ function Chat({loggedIn, setLoggedIn}){
         chatDispatch({type:'NEW_MSG', room:chatData.selected._id, message:message});
     }
     const joinRoom = (roomId) => {
-        socket.emit('room', roomId)
+        socket.emit('join_room', roomId)
     }
     const updateInvite = (userId) => {
         socket.emit('update_pendinglist', userId);
@@ -124,13 +124,17 @@ function Chat({loggedIn, setLoggedIn}){
         navDispatch({type:'LEFTDRAWER', open: false});
     }
 
+    const removeUsers = (userIds, groupId) => {
+        socket.emit('remove_users', userIds, groupId);
+    }
+
     if(loaded){
         return(
             <div className={classes.root}>
                 <LeftNav userData={chatData.user} groupData={chatData.groups} joinRoom={joinRoom} updateMembers={updateMembers} />
                 {chatData.groups.length > 0 ? 
                     <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} userInfo={chatData.user}
-                    newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}
+                    newMessage={newMessage} updateMembers={updateMembers} removeUsers={removeUsers} selected={chatData.selected}
                     updateGroup={updateGroup} removeGroup={removeGroup} updateInvite={updateInvite} history={history} setLoggedIn={setLoggedIn} /> 
                     : <Welcome setLoggedIn={setLoggedIn} openNewGroup={openNewGroup} />}
             </div>

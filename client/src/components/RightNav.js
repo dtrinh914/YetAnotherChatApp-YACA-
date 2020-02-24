@@ -38,7 +38,7 @@ const useStyles = makeStyles({
 });
 
 
-export default function RightNav({updateInvite, updateMembers, updateGroup, removeGroup, currentGroup, currUserId}) {
+export default function RightNav({updateInvite, updateMembers, updateGroup, removeGroup, removeUsers, currentGroup, currUserId}) {
     const {navData, navDispatch} = useContext(NavContext);
     const {chatDispatch} = useContext(ChatContext);
     const classes = useStyles();
@@ -47,7 +47,7 @@ export default function RightNav({updateInvite, updateMembers, updateGroup, remo
     const groupDescription = currentGroup.description;
 
     const selectedGroupId = currentGroup._id;
-    const {activeMembers, pendingMembers, pendingRequests} = currentGroup;
+    const {activeMembers, pendingMembers, pendingRequests, creator} = currentGroup;
 
     const sendInvite = (userId) =>{
         axios.post('/api/groups/' + selectedGroupId + '/members',{userId: userId, 
@@ -114,6 +114,18 @@ export default function RightNav({updateInvite, updateMembers, updateGroup, remo
              })
              .catch(err => console.log(err))
     }
+
+    const deleteMembers = (userIds) => {
+        axios.delete(`api/groups/${selectedGroupId}/members`, {data:{userIds:userIds}, withCredentials:true})
+             .then(res => {
+                if(res.data.status === 1){
+                    updateMembers(selectedGroupId);
+                    removeUsers(userIds, selectedGroupId);
+                    closeGroupSettings();
+                }
+             })
+             .catch(err => console.log(err));
+    }
     
     const closeAddMem = () => {
         navDispatch({type:'ADDMEM', open:false});
@@ -149,7 +161,8 @@ export default function RightNav({updateInvite, updateMembers, updateGroup, remo
             {addMemStatus ? 
                 <AddMember closeAddMem={closeAddMem} sendInvite={sendInvite}
                 filterResults={filterResults}/> : ''}
-            {groupSettingsStatus ? <GroupSettingsForm editGroup={editGroup} deleteGroup={deleteGroup} 
+            {groupSettingsStatus ? <GroupSettingsForm editGroup={editGroup} deleteGroup={deleteGroup} groupMembers={activeMembers}
+                                        deleteMembers={deleteMembers} creator={creator} 
                                         groupName={currentGroup.groupName} groupDescription={groupDescription} 
                                         close={closeGroupSettings} /> : ''}
         </>

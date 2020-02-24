@@ -103,7 +103,7 @@ function NewGroup({createNewGroup, close}){
 
     return(
         <div className={classes.root}>
-                <ClickAwayListener onClickAway={handleClose}>
+                <ClickAwayListener onClickAway={handleClose} mouseEvent='onMouseDown'>
                     <Paper className={classes.paper}>
                         {loading ? <LinearProgress data-testid='newgroupform-loading' className={classes.loadbar} /> : ''}
 

@@ -7,10 +7,10 @@ exports[`<MemberResultCard /> with a pending member should match snapshot 1`] = 
     data-testid="member-result-card"
   >
     <div
-      class="makeStyles-user-34"
+      class="makeStyles-user-46"
     >
       <div
-        class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-33 MuiAvatar-colorDefault"
+        class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-45 MuiAvatar-colorDefault"
       >
         T
       </div>
@@ -44,10 +44,10 @@ exports[`<MemberResultCard /> with an active member should match snapshot 1`] = 
     data-testid="member-result-card"
   >
     <div
-      class="makeStyles-user-3"
+      class="makeStyles-user-15"
     >
       <div
-        class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-2 MuiAvatar-colorDefault"
+        class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-14 MuiAvatar-colorDefault"
       >
         T
       </div>
@@ -78,10 +78,10 @@ exports[`<MemberResultCard /> with any other person should match snapshot 1`] = 
     data-testid="member-result-card"
   >
     <div
-      class="makeStyles-user-98"
+      class="makeStyles-user-110"
     >
       <div
-        class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-97 MuiAvatar-colorDefault"
+        class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-109 MuiAvatar-colorDefault"
       >
         T
       </div>
@@ -100,7 +100,7 @@ exports[`<MemberResultCard /> with any other person should match snapshot 1`] = 
       >
         <svg
           aria-hidden="true"
-          class="MuiSvgIcon-root makeStyles-add-99"
+          class="MuiSvgIcon-root makeStyles-add-97"
           focusable="false"
           role="presentation"
           viewBox="0 0 24 24"

@@ -30,6 +30,11 @@ function ChatWindow({memberMap, messages}){
         
         // loop through each message
         for(let i = 0; i < messages.length; i++){
+
+            if(!memberMap[messages[i].id]){
+                continue;
+            }
+            
             // format the date of each message
             const date = new Date(messages[i].time);
             const formatedDate = format(date, 'E MMMM dd, yyyy');
@@ -38,11 +43,11 @@ function ChatWindow({memberMap, messages}){
             if(!dates[formatedDate]){
                 // if it isn't set it equal to true in the hashtable and push the date into results array
                 dates[formatedDate] = true;
-                results.push({date: formatedDate, type: 'date'});
+                results.push({date: formatedDate, type: 'date', key:uuid()});
             }
-
+            
             //perform a join using the memberMap hashtable and add to results array
-            results.push({...messages[i], username: memberMap[messages[i].id].username, type: 'message'})
+            results.push({...messages[i], username: memberMap[messages[i].id].username, type: 'message', key:uuid()})
         }
 
         return results;
@@ -53,9 +58,9 @@ function ChatWindow({memberMap, messages}){
             <List className={classes.list}>
                 {formatMessages(messages).map( message => {
                     if(message.type === 'message'){
-                        return <Message key={uuid()} message={message}/>
+                        return <Message key={message.key} message={message}/>
                     } else {
-                        return <DateDivider key={uuid()} date={message.date} />
+                        return <DateDivider key={message.key} date={message.date} />
                     }
                 })}   
             </List>
