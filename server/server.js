@@ -1,8 +1,11 @@
 const app = require('./app');
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const redisAdapter = require('socket.io-redis');
 const {openConnection, storeGroupMsg} = require('./util/mongoUtil');
 
+//connect socket-io to redis
+io.adapter(redisAdapter({host:'localhost', port: 6379}));
 
 // open DB connection before starting server and socket listeners
 openConnection()

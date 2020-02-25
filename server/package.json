@@ -4,7 +4,7 @@
   "description": "Backend for chat app",
   "main": "server.js",
   "scripts": {
-    "test": "jest --detectOpenHandles"
+    "test": "./node_modules/.bin/jest --detectOpenHandles"
   },
   "author": "Duc Trinh",
   "license": "ISC",
@@ -20,6 +20,7 @@
     "passport-local": "^1.0.0",
     "redis": "^2.8.0",
     "socket.io": "^2.3.0",
+    "socket.io-redis": "^5.2.0",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
