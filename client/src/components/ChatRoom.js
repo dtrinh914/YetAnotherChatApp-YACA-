@@ -16,14 +16,14 @@ const useStyles = makeStyles({
 
 
 export default function ChatRoom({newMessage, currentGroup, selected, updateInvite, updateGroup, leaveRoom,
-                                  updateMembers, removeUsers, history, setLoggedIn, userInfo, removeGroup}) {
+                                  updateMembers, removeUsers, handleLogOut, userInfo, removeGroup}) {
     const classes = useStyles();
     const isCreator = currentGroup.creator === userInfo._id ? true : false;
     const isAdmin = currentGroup.admins.includes(userInfo._id) ? true : false; 
     return (
         <>
            <div className={classes.root}>
-                <Navbar history={history} setLoggedIn={setLoggedIn} isCreator={isCreator} isAdmin={isAdmin} />
+                <Navbar handleLogOut={handleLogOut} isCreator={isCreator} isAdmin={isAdmin} />
                 <ChatWindow messages={currentGroup.messages} memberMap={currentGroup.memberMap} />
                 <ChatInput onConfirm={newMessage} selected={selected} />
             </div>

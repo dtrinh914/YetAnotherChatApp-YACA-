@@ -18,7 +18,6 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import EditAttributesIcon from '@material-ui/icons/EditAttributes';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import {makeStyles} from '@material-ui/styles';
-import axios from 'axios';
 import {ChatContext} from '../contexts/chatContext';
 import {NavContext} from '../contexts/navContext';
 
@@ -41,7 +40,7 @@ const useStyles=makeStyles({
     }
 });
 
-function Navbar({history, setLoggedIn, isCreator, isAdmin}){
+function Navbar({handleLogOut, isCreator, isAdmin}){
     const {chatData} = useContext(ChatContext);
     const {navData, navDispatch} = useContext(NavContext);
     const classes = useStyles();
@@ -78,16 +77,6 @@ function Navbar({history, setLoggedIn, isCreator, isAdmin}){
         prevOpen.current = open;
     }, [open]);
 
-    const handleLogOut = () => {
-        axios.get('/api/actions/logout', {withCredentials:true})
-        .then(res => {
-            if(res.data.loggedIn === false){
-                setLoggedIn(res.data);
-                history.push('/');
-            }
-        })
-        .catch((err) => console.log(err));
-    };
     const handleAddMem = () => {
         navDispatch({type:'ADDMEM', open:true});
     };
