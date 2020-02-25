@@ -16,9 +16,6 @@ openConnection()
     
     io.on('connection', (socket) => {
         console.log('a user connected');
-        socket.on('disconnect', () => {
-            console.log('user disconnected');
-        });
     
         //joins room specified by the client
         socket.on('join_room', (room) => {
@@ -68,6 +65,15 @@ openConnection()
             storeGroupMsg(room,message);
             socket.in(room).broadcast.emit('message', room, message);
         });
+
+        socket.on('disconnect', () => {
+            console.log('user disconnected');
+        });
+        
+        //broadcast to client to close their connection
+        socket.on('closeClient', (userId) => {
+            socket.in(userId).broadcast.emit('closeClient');
+        })
     });
 })
 .catch(err => {

@@ -27,6 +27,17 @@ function Chat({loggedIn, setLoggedIn}){
     const {chatData, chatDispatch} = useContext(ChatContext);
     const [loaded, setLoaded] = useState(false);
 
+    const handleLogOut = () => {
+        axios.get('/api/actions/logout', {withCredentials:true})
+        .then(res => {
+            if(res.data.loggedIn === false){
+                setLoggedIn(res.data);
+                history.push('/');
+            }
+        })
+        .catch((err) => console.log(err));
+    };
+
     useEffect(() => {
         //redirect if user is not logged in
         if(!loggedIn){
@@ -85,12 +96,17 @@ function Chat({loggedIn, setLoggedIn}){
             //on connect joins the rooms on the client side
             socket.on('connect', () => {
                 chatData.groups.forEach(group => {
-                    socket.emit('join_room', group._id)
+                    socket.emit('join_room', group._id);
                 })
-                socket.emit('user', chatData.user._id)
+                socket.emit('user', chatData.user._id);
             });
 
+            socket.on('closeClient', ()=>{
+                handleLogOut();
+            })
+
             return function cleanup(){
+                socket.emit('closeClient', chatData.user._id);
                 socket.close();
             }
         }
@@ -141,7 +157,7 @@ function Chat({loggedIn, setLoggedIn}){
                     <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} userInfo={chatData.user}
                     newMessage={newMessage} updateMembers={updateMembers} removeUsers={removeUsers} selected={chatData.selected}
                     updateGroup={updateGroup} removeGroup={removeGroup} leaveRoom={leaveRoom} 
-                    updateInvite={updateInvite} history={history} setLoggedIn={setLoggedIn} /> 
+                    updateInvite={updateInvite} handleLogOut={handleLogOut} /> 
                     : <Welcome setLoggedIn={setLoggedIn} openNewGroup={openNewGroup} />}
             </div>
         );
