@@ -47,7 +47,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function Welcome({setLoggedIn, openNewGroup}) {
+export default function Welcome({handleLogOut, openNewGroup}) {
     const classes = useStyles();
 
     return (
@@ -57,7 +57,7 @@ export default function Welcome({setLoggedIn, openNewGroup}) {
                     <img className={classes.image} alt='envelope' src='mail.png' />
                     <Typography>Untitled Chat App</Typography>
                 </div>
-                <Button onClick={setLoggedIn}>Logout</Button>
+                <Button onClick={handleLogOut}>Logout</Button>
             </Paper>
             
             <div className={classes.body}>

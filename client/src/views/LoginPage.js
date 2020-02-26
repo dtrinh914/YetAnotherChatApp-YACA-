@@ -1,30 +1,17 @@
 import React from 'react';
 import useInput from '../hooks/useInput';
-import {Link, Redirect, useHistory} from 'react-router-dom';
-import axios from 'axios';
+import {Link, Redirect} from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import './LoginPage.css'
 
-function LoginPage({loggedIn, setLoggedIn}){
+function LoginPage({loggedIn, logInUser}){
     const [username, setUsername] = useInput();
     const [password, setPassword] = useInput();
-    let history = useHistory();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post('/api/actions/login', {
-            username:username,
-            password:password,
-            withCredentials:true
-        })
-        .then( response => {
-            if(response.data.loggedIn){
-                setLoggedIn(response.data);
-                history.push('/chat');
-            }
-        }) 
-        .catch( error => console.log(error));
+        logInUser(username, password);
     }
 
     if(loggedIn){

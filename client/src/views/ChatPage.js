@@ -32,7 +32,9 @@ function Chat({loggedIn, setLoggedIn}){
         .then(res => {
             if(res.data.loggedIn === false){
                 setLoggedIn(res.data);
+                socket.emit('closeClient', chatData.user._id);
                 history.push('/');
+                
             }
         })
         .catch((err) => console.log(err));
@@ -104,11 +106,6 @@ function Chat({loggedIn, setLoggedIn}){
             socket.on('closeClient', ()=>{
                 handleLogOut();
             })
-
-            return function cleanup(){
-                socket.emit('closeClient', chatData.user._id);
-                socket.close();
-            }
         }
         //eslint-disable-next-line
     }, [loaded])
@@ -158,7 +155,7 @@ function Chat({loggedIn, setLoggedIn}){
                     newMessage={newMessage} updateMembers={updateMembers} removeUsers={removeUsers} selected={chatData.selected}
                     updateGroup={updateGroup} removeGroup={removeGroup} leaveRoom={leaveRoom} 
                     updateInvite={updateInvite} handleLogOut={handleLogOut} /> 
-                    : <Welcome setLoggedIn={setLoggedIn} openNewGroup={openNewGroup} />}
+                    : <Welcome handleLogOut={handleLogOut} openNewGroup={openNewGroup} />}
             </div>
         );
     } else {
