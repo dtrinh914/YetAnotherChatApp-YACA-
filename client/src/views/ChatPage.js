@@ -28,13 +28,14 @@ function Chat({loggedIn, setLoggedIn}){
     const [loaded, setLoaded] = useState(false);
 
     const handleLogOut = () => {
+        socket.emit('closeClient', chatData.user._id);
+
         axios.get('/api/actions/logout', {withCredentials:true})
         .then(res => {
             if(res.data.loggedIn === false){
                 setLoggedIn(res.data);
-                socket.emit('closeClient', chatData.user._id);
+                socket.close();
                 history.push('/');
-                
             }
         })
         .catch((err) => console.log(err));

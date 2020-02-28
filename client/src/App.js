@@ -12,19 +12,22 @@ function App() {
   const [loggedIn, setLoggedIn] = useState({loggedIn:false});
   const history = useHistory();
 
-  const logInUser = (username,password) => {
-    axios.post('/api/actions/login', {
-                                        username:username,
-                                        password:password,
-                                        withCredentials:true
-                                     })
-        .then( response => {
-            if(response.data.loggedIn){
-                setLoggedIn(response.data);
-                history.push('/chat');
-            }
-        }) 
-        .catch( error => console.log(error));
+  const logInUser = async (username, password) => {
+    try{
+      const response = await axios.post('/api/actions/login', {
+                                                                username:username,
+                                                                password:password,
+                                                                withCredentials:true
+                                                              });
+      if(response.data.loggedIn){
+        setLoggedIn(response.data);
+        history.push('/chat');
+      } else {
+        return 0;
+      }
+    } catch (err){
+      console.log(err);
+    }
   };
 
   useEffect(() =>{
@@ -36,7 +39,7 @@ function App() {
   return (
     <Switch>
       <Route exact path = '/'>
-        <LoginPage {...loggedIn} setLoggedIn={setLoggedIn} logInUser={logInUser} />
+        <LoginPage {...loggedIn} setLoggedIn={setLoggedIn} />
       </Route>
       <Route exact path = '/chat'>
         <ChatProvider>
