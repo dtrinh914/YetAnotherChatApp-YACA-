@@ -157,7 +157,7 @@ function CreateAccountPage({logInUser}){
                     label='Confirm Password' value={confirmPassword} onChange={handleConfirmPassword} 
                     variant='outlined' required inputProps={{'data-testid':'create-page-confirm-input'}} 
                     FormHelperTextProps={{'data-testid':'create-page-confirm-helper'}} />
-                <Button data-testid='create-page-submit' type='submit'>Sign Up</Button>
+                <Button data-testid='create-page-submit' type='submit' variant='outlined' disabled={loading}>Sign Up</Button>
             </form>
         </div>
     );

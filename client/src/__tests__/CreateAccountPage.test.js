@@ -48,7 +48,7 @@ describe('CreateAccountPage component after each input', ()=>{
     });
 });
 
-it('should create user and trigger log in function', async () =>{
+test('should create user and trigger log in function', async () =>{
     const {getByTestId, queryByTestId} = render(component);
     const spy = jest.spyOn(console, 'log');
 
@@ -77,7 +77,7 @@ it('should create user and trigger log in function', async () =>{
 
 });
 
-it('should attempt to create user and return error message "This username has already been taken."', async () =>{
+test('should attempt to create user and return error message "This username has already been taken."', async () =>{
     const {getByTestId} = render(component);
 
     //fill out form
