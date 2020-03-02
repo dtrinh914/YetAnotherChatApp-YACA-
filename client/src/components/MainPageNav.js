@@ -39,11 +39,11 @@ export default function MainPageNav() {
         <AppBar className={classes.bar} position='static'>
             <Toolbar className={classes.tool}>
                 <div className={classes.left}>
-                    <img className={classes.img} src='/mail.png' alt='mail icon' />
+                    <Link to='/'><img className={classes.img} src='/mail.png' alt='mail icon' /></Link>
                     <Typography className={classes.brand}>YACA</Typography>
                 </div>
                 <div className={classes.right}>
-                    <Link className={classes.link} to='/'><Button>Log In</Button></Link>
+                    <Link className={classes.link} to='/login'><Button>Log In</Button></Link>
                     <Link className={classes.link} to='/users/new'><Button>Sign Up</Button></Link>
                 </div>
             </Toolbar>

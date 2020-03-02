@@ -3,10 +3,12 @@ import {Switch, Route, useHistory} from 'react-router-dom';
 import LoginPage from './views/LoginPage';
 import CreateAccountPage from './views/CreateAccountPage';
 import ChatPage from './views/ChatPage';
+import LandingPage from './views/LandingPage';
 import axios from 'axios';
 import './App.css';
 import { ChatProvider } from './contexts/chatContext';
 import { NavProvider} from './contexts/navContext';
+
 
 function App() {
   const [loggedIn, setLoggedIn] = useState({loggedIn:false});
@@ -39,7 +41,10 @@ function App() {
   return (
     <Switch>
       <Route exact path = '/'>
-        <LoginPage {...loggedIn} setLoggedIn={setLoggedIn} />
+        <LandingPage {...loggedIn} />
+      </Route>
+      <Route exact path = '/login'>
+        <LoginPage setLoggedIn={setLoggedIn} />
       </Route>
       <Route exact path = '/chat'>
         <ChatProvider>
