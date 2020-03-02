@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import MainPageNav from '../components/MainPageNav';
 import useInput from '../hooks/useInput';
-import {Redirect,useHistory} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -32,7 +32,7 @@ const useStyle = makeStyles({
     }
 });
 
-function LoginPage({loggedIn, setLoggedIn}){
+function LoginPage({setLoggedIn}){
     const classes = useStyle();
     const history = useHistory();
     const [username, setUsername] = useInput();
@@ -77,29 +77,25 @@ function LoginPage({loggedIn, setLoggedIn}){
         setPassword(e);
     };
 
-    if(loggedIn){
-        return <Redirect to='/chat' />
-    } else {
-        return(
-            <div className={classes.root} >
-                <MainPageNav />
-                {loading ? loadingBar : ''}
-                <form className={classes.form} onSubmit={handleSubmit}>
-                    <h1>Sign In</h1>
-                    <TextField inputProps={{'data-testid':'loginpage-username'}} 
-                    FormHelperTextProps={{'data-testid':'loginpage-username-helper'}}
-                    className={classes.input} type='text' name='username' id='username' 
-                    label='Username' variant='outlined' value={username} required disabled={loading}
-                    helperText={inputErr.message} error={inputErr.status} onChange={handleUsername} />
-                    <TextField inputProps={{'data-testid':'loginpage-password'}}
-                    className={classes.input} type="password" name='password' id='password' 
-                    label='Password' variant='outlined' value={password} required disabled={loading}
-                    onChange={handlePassword} error={inputErr.status} />
-                    <Button data-testid={'loginpage-submit'} type='submit' variant="outlined" disabled={loading}>Login</Button>
-                </form>
-            </div>
-        );
-    }
+    return(
+        <div className={classes.root} >
+            <MainPageNav />
+            {loading ? loadingBar : ''}
+            <form className={classes.form} onSubmit={handleSubmit}>
+                <h1>Sign In</h1>
+                <TextField inputProps={{'data-testid':'loginpage-username'}} 
+                FormHelperTextProps={{'data-testid':'loginpage-username-helper'}}
+                className={classes.input} type='text' name='username' id='username' 
+                label='Username' variant='outlined' value={username} required disabled={loading}
+                helperText={inputErr.message} error={inputErr.status} onChange={handleUsername} />
+                <TextField inputProps={{'data-testid':'loginpage-password'}}
+                className={classes.input} type="password" name='password' id='password' 
+                label='Password' variant='outlined' value={password} required disabled={loading}
+                onChange={handlePassword} error={inputErr.status} />
+                <Button data-testid={'loginpage-submit'} type='submit' variant="outlined" disabled={loading}>Login</Button>
+            </form>
+        </div>
+    );
 }
 
 export default LoginPage; 
