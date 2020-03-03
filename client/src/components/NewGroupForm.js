@@ -109,13 +109,13 @@ function NewGroup({createNewGroup, close}){
 
                         <form data-testid='newgroupform' className={classes.form} onSubmit={handleSubmit}>
 
-                            <TextField inputProps={{'data-testid': 'newgroupform-group-name-input'}} ref={nameInputRef} 
+                            <TextField inputProps={{'data-testid': 'newgroupform-group-name-input', minlength:'3', maxlength:'25'}} ref={nameInputRef} 
                             FormHelperTextProps = {{'data-testid': 'newgroupform-group-name-error'}}
                             className={classes.textInput} label='Group Name' id='Group Name' 
                             type='text' name='newGroupName' value={newGroup} onChange={handleGroupChange}
                             error={inputErr.status} helperText={inputErr.err} disabled={loading} />
 
-                            <TextField inputProps={{'data-testid': 'newgroupform-group-description-input'}} 
+                            <TextField inputProps={{'data-testid': 'newgroupform-group-description-input', maxlength:'50'}} 
                             className={classes.textInput}  label='Group Description' id='Group Description' 
                             type='text' name='newGroupDescription' value={description} 
                             onChange={setDescription} disabled={loading}/>

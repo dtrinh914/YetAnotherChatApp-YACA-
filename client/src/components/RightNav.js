@@ -20,7 +20,8 @@ const useStyles = makeStyles({
         width: '250px',
         height: '100%',
         background:'#424242',
-        overflow: 'auto'
+        overflow: 'auto',
+        wordWrap: 'break-word'
     },
     hidden:{
         display:'none'

@@ -11,7 +11,7 @@ const useStyles = makeStyles({
     root:{
         padding: '10px 0px',
         textAlign: 'center',
-        margin: 0
+        margin: 0,
     },
     header:{
         display: 'flex',
