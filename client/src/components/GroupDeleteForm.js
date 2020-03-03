@@ -17,7 +17,7 @@ const useStyle = makeStyles({
 });
 
 
-export default function GroupDeleteForm({groupName, deleteGroup, selectMain}) {
+export default function GroupDeleteForm({groupName, deleteGroup, selectMain, loading}) {
     const classes = useStyle();
 
     const handleDelete = () =>{
@@ -29,10 +29,10 @@ export default function GroupDeleteForm({groupName, deleteGroup, selectMain}) {
             <Typography data-testid='group-delete-name'>Are you sure you want to delete {groupName}?</Typography>
             <div className={classes.controls}>
                 <Button data-testid='group-delete-confirm' className={classes.confirmBtn}
-                 onClick={handleDelete} color='primary' variant='outlined'>
+                 onClick={handleDelete} color='primary' variant='outlined' disabled={loading}>
                     <CheckIcon />
                 </Button>
-                <Button data-testid='group-delete-deny' color='secondary' variant='outlined' onClick={selectMain}>
+                <Button data-testid='group-delete-deny' color='secondary' variant='outlined' onClick={selectMain} disabled={loading}>
                     <CloseIcon />
                 </Button>
             </div>

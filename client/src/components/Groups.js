@@ -23,7 +23,8 @@ const useStyles = makeStyles({
         fontWeight: 700,
     },
     list:{
-        padding: 0
+        padding: 0,
+        wordWrap:'break-word'
     }
 });
 

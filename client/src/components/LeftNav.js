@@ -17,9 +17,10 @@ const useStyles = makeStyles({
         width: '250px',
         height: '100%',
         border: 'none',
-        background: '#424242', 
-        overflow: 'auto',
-        wordWrap:'break-word'
+        background: '#424242',
+        wordWrap:'break-word',
+        overflowX: 'hidden',
+        overflowY: 'auto',
     },
     paper:{
         display: 'flex',
