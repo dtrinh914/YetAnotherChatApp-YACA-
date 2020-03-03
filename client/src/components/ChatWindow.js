@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import uuid from 'uuid/v4';
 import Message from './Message';
 import DateDivider from './DateDivider';
@@ -21,8 +21,10 @@ const useStyle = makeStyles({
     }
 });
 
-function ChatWindow({memberMap, messages}){
+function ChatWindow({memberMap, messages, groupId}){
     const classes = useStyle();
+    const container = useRef(null);
+    const [atBottom, setAtBottom] = useState(true);
 
     const formatMessages = (messages) => {
         let results = [];
@@ -51,10 +53,39 @@ function ChatWindow({memberMap, messages}){
         }
 
         return results;
-    }
+    };
+
+    // add event listener on scroll to check if user is at bottom
+    useEffect(()=>{
+        const chatWindow = container.current;
+
+        //check if user is at bottom and set state to true/false;
+        const handleScroll = () =>{
+            if(chatWindow.scrollHeight - chatWindow.scrollTop === chatWindow.clientHeight){
+                setAtBottom(true);
+            } else {
+                setAtBottom(false);
+            }
+        };
+
+        chatWindow.addEventListener('scroll', handleScroll);
+
+        return () => chatWindow.removeEventListener('scroll', handleScroll)
+    },[]);
+    
+    //when the group changes set the scroll to the bottom
+    useEffect(()=>{
+        container.current.scrollTop = container.current.scrollHeight;
+    }, [groupId]);
+
+    //set scroll to bottom when messages are added, only when user is already at the bottom
+    useEffect(()=>{
+        if(atBottom) container.current.scrollTop = container.current.scrollHeight;
+        //eslint-disable-next-line
+    }, [messages]);
 
     return(
-        <Paper data-testid='chat-window' className={classes.paper}>
+        <Paper data-testid='chat-window' className={classes.paper} ref={container}>
             <List className={classes.list}>
                 {formatMessages(messages).map( message => {
                     if(message.type === 'message'){
@@ -62,7 +93,7 @@ function ChatWindow({memberMap, messages}){
                     } else {
                         return <DateDivider key={message.key} date={message.date} />
                     }
-                })}   
+                })}
             </List>
         </Paper>
     );
