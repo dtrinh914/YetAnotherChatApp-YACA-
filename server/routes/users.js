@@ -9,15 +9,22 @@ router.post('/new', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    addUser(username, password).then( response =>{
-        if(response.status === 1){
-            res.json({data: 'Created Account', status: 1});
-        } else if(response.status === 0) {
-            res.json({data: 'Username already exists', status: 0});
-        } else {
-            res.json({data: 'There is an error with processing your request', status: -1});
-        }
-    });
+    if(username.length < 3 || username.length > 15 || 
+       password.length < 8 || password.length > 32 || 
+       username.includes(' ') || password.includes(' ')){
+        res.json({data: 'There is an error with processing your request', status: -1});
+    } else {
+        addUser(username, password).then( response =>{
+            if(response.status === 1){
+                res.json({data: 'Created Account', status: 1});
+            } else if(response.status === 0) {
+                res.json({data: 'Username already exists', status: 0});
+            } else {
+                res.json({data: 'There is an error with processing your request', status: -1});
+            }
+        })
+        .catch((err) => res.json(err));
+    }
 });
 
 //route to find user based on username

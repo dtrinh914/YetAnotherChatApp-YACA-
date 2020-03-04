@@ -57,11 +57,13 @@ afterAll(async () =>{
 
 describe('POST /api/groups', ()=>{
     it.each`
-        groupName      | result
-        ${'test_group'}| ${'"status":1'} 
-        ${'   '}       | ${'A group name cannot be an empty string.'}
-        ${''}          | ${'A group name cannot be an empty string.'}
-        ${'test_group'}| ${'The group already exists'}
+        groupName                             | result
+        ${'test_group'}                       | ${'"status":1'} 
+        ${'   '}                              | ${'A group name cannot be an empty string.'}
+        ${''}                                 | ${'A group name cannot be an empty string.'}
+        ${'ab'}                               | ${'A group name cannot be shorter than 3 characters.'}
+        ${'This is a really long group name'} | ${'A group name cannot be longer than 25 characters.'}
+        ${'test_group'}                       | ${'The group already exists'}
     `('should contain $result when the groupName = $groupName', async({groupName, result}) => {
         const response = await request(app)
                                     .post('/api/groups')

@@ -9,7 +9,9 @@ router.post('/', isLoggedIn, (req,res) => {
     const groupName = req.body.newGroupName.trim();
 
     //check if groupName is empty string
-    if(groupName === '') res.json({data: 'A group name cannot be an empty string.', status: 0})
+    if(groupName === '') res.json({data: 'A group name cannot be an empty string.', status: 0});
+    else if(groupName.length < 3) res.json({data: 'A group name cannot be shorter than 3 characters.', status: 0});
+    else if(groupName.length > 25) res.json({data: 'A group name cannot be longer than 25 characters.', status: 0});
     else{
         addGroup(groupName, req.body.description, req.user._id)
             .then( response => res.json(response))
