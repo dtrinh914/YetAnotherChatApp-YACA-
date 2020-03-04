@@ -71,7 +71,8 @@ const addUser = async (username, password) =>{
         const userCol = client.db(DB).collection('users');
 
         // connects to proper connection and tests to see if user name exists
-        const usernameExist = await userCol.findOne({username:username});
+        const re = new RegExp('^'+username+'$', 'i');
+        const usernameExist = await userCol.findOne({username:re});
         
         // returns 0 if user exists, inserts the new user data if it doesn't and returns 1
         if(usernameExist){

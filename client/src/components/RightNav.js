@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import AddMember from './AddMember';
 import GroupDescription from './GroupDescription';
 import GroupMembers from './GroupMembers';
@@ -20,7 +20,8 @@ const useStyles = makeStyles({
         width: '250px',
         height: '100%',
         background:'#424242',
-        overflow: 'auto'
+        overflow: 'auto',
+        wordWrap: 'break-word'
     },
     hidden:{
         display:'none'
@@ -43,6 +44,7 @@ const useStyles = makeStyles({
 export default function RightNav({updateInvite, updateMembers, updateGroup, removeGroup, removeUsers, leaveRoom, currentGroup, currUserId}) {
     const {navData, navDispatch} = useContext(NavContext);
     const {chatDispatch} = useContext(ChatContext);
+    const [loading, setLoading] = useState(false);
     const classes = useStyles();
     const addMemStatus = navData.rightNav.addMem;
     const groupSettingsStatus = navData.rightNav.groupSettings;
@@ -95,17 +97,20 @@ export default function RightNav({updateInvite, updateMembers, updateGroup, remo
     };
 
     const editGroup = (groupDescription) => {
+        setLoading(true);
         axios.put(`api/groups/${selectedGroupId}`, {groupDescription: groupDescription, withCredentials:true})
              .then( res => {
                 if(res.data.status === 1){
                     updateGroup(selectedGroupId, groupDescription)
                     chatDispatch({type:'UPDATE_GROUP', groupId:selectedGroupId, groupDescription: groupDescription});
                 }
+                setLoading(false);
              })
              .catch(err => console.log(err));
     }
 
     const deleteGroup = () => {
+        setLoading(true);
         axios.delete(`api/groups/${selectedGroupId}`, {withCredentials:true})
              .then( res => {
                  if(res.data.status === 1){
@@ -115,11 +120,13 @@ export default function RightNav({updateInvite, updateMembers, updateGroup, remo
                     //close menu
                     closeGroupSettings();
                  }
+                 setLoading(false);
              })
              .catch(err => console.log(err))
     }
 
     const deleteMembers = (userIds) => {
+        setLoading(true);
         axios.delete(`api/groups/${selectedGroupId}/members`, {data:{userIds:userIds}, withCredentials:true})
              .then(res => {
                 if(res.data.status === 1){
@@ -127,6 +134,7 @@ export default function RightNav({updateInvite, updateMembers, updateGroup, remo
                     removeUsers(userIds, selectedGroupId);
                     closeGroupSettings();
                 }
+                setLoading(false);
              })
              .catch(err => console.log(err));
     }
@@ -183,7 +191,7 @@ export default function RightNav({updateInvite, updateMembers, updateGroup, remo
                 <AddMember closeAddMem={closeAddMem} sendInvite={sendInvite}
                 filterResults={filterResults}/> : ''}
             {groupSettingsStatus ? <GroupSettingsForm editGroup={editGroup} deleteGroup={deleteGroup} groupMembers={activeMembers}
-                                        deleteMembers={deleteMembers} creator={creator} 
+                                        deleteMembers={deleteMembers} creator={creator} loading={loading}
                                         groupName={currentGroup.groupName} groupDescription={groupDescription} 
                                         close={closeGroupSettings} /> : ''}
             {leaveGroupStatus ? <ConfirmationWindow text={leaveGroupText} handleConfirm={handleLeaveGroup} handleClose={closeLeaveGroup} /> : ''}

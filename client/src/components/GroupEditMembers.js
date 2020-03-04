@@ -34,7 +34,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function GroupEditMembers({groupMembers, selectMain, deleteMembers}) {
+export default function GroupEditMembers({groupMembers, selectMain, deleteMembers, loading}) {
     const classes = useStyles();
     const [membersState, setMemberState] = useState([]);
 
@@ -59,7 +59,9 @@ export default function GroupEditMembers({groupMembers, selectMain, deleteMember
         //get array of members whose name has been checked
         const removeMembers = membersState.filter(member => member.checked === true);
         const removeIds = removeMembers.map(member => member._id);
-        deleteMembers(removeIds);
+        if(removeIds.length > 0){
+            deleteMembers(removeIds);
+        } 
     }
     
     return (
@@ -74,8 +76,8 @@ export default function GroupEditMembers({groupMembers, selectMain, deleteMember
                                                             handleCheck={handleCheck} />)}
             </List>
             <div className={classes.controls}>
-                <Button data-testid='group-editmembers-confirm' type='submit'>Remove Selected</Button>
-                <Button data-testid='group-editmembers-back' onClick={selectMain}>Go Back</Button>
+                <Button data-testid='group-editmembers-confirm' type='submit' disabled={loading}>Remove Selected</Button>
+                <Button data-testid='group-editmembers-back' onClick={selectMain} disabled={loading}>Go Back</Button>
             </div>
         </form>
     )

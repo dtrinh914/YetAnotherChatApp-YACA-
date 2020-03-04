@@ -49,11 +49,19 @@ afterAll(async () =>{
 
 describe('/api/users/new', () =>{
     const errorStatus = '{"data":"There is an error with processing your request","status":-1}';
+    const longName = 'this_really_really_long_username';
+    const longPass = 'this_really_really_really_long_password';
 
     it.each` 
         username       | password           | result
         ${'test_user'} | ${'test_password'} | ${'{"data":"Username already exists","status":0}'}
         ${'new_user'}  | ${'new_password'}  | ${'{"data":"Created Account","status":1}'}
+        ${'ab'}        | ${'new_password'}  | ${errorStatus}
+        ${longName}    | ${'new_password'}  | ${errorStatus}
+        ${'test_user2'}| ${'short'}         | ${errorStatus}
+        ${'test_user2'}| ${longPass}        | ${errorStatus}
+        ${'test user2'}| ${'new_password'}  | ${errorStatus}
+        ${'test_user2'}| ${'new password'}  | ${errorStatus}
         ${'new_user'}  | ${''}              | ${errorStatus}
         ${''}          | ${'new_password'}  | ${errorStatus}
         ${''}          | ${''}              | ${errorStatus}

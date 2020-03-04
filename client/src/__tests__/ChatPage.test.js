@@ -251,6 +251,10 @@ describe('<ChatPage/> when the screen size is large', ()=>{
 
         fireEvent.click(checkBoxes[0]);
         fireEvent.click(getByTestId('group-editmembers-confirm'));
+
+        await wait(()=>{
+            
+        })
     });
 
     it('should open second group tab and leave group', async() => {

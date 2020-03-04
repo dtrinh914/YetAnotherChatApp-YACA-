@@ -5,6 +5,7 @@ import {makeStyles} from '@material-ui/styles';
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
@@ -41,30 +42,39 @@ export default function AddMember({sendInvite, filterResults, closeAddMem}) {
     const classes = useStyles();
     const [username, setUsername] = useInput();
     const [searchResults, setSearchResults] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const searchUser = (name) =>{
+        setLoading(true);
         const url = '/api/users/search/'+ name;
         axios.get(url, {withCredentials:true})
         .then( res => {
             if(res.data.status === 1){
                 setSearchResults(res.data.data);
             }
+            setLoading(false);
+        })
+        .catch(err => {
+            console.log(err);
         })
     }
     
     const handleSubmit = (e) => {
         e.preventDefault();
-        searchUser(username);
+        if(username.trim() !== ''){
+            searchUser(username);
+        }
     }
 
     return (
         <div className={classes.root}>
             <ClickAwayListener onClickAway={closeAddMem} mouseEvent='onMouseDown'>
                 <Paper className={classes.paper} >
+                    {loading ? <LinearProgress /> : ''}
                     <Typography>Add a Member</Typography>
                     <form data-testid='addmember-form' onSubmit={handleSubmit}>
                         <Input inputProps={{'data-testid':'addmember-input'}} className={classes.input} id='username' 
-                        name='username' placeholder='Username' value={username} onChange={setUsername} />
+                        name='username' placeholder='Username' value={username} onChange={setUsername} disabled={loading} />
                         <List>
                             {filterResults(searchResults)
                                 .map(result => <MemberResultCard key={uuid()} 
@@ -74,7 +84,8 @@ export default function AddMember({sendInvite, filterResults, closeAddMem}) {
                                                                 sendInvite = {sendInvite}
                                                                 />)}
                         </List>
-                        <Button data-testid='addmember-submit-button' className={classes.button} type='submit'>Search</Button>
+                        <Button data-testid='addmember-submit-button' className={classes.button} 
+                            type='submit' disabled={loading}>Search</Button>
                     </form>
                     <Button className={classes.button} onClick={closeAddMem}>Close</Button>
                 </Paper>

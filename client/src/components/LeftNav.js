@@ -17,14 +17,16 @@ const useStyles = makeStyles({
         width: '250px',
         height: '100%',
         border: 'none',
-        background: '#424242', 
-        overflow: 'auto'
+        background: '#424242',
+        wordWrap:'break-word',
+        overflowX: 'hidden',
+        overflowY: 'auto',
     },
     paper:{
         display: 'flex',
         flexDirection: 'column',
         padding: '10px',
-        color: 'white',
+        color: 'white'
     },
     divider:{
         width: '85%',

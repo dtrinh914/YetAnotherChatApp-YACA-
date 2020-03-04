@@ -5,6 +5,7 @@ import GroupEditMembers from './GroupEditMembers';
 import GroupDeleteForm from './GroupDeleteForm';
 import Paper from '@material-ui/core/Paper';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import {makeStyles} from '@material-ui/styles';
 
 const useStyles = makeStyles({
@@ -35,7 +36,8 @@ const useStyles = makeStyles({
     }
 });
 
-export default function GroupSettingsForm({groupName, groupDescription, groupMembers, creator, close, editGroup, deleteGroup, deleteMembers}) {
+export default function GroupSettingsForm({groupName, groupDescription, groupMembers, creator, 
+                                            close, editGroup, deleteGroup, deleteMembers, loading}) {
     const classes = useStyles();
     const [view, switchView] = useState('main');
     const groupMemberList = groupMembers.filter(member => member._id !== creator);
@@ -58,17 +60,19 @@ export default function GroupSettingsForm({groupName, groupDescription, groupMem
 
     const currentView = () => {
         if(view === 'delete'){
-            return (<GroupDeleteForm groupName={groupName} deleteGroup={deleteGroup}  selectMain={selectMain} />);
+            return (<GroupDeleteForm groupName={groupName} deleteGroup={deleteGroup} selectMain={selectMain} loading={loading} />);
         }
         else if(view === 'edit'){
-            return (<GroupEditForm groupName={groupName} groupDescription={groupDescription} editGroup={editGroup} selectMain={selectMain} />);
+            return (<GroupEditForm groupName={groupName} groupDescription={groupDescription} 
+                        editGroup={editGroup} selectMain={selectMain} loading={loading} />);
         }
         else if(view === 'members'){
-            return (<GroupEditMembers groupMembers={groupMemberList} selectMain={selectMain} deleteMembers={deleteMembers} />)
+            return (<GroupEditMembers groupMembers={groupMemberList} selectMain={selectMain} 
+                        deleteMembers={deleteMembers} loading={loading} />)
         } 
         else {
             return (<GroupSettingsMain close={close} selectEdit={selectEdit} 
-                        selectMembers={selectMembers} selectDelete={selectDelete} />);
+                        selectMembers={selectMembers} selectDelete={selectDelete} loading={loading} />);
         }
     };
 
@@ -76,6 +80,7 @@ export default function GroupSettingsForm({groupName, groupDescription, groupMem
         <div className={classes.root}>
             <ClickAwayListener mouseEvent='onMouseDown' onClickAway={close}>
                 <Paper className={view === 'members' ? classes.paper : `${classes.paper} ${classes.formatPaper}`}>
+                    {loading ? <LinearProgress /> : ''}
                     {currentView()}
                 </Paper>
             </ClickAwayListener>

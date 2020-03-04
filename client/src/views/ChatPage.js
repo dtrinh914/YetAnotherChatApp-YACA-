@@ -3,11 +3,13 @@ import {useHistory} from 'react-router-dom';
 import LeftNav from '../components/LeftNav';
 import ChatRoom from '../components/ChatRoom';
 import Welcome from '../components/Welcome';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from 'axios';
 import io from 'socket.io-client';
 import {ChatContext} from '../contexts/chatContext';
 import {NavContext} from '../contexts/navContext';
 import {makeStyles} from '@material-ui/styles';
+
 
 
 const useStyles = makeStyles({
@@ -16,6 +18,12 @@ const useStyles = makeStyles({
         height: '100vh',
         width: '100vw'
     },
+    loading:{
+        display:'flex',
+        height: '100vh',
+        justifyContent:'center',
+        alignItems:'center'
+    }
 });
 
 let socket;
@@ -161,8 +169,8 @@ function Chat({loggedIn, setLoggedIn}){
         );
     } else {
         return(
-            <div>
-                <h1>Loading</h1>
+            <div className={classes.loading}>
+                <CircularProgress />
             </div>
         )
     }

@@ -11,7 +11,7 @@ const useStyles = makeStyles({
     root:{
         padding: '10px 0px',
         textAlign: 'center',
-        margin: 0
+        margin: 0,
     },
     header:{
         display: 'flex',
@@ -23,7 +23,8 @@ const useStyles = makeStyles({
         fontWeight: 700,
     },
     list:{
-        padding: 0
+        padding: 0,
+        wordWrap:'break-word'
     }
 });
 

@@ -10,7 +10,8 @@ const addGroup =  async (groupName, description, userId) => {
         const userCol = client.db(DB).collection('users');
         const groupCol = client.db(DB).collection('groups');
 
-        const groupExist = await groupCol.findOne({groupName:groupName});
+        const re = new RegExp('^'+groupName+'$', 'i');
+        const groupExist = await groupCol.findOne({groupName:re});
                 
         // returns 0 if group exists, inserts the new group data if it doesn't and returns 1
         if(groupExist){

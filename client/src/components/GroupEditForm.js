@@ -21,7 +21,7 @@ const useStyle = makeStyles({
     }
 });
 
-export default function GroupEditForm({groupName, groupDescription, selectMain, editGroup}) {
+export default function GroupEditForm({groupName, groupDescription, selectMain, editGroup, loading}) {
     const classes = useStyle();
     const [description, setDescription] = useInput(groupDescription);
     const groupDescriptionRef = useRef(null);
@@ -40,11 +40,11 @@ export default function GroupEditForm({groupName, groupDescription, selectMain, 
         <form className={classes.form} onSubmit={handleSubmit}>
             <Textfield inputProps={{'data-testid':'group-edit-name'}} className={classes.input} value={groupName} label='Group Name' disabled />
             <Textfield inputProps={{'data-testid':'group-edit-description'}}ref={groupDescriptionRef} className={classes.input} value={description} 
-                label='Group Description' onChange={setDescription} />
+                label='Group Description' onChange={setDescription} disabled={loading} />
 
             <div className={classes.controls}>
-                <Button data-testid='group-edit-confirm' className={classes.button} type='submit'>Confirm</Button>
-                <Button data-testid='group-edit-back' onClick={selectMain}>Go Back</Button>
+                <Button data-testid='group-edit-confirm' className={classes.button} type='submit' disabled={loading} >Confirm</Button>
+                <Button data-testid='group-edit-back' onClick={selectMain} disabled={loading} >Go Back</Button>
             </div>
         </form>
     )
