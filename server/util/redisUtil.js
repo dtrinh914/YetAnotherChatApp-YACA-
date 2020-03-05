@@ -1,13 +1,15 @@
 const redis = require('redis');
 const session = require('express-session');
+const {REDIS_CONFIG} = require('../config/config');
 const redisStore = require('connect-redis')(session);
-const redisClient = redis.createClient();
+const redisClient = redis.createClient(REDIS_CONFIG);
 
 redisClient.on('error', (err) => {
     console.log('Redis error: ', err);
 });
 
-const appRedisStore = new redisStore({host: 'localhost', port:6379, client: redisClient, ttl: 86700})
+const appRedisStore = new redisStore({host: REDIS_CONFIG.host, port: REDIS_CONFIG.port, password:REDIS_CONFIG.password,
+                                      client: redisClient, ttl: 86700})
 
 const closeRedis = async () =>{
     await new Promise((resolve) => {

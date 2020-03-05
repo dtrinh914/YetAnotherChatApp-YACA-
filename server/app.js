@@ -10,6 +10,7 @@ const uuid = require('uuid/v4')
 const passport = require('passport');
 const session = require('express-session');
 const {appRedisStore} = require('./util/redisUtil');
+const {SESSION_SECRET} = require('./config/config');
 
 require('./util/pass')(passport);
 
@@ -23,7 +24,7 @@ app.use(
             return uuid();
         },
         store: appRedisStore,
-        secret: 'keyboard cat',
+        secret: SESSION_SECRET,
         resave: false,
         saveUninitialized: true
     })

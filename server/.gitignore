@@ -107,9 +107,13 @@ dist
 .vscode-test
 
 # misc
+nginx-conf
 config
 build
 .DS_Store
+.dockerignore
+Dockerfile
+docker-compose.yml
 
 # files used for development
 util/m.js
