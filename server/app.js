@@ -15,20 +15,25 @@ const {SESSION_SECRET} = require('./config/config');
 require('./util/pass')(passport);
 
 // middleware configurations
+let sess = {
+    genid: (req) => {
+        return uuid();
+    },
+    store: appRedisStore,
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true
+}
+
+if (app.get('env') === 'production') {
+    app.set('trust proxy', 1)
+    sess.cookie.secure = true 
+}
+
 app.use(express.static(path.join(__dirname, 'build')));
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
-app.use(
-    session({
-        genid: (req) => {
-            return uuid();
-        },
-        store: appRedisStore,
-        secret: SESSION_SECRET,
-        resave: false,
-        saveUninitialized: true
-    })
-);
+app.use(session(sess));
 app.use(passport.initialize());
 app.use(passport.session());
 

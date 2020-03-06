@@ -15,12 +15,12 @@ import {makeStyles} from '@material-ui/styles';
 const useStyles = makeStyles({
     root:{
         display:'flex',
-        height: '100vh',
+        height: 'var(--app-height)',
         width: '100vw'
     },
     loading:{
         display:'flex',
-        height: '100vh',
+        height: 'var(--app-height)',
         justifyContent:'center',
         alignItems:'center'
     }
@@ -48,6 +48,14 @@ function Chat({loggedIn, setLoggedIn}){
         })
         .catch((err) => console.log(err));
     };
+
+    useEffect(()=>{
+        const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+        window.addEventListener('resize', appHeight);
+        appHeight();
+
+        return () => window.removeEventListener('resize', appHeight);
+    }, []);
 
     useEffect(() => {
         //redirect if user is not logged in

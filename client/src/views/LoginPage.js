@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import MainPageNav from '../components/MainPageNav';
 import useInput from '../hooks/useInput';
 import {useHistory} from 'react-router-dom';
@@ -13,7 +13,7 @@ const useStyle = makeStyles({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        height: '100vh',
+        height: 'var(--app-height)',
         overflow: 'auto'
     },
     form:{
@@ -76,6 +76,14 @@ function LoginPage({setLoggedIn}){
         setInputErr({message:'', status:false});
         setPassword(e);
     };
+
+    useEffect(()=>{
+        const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+        window.addEventListener('resize', appHeight);
+        appHeight();
+
+        return () => window.removeEventListener('resize', appHeight);
+    }, []);
 
     return(
         <div className={classes.root} >
