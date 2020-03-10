@@ -8,8 +8,7 @@ redisClient.on('error', (err) => {
     console.log('Redis error: ', err);
 });
 
-const appRedisStore = new redisStore({host: REDIS_CONFIG.host, port: REDIS_CONFIG.port, password:REDIS_CONFIG.password,
-                                      client: redisClient, ttl: 86700})
+const appRedisStore = new redisStore({...REDIS_CONFIG, client: redisClient, ttl: 86700})
 
 const closeRedis = async () =>{
     await new Promise((resolve) => {
