@@ -6,7 +6,7 @@ const {openConnection, storeGroupMsg} = require('./util/mongoUtil');
 const {REDIS_CONFIG} = require('./config/config');
 
 //connect socket-io to redis
-io.adapter(redisAdapter({host:REDIS_CONFIG.host, port: REDIS_CONFIG.port, password:REDIS_CONFIG.password}));
+io.adapter(redisAdapter({...REDIS_CONFIG}));
 
 // open DB connection before starting server and socket listeners
 openConnection()

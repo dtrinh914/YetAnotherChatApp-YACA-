@@ -22,7 +22,8 @@ let sess = {
     store: appRedisStore,
     secret: SESSION_SECRET,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: {}
 }
 
 if (app.get('env') === 'production') {

@@ -108,12 +108,13 @@ dist
 
 # misc
 nginx-conf
-config
 build
 .DS_Store
 .dockerignore
 Dockerfile
 docker-compose.yml
+.env
+dump.rdb
 
 # files used for development
 util/m.js
