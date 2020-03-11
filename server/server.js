@@ -2,6 +2,7 @@ const app = require('./app');
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const redisAdapter = require('socket.io-redis');
+const {redisSet, redisDel} = require('./util/redisUtil');
 const {openConnection, storeGroupMsg} = require('./util/mongoUtil');
 const {REDIS_CONFIG} = require('./config/config');
 
@@ -29,7 +30,9 @@ openConnection()
         });
     
         //creates a room specific for each user
-        socket.on('user', (userId) => {
+        socket.on('user', async (userId) => {
+            //set userId to be online in redis cache
+            await redisSet(userId, 'online')
             socket.join(userId);
         })
     
@@ -48,7 +51,11 @@ openConnection()
         //receives msg from client to update a group's member list
         //and sends msg to all client in a group to update their member list
         socket.on('update_memberlist', (groupId) => {
-            io.in(groupId).emit('update_memberlist', groupId);
+            socket.in(groupId).broadcast.emit('update_memberlist', groupId);
+        });
+
+        socket.on('update_status', (groupId, userId, status) =>{
+            socket.in(groupId).broadcast.emit('update_status', groupId, userId, status);
         });
 
         socket.on('update_group', (groupId, groupDescription) => {
@@ -62,8 +69,8 @@ openConnection()
         });
     
         //Receives messages sent by client and broadcast messages to the specific room
-        socket.on('message', (room, message) => {
-            storeGroupMsg(room,message);
+        socket.on('message', async (room, message) => {
+            await storeGroupMsg(room,message);
             socket.in(room).broadcast.emit('message', room, message);
         });
 
@@ -72,7 +79,9 @@ openConnection()
         });
         
         //broadcast to client to close their connection
-        socket.on('closeClient', (userId) => {
+        socket.on('closeClient', async (userId) => {
+            //remove user Id from redis cache;
+            await redisDel(userId);
             socket.in(userId).broadcast.emit('closeClient');
         })
     });

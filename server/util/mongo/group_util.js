@@ -1,6 +1,7 @@
 const ObjectId = require('mongodb').ObjectId;
 const {getClient, errorHandler} = require('./connection');
 const {DB} = require('../../config/config');
+const {redisGet} = require('../redisUtil');
 
 
 //add new group to the database
@@ -123,6 +124,17 @@ const getGroupInfo = async (groupId) =>{
                                                     }},
                                                 ]).toArray();
         if(groupData.length > 0){
+            //retrieves online status of all members
+            let currMembers = groupData[0].activeMembers;
+            let count = 0;
+
+            for(let member of currMembers){
+                const res = await redisGet(member._id.toString());
+                const status = res === 'online' ? true : false;
+                currMembers[count] = {...member, online:status};
+                count++;
+            }
+
             return {data:groupData, status: 1}
         } else {
             return {data:"This group ID doesn't exist" ,status: 0}

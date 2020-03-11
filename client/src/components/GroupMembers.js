@@ -24,7 +24,7 @@ export default function GroupMembers({groupMembers}) {
                                                 <Avatar className={classes.avatar}>
                                                     {member.username[0].toUpperCase()}
                                                 </Avatar>
-                                                <StatusBadge online={true} />
+                                                <StatusBadge online={member.online} />
                                                 <span>{member.username}</span>
                                             </ListItem>)}
             </List>

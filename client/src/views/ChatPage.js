@@ -36,6 +36,12 @@ function Chat({loggedIn, setLoggedIn}){
     const [loaded, setLoaded] = useState(false);
 
     const handleLogOut = () => {
+        const userId = chatData.user._id;
+
+        chatData.groups.forEach(group => {
+            socket.emit('update_status', group._id, userId, false);
+        });
+
         socket.emit('closeClient', chatData.user._id);
 
         axios.get('/api/actions/logout', {withCredentials:true})
@@ -74,9 +80,15 @@ function Chat({loggedIn, setLoggedIn}){
     useEffect(() => {
         if(loaded){
             socket = io();
+
             //listens for new messages from the backend and updates state
             socket.on('message', (room, message) => {
                 chatDispatch({type:'NEW_MSG', room:room, message:message})
+            });
+
+            //listener to update user status
+            socket.on('update_status', (groupId, userId, status) => {
+                chatDispatch({type:'UPDATE_STATUS', groupId: groupId, userId: userId, status:status});
             });
 
             //listener to update pending list
@@ -114,15 +126,20 @@ function Chat({loggedIn, setLoggedIn}){
 
             //on connect joins the rooms on the client side
             socket.on('connect', () => {
+                const userId = chatData.user._id;
+
                 chatData.groups.forEach(group => {
                     socket.emit('join_room', group._id);
-                })
+                    //emit to groups that user is online
+                    socket.emit('update_status', group._id, userId, true);
+                });
+
                 socket.emit('user', chatData.user._id);
             });
 
             socket.on('closeClient', ()=>{
                 handleLogOut();
-            })
+            });
         }
         //eslint-disable-next-line
     }, [loaded])
