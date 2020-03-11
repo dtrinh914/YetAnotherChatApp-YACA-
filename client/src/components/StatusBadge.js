@@ -19,9 +19,9 @@ const useStyle = makeStyles({
     }
 })
 
-export default function StatusBadge({status}) {
+export default function StatusBadge({online}) {
     const classes = useStyle();
-    const badgeColor = status === 'online' ? '#00e676' : '#9e9e9e'
+    const badgeColor = online ? '#00e676' : '#9e9e9e'
 
     return (
         <>

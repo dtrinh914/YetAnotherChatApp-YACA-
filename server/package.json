@@ -9,19 +9,19 @@
   "author": "Duc Trinh",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^3.0.7",
+    "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
-    "connect-redis": "^4.0.3",
+    "connect-redis": "^4.0.4",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
-    "mongodb": "^3.5.2",
+    "mongodb": "^3.5.5",
     "node-gyp": "^6.1.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "redis": "^2.8.0",
+    "redis": "^3.0.2",
     "socket.io": "^2.3.0",
     "socket.io-redis": "^5.2.0",
-    "uuid": "^3.4.0"
+    "uuid": "^7.0.2"
   },
   "devDependencies": {
     "jest": "^25.1.0",
