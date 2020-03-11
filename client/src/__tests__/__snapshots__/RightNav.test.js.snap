@@ -40,7 +40,7 @@ exports[`right nav when window size is md should render properly and match snaps
             />
             <span
               class="makeStyles-badgeCore-37"
-              style="background: rgb(0, 230, 118);"
+              style="background: rgb(158, 158, 158);"
             />
             <span>
               test_user1
@@ -60,7 +60,7 @@ exports[`right nav when window size is md should render properly and match snaps
             />
             <span
               class="makeStyles-badgeCore-37"
-              style="background: rgb(0, 230, 118);"
+              style="background: rgb(158, 158, 158);"
             />
             <span>
               test_user2
@@ -80,7 +80,7 @@ exports[`right nav when window size is md should render properly and match snaps
             />
             <span
               class="makeStyles-badgeCore-37"
-              style="background: rgb(0, 230, 118);"
+              style="background: rgb(158, 158, 158);"
             />
             <span>
               test_user3

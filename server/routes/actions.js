@@ -3,6 +3,7 @@ const router = express.Router();
 const isLoggedIn = require('../middleware/isLoggedIn');
 const passport = require('passport');
 const {getInitData} = require('../util/mongoUtil');
+const {redisSet} = require('../util/redisUtil');
 
 // route to login user
 router.post('/login', (req,res,next) => {
@@ -11,6 +12,8 @@ router.post('/login', (req,res,next) => {
         if(err) return next(err);
         req.login(user, (err) => {
             if(err) return next(err);
+            //update in redis that user is online
+            redisSet(user._id.toString(), 'online');
             return res.json({loggedIn:true});
         })
     })(req,res,next);

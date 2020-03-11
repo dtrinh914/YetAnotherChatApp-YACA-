@@ -1,5 +1,5 @@
 import React, {useRef, useState, useEffect} from 'react';
-import uuid from 'uuid/v4';
+import {v4 as uuid} from 'uuid/v4';
 import Message from './Message';
 import DateDivider from './DateDivider';
 import Paper from '@material-ui/core/Paper';

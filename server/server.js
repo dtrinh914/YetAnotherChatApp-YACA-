@@ -2,7 +2,7 @@ const app = require('./app');
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const redisAdapter = require('socket.io-redis');
-const {redisSet, redisDel} = require('./util/redisUtil');
+const {redisDel} = require('./util/redisUtil');
 const {openConnection, storeGroupMsg} = require('./util/mongoUtil');
 const {REDIS_CONFIG} = require('./config/config');
 
@@ -31,8 +31,6 @@ openConnection()
     
         //creates a room specific for each user
         socket.on('user', async (userId) => {
-            //set userId to be online in redis cache
-            await redisSet(userId, 'online')
             socket.join(userId);
         })
     

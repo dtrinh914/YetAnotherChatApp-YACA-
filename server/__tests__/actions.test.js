@@ -1,16 +1,21 @@
 const request = require('supertest');
-const {openConnection, getClient, addUser, closeConnection} = require('../util/mongoUtil');
-const {clearRedis, closeRedis} = require('../util/redisUtil');
+const {openConnection, getClient, addUser, findUserByUsername, closeConnection} = require('../util/mongoUtil');
+const {redisGet, clearRedis, closeRedis} = require('../util/redisUtil');
 const app = require('../app');
 
 //mock config file to use test DB
 jest.mock('../config/config')
 
+let testId;
+
 beforeAll(async () => {
     // opens connection to test DB
     await openConnection();
     // creates a user
-    await addUser('test_user', 'test_password') 
+    await addUser('test_user', 'test_password');
+
+    let response = await findUserByUsername('test_user');
+    testId = response.data[0]._id;
 });
 
 afterAll(async () =>{
@@ -43,6 +48,11 @@ describe('/api/actions/login', () => {
             expect(response.header['set-cookie'][0]).toContain('connect.sid=')
         }
     });
+
+    it('should have user status online in redis', async () => {
+        const response = await redisGet(testId.toString());
+        expect(response).toBe('online');
+    })
 });
 
 describe('/api/actions/logout', () => {
