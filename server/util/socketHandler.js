@@ -3,8 +3,6 @@ const {storeGroupMsg} = require('./mongoUtil');
 
 module.exports = function(io){
     io.on('connection', (socket) => {
-        console.log('a user connected');
-    
         //joins room specified by the client
         socket.on('join_room', (room) => {
             socket.join(room);
@@ -56,10 +54,6 @@ module.exports = function(io){
         socket.on('message', async (room, message) => {
             await storeGroupMsg(room,message);
             socket.in(room).broadcast.emit('message', room, message);
-        });
-
-        socket.on('disconnect', () => {
-            console.log('user disconnected');
         });
         
         //broadcast to client to close their connection

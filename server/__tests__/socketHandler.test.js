@@ -1,5 +1,6 @@
-const {openConnection, getClient, closeConnection} = require('../util/mongoUtil');
-const {redisGet, clearRedis, closeRedis} = require('../util/redisUtil');
+const {openConnection, getClient, addGroup, getGroupInfo, closeConnection} = require('../util/mongoUtil');
+const ObjectId = require('mongodb').ObjectId;
+const {redisSet, redisGet, clearRedis, closeRedis} = require('../util/redisUtil');
 const socketHandler = require('../util/socketHandler');
 const httpServer = require('http').createServer().listen();
 const ioServer = require('socket.io')(httpServer);
@@ -10,7 +11,7 @@ const wait = require('wait-for-expect');
 jest.mock('../config/config')
 
 //define client sockets for testing
-let socket1, socket2, socket3, clients;
+let socket1, socket2, socket3, clients, testGroupId;
 
 let httpServerAddr = httpServer.address();
 
@@ -20,6 +21,10 @@ let serverRooms = ioServer.sockets.adapter.rooms;
 beforeAll(async () => {
     // opens connection to test DB
     await openConnection();
+
+    //create test group and store id
+    const response = await addGroup('test_group', 'test_description', new ObjectId());
+    testGroupId = response.data[0]._id.toString();
 
     //apply socket listeners
     socketHandler(ioServer);
@@ -184,3 +189,100 @@ test('should send update_memberlist message to all clients in a room', async()=>
         expect(result).toBe(2);
     });
 });
+
+test('should send update_status message to clients in room', async () => {
+    const [socket1, socket2, socket3] = clients;
+
+    socket1.emit('join_room', 'test_room1');
+    socket2.emit('join_room', 'test_room1');
+    socket3.emit('join_room', 'test_room2');
+     
+    let result = 0;
+
+    clients.forEach(socket => {
+        socket.on('update_status', (groupId, userId, status) =>{
+            if(groupId === 'test_room1' && userId === 'test_user' && status) result++;
+        });
+    });
+    
+    socket3.emit('update_status', 'test_room1', 'test_user', true);
+
+    await wait(()=>{
+        expect(result).toBe(2);
+    });
+});
+
+test('should send update_group message to clients in room', async () => {
+    const [socket1, socket2, socket3] = clients;
+
+    socket1.emit('join_room', 'test_room1');
+    socket2.emit('join_room', 'test_room1');
+    socket3.emit('join_room', 'test_room2');
+
+    let result = 0;
+
+    clients.forEach(socket => { 
+        socket.on('update_group', (groupId, description)=>{
+            if(groupId === 'test_room1' && description === 'test_description') result++;
+        });
+    });
+
+    socket3.emit('update_group', 'test_room1', 'test_description');
+
+    await wait(()=>{
+        expect(result).toBe(2);
+    });
+});
+
+test('should store message in DB and send to clients in room', async() =>{
+    const [socket1, socket2, socket3] = clients;
+
+    socket1.emit('join_room', testGroupId);
+    socket2.emit('join_room', testGroupId);
+    socket3.emit('join_room', 'test_room2');
+
+    let result = 0;
+
+    clients.forEach(socket => {
+        socket.on('message', (groupId, message) =>{
+            if(groupId === testGroupId && message === 'test_message') result++;
+        });
+    });
+
+    socket3.emit('message', testGroupId, 'test_message');
+
+    await wait(()=>{
+        expect(result).toBe(2);
+    });
+
+
+    //retrieve group information from DB
+    const response = await getGroupInfo(testGroupId);
+    const messages = response.data[0].messages;
+    expect(messages.length).toBe(1);
+});
+
+test('should remove client from redis', async() =>{
+    const [socket1] = clients;
+    socket1.emit('user', 'user1');
+
+    //create room for user
+    await wait(()=>{
+        expect(serverRooms['user1'].length).toBe(1);
+    });
+    
+    //set key in redis 
+    await redisSet('user1', 'true');
+    let response = await redisGet('user1');
+
+    //key should exists
+    expect(response).toBeTruthy();
+
+    socket1.emit('closeClient', 'user1');
+
+    //key should be deleted
+    await wait(async()=>{
+        response = await redisGet('user1');
+        expect(response).toBeFalsy();
+    });
+})
