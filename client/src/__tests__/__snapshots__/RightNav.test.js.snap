@@ -24,17 +24,24 @@ exports[`right nav when window size is md should render properly and match snaps
           Group Members
         </h2>
         <ul
-          class="MuiList-root makeStyles-list-11 MuiList-padding"
+          class="MuiList-root makeStyles-list-12 MuiList-padding"
         >
           <li
             class="MuiListItem-root MuiListItem-gutters"
             data-testid="group-member"
           >
             <div
-              class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-12 MuiAvatar-colorDefault"
+              class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-13 MuiAvatar-colorDefault"
             >
               T
             </div>
+            <span
+              class="makeStyles-badgeOutline-36"
+            />
+            <span
+              class="makeStyles-badgeCore-37"
+              style="background: rgb(158, 158, 158);"
+            />
             <span>
               test_user1
             </span>
@@ -44,10 +51,17 @@ exports[`right nav when window size is md should render properly and match snaps
             data-testid="group-member"
           >
             <div
-              class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-12 MuiAvatar-colorDefault"
+              class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-13 MuiAvatar-colorDefault"
             >
               T
             </div>
+            <span
+              class="makeStyles-badgeOutline-36"
+            />
+            <span
+              class="makeStyles-badgeCore-37"
+              style="background: rgb(158, 158, 158);"
+            />
             <span>
               test_user2
             </span>
@@ -57,10 +71,17 @@ exports[`right nav when window size is md should render properly and match snaps
             data-testid="group-member"
           >
             <div
-              class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-12 MuiAvatar-colorDefault"
+              class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-13 MuiAvatar-colorDefault"
             >
               T
             </div>
+            <span
+              class="makeStyles-badgeOutline-36"
+            />
+            <span
+              class="makeStyles-badgeCore-37"
+              style="background: rgb(158, 158, 158);"
+            />
             <span>
               test_user3
             </span>

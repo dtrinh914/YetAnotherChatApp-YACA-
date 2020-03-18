@@ -91,6 +91,24 @@ function reducer(state, action){
                 }
             });
             return {...state, groups:newGroupState};
+        // updates online status of members {type:'UPDATE_STATUS', groupId:*, userId:*, status:*}
+        case "UPDATE_STATUS":
+            newGroupState = state.groups.map(group => {
+                if(group._id === action.groupId){
+                    const newMemberState = group.activeMembers.map(member => {
+                       if(member._id === action.userId){
+                            return {...member, online:action.status}
+                       } else {
+                           return member;
+                       }
+                    });
+                    return {...group, activeMembers:newMemberState};
+                } else {
+                    return group;
+                }
+            });
+
+            return {...state, groups: newGroupState};
         // updates pending invites state {type:'UPDATE_PENDING', payload:*}
         case "UPDATE_PENDING":
             newPendingState = action.payload;

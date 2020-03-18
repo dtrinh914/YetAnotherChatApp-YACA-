@@ -23,11 +23,11 @@ exports[`<ChatWindow> with seedData should match snapshot 1`] = `
         />
       </div>
       <li
-        class="MuiListItem-root makeStyles-root-74 MuiListItem-gutters"
+        class="MuiListItem-root makeStyles-root-75 MuiListItem-gutters"
         data-testid="message"
       >
         <div
-          class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-75 MuiAvatar-colorDefault"
+          class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-76 MuiAvatar-colorDefault"
         >
           T
         </div>
@@ -40,7 +40,7 @@ exports[`<ChatWindow> with seedData should match snapshot 1`] = `
               test_user1
             </strong>
             <span
-              class="makeStyles-span-76"
+              class="makeStyles-span-77"
             >
               02:02 PM
             </span>
@@ -54,11 +54,11 @@ exports[`<ChatWindow> with seedData should match snapshot 1`] = `
         </div>
       </li>
       <li
-        class="MuiListItem-root makeStyles-root-74 MuiListItem-gutters"
+        class="MuiListItem-root makeStyles-root-75 MuiListItem-gutters"
         data-testid="message"
       >
         <div
-          class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-75 MuiAvatar-colorDefault"
+          class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-76 MuiAvatar-colorDefault"
         >
           T
         </div>
@@ -71,7 +71,7 @@ exports[`<ChatWindow> with seedData should match snapshot 1`] = `
               test_user2
             </strong>
             <span
-              class="makeStyles-span-76"
+              class="makeStyles-span-77"
             >
               02:03 PM
             </span>
@@ -85,11 +85,11 @@ exports[`<ChatWindow> with seedData should match snapshot 1`] = `
         </div>
       </li>
       <li
-        class="MuiListItem-root makeStyles-root-74 MuiListItem-gutters"
+        class="MuiListItem-root makeStyles-root-75 MuiListItem-gutters"
         data-testid="message"
       >
         <div
-          class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-75 MuiAvatar-colorDefault"
+          class="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-76 MuiAvatar-colorDefault"
         >
           T
         </div>
@@ -102,7 +102,7 @@ exports[`<ChatWindow> with seedData should match snapshot 1`] = `
               test_user3
             </strong>
             <span
-              class="makeStyles-span-76"
+              class="makeStyles-span-77"
             >
               02:04 PM
             </span>

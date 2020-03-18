@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const ObjectId = require('mongodb').ObjectId;
 const {getClient, errorHandler} = require('./connection.js');
+const {redisGet} = require('../redisUtil');
 const {getGroupInfo} = require('./group_util');
 const {DB} = require('../../config/config');
 
@@ -44,12 +45,15 @@ const getInitData = async (userId) => {
             //fetches each of the group data for the user
             for(let i=0; i < groupIds.length; i++){
                 const response = await getGroupInfo(groupIds[i]);
-                formatedGroups.push(response.data[0]);
+                let currGroup = response.data[0];
+                formatedGroups.push(currGroup);
             }
 
             groups = formatedGroups;
             selected = formatedGroups[0]._id;
             name = formatedGroups[0].groupName;
+
+            
         }
         // removes unnecessary infomation before sending to client
         delete user.password;

@@ -10,8 +10,6 @@ import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import axios from 'axios';
-import uuid from 'uuid/v4';
-
 
 const useStyles = makeStyles({
     root:{
@@ -77,7 +75,7 @@ export default function AddMember({sendInvite, filterResults, closeAddMem}) {
                         name='username' placeholder='Username' value={username} onChange={setUsername} disabled={loading} />
                         <List>
                             {filterResults(searchResults)
-                                .map(result => <MemberResultCard key={uuid()} 
+                                .map(result => <MemberResultCard key={result._id} 
                                                                 username={result.username} 
                                                                 userId={result._id}
                                                                 status= {result.status} 

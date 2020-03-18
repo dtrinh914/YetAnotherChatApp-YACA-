@@ -5,6 +5,7 @@ import CreateAccountPage from './views/CreateAccountPage';
 import ChatPage from './views/ChatPage';
 import LandingPage from './views/LandingPage';
 import axios from 'axios';
+import io from 'socket.io-client';
 import './App.css';
 import { ChatProvider } from './contexts/chatContext';
 import { NavProvider} from './contexts/navContext';
@@ -49,7 +50,7 @@ function App() {
       <Route exact path = '/chat'>
         <ChatProvider>
         <NavProvider>
-          <ChatPage {...loggedIn}  setLoggedIn={setLoggedIn} />
+          <ChatPage io={io} {...loggedIn}  setLoggedIn={setLoggedIn} />
         </NavProvider>
         </ChatProvider>
       </Route>

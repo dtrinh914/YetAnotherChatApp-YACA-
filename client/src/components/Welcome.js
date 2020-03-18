@@ -41,6 +41,10 @@ const useStyles = makeStyles({
     button:{
         animation: '$fade 1s ease-in'
     },
+    brand:{
+        fontSize: '2.0rem',
+        fontFamily:'Nunito'
+    },
     '@keyframes fade':{
         from:{opacity:0},
         to:{opacity:1}
@@ -55,7 +59,7 @@ export default function Welcome({handleLogOut, openNewGroup}) {
             <Paper className={classes.header} square>
                 <div className={classes.logo}>
                     <img className={classes.image} alt='envelope' src='mail.png' />
-                    <Typography>Untitled Chat App</Typography>
+                    <Typography className={classes.brand}>YACA</Typography>
                 </div>
                 <Button onClick={handleLogOut}>Logout</Button>
             </Paper>
