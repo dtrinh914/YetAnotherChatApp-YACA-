@@ -3,6 +3,7 @@ const {storeGroupMsg} = require('./mongoUtil');
 
 module.exports = function(io){
     io.on('connection', (socket) => {
+        console.log('connected');
         //joins room specified by the client
         socket.on('join_room', (room) => {
             socket.join(room);

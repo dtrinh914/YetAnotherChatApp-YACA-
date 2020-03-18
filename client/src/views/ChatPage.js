@@ -5,7 +5,6 @@ import ChatRoom from '../components/ChatRoom';
 import Welcome from '../components/Welcome';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from 'axios';
-import io from 'socket.io-client';
 import {ChatContext} from '../contexts/chatContext';
 import {NavContext} from '../contexts/navContext';
 import {makeStyles} from '@material-ui/styles';
@@ -28,7 +27,7 @@ const useStyles = makeStyles({
 
 let socket;
 
-function Chat({loggedIn, setLoggedIn}){
+function Chat({io, url, loggedIn, setLoggedIn}){
     const classes = useStyles();
     const history = useHistory();
     const {navDispatch} = useContext(NavContext);
@@ -79,7 +78,7 @@ function Chat({loggedIn, setLoggedIn}){
 
     useEffect(() => {
         if(loaded){
-            socket = io();
+            socket = new io(url);
 
             //listens for new messages from the backend and updates state
             socket.on('message', (room, message) => {
@@ -172,10 +171,6 @@ function Chat({loggedIn, setLoggedIn}){
         navDispatch({type:'LEFTDRAWER', open: false});
     }
 
-    const removeUsers = (userIds, groupId) => {
-        socket.emit('remove_users', userIds, groupId);
-    }
-
     const leaveRoom = (groupId) => {
         socket.emit('leave_room', groupId);
     }
@@ -186,7 +181,7 @@ function Chat({loggedIn, setLoggedIn}){
                 <LeftNav userData={chatData.user} groupData={chatData.groups} joinRoom={joinRoom} updateMembers={updateMembers} />
                 {chatData.groups.length > 0 ? 
                     <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} userInfo={chatData.user}
-                    newMessage={newMessage} updateMembers={updateMembers} removeUsers={removeUsers} selected={chatData.selected}
+                    newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}
                     updateGroup={updateGroup} removeGroup={removeGroup} leaveRoom={leaveRoom} 
                     updateInvite={updateInvite} handleLogOut={handleLogOut} /> 
                     : <Welcome handleLogOut={handleLogOut} openNewGroup={openNewGroup} />}

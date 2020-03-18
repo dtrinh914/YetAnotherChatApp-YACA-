@@ -40,7 +40,7 @@
     ]
   },
   "devDependencies": {
-    "css-mediaquery": "^0.1.2"
+    "mock-socket": "^9.0.3"
   },
   "proxy": "http://localhost:5000"
 }

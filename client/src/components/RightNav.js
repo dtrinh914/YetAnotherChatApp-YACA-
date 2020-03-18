@@ -41,7 +41,7 @@ const useStyles = makeStyles({
 });
 
 
-export default function RightNav({updateInvite, updateMembers, updateGroup, removeGroup, removeUsers, leaveRoom, currentGroup, currUserId}) {
+export default function RightNav({updateInvite, updateMembers, updateGroup, removeGroup, leaveRoom, currentGroup, currUserId}) {
     const {navData, navDispatch} = useContext(NavContext);
     const {chatDispatch} = useContext(ChatContext);
     const [loading, setLoading] = useState(false);
@@ -131,7 +131,6 @@ export default function RightNav({updateInvite, updateMembers, updateGroup, remo
              .then(res => {
                 if(res.data.status === 1){
                     updateMembers(selectedGroupId);
-                    removeUsers(userIds, selectedGroupId);
                     closeGroupSettings();
                 }
                 setLoading(false);
