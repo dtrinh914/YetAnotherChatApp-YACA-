@@ -1,9 +1,8 @@
-const {redisDel} = require('./redisUtil');
+const {redisSet, redisGet, redisDel} = require('./redisUtil');
 const {storeGroupMsg} = require('./mongoUtil');
 
 module.exports = function(io){
     io.on('connection', (socket) => {
-        console.log('connected');
         //joins room specified by the client
         socket.on('join_room', (room) => {
             socket.join(room);
@@ -16,6 +15,7 @@ module.exports = function(io){
     
         //creates a room specific for each user
         socket.on('user', async (userId) => {
+            await redisSet('socket'+ socket.id, userId);
             socket.join(userId);
         })
     
@@ -58,10 +58,27 @@ module.exports = function(io){
         });
         
         //broadcast to client to close their connection
-        socket.on('closeClient', async (userId) => {
+        socket.on('disconnecting', async () => {
             //remove user Id from redis cache;
-            await redisDel(userId);
-            socket.in(userId).broadcast.emit('closeClient');
-        })
+            const rooms = socket.rooms;
+            const userId = await redisGet('socket'+socket.id);
+
+            //check to see if the user is connected on other clients
+            if(userId && !io.sockets.adapter.rooms[userId]){
+                for(let key in rooms){
+                    if(key === socket.id || key === userId) continue;
+                    io.in(key).emit('update_status', key, userId, false);
+                }
+
+                await redisDel(userId);
+            }
+
+            await redisDel('socket'+socket.id);
+        });
+
+        //when user logs out, send message to all other sources that user is logged into
+        socket.on('close_client', async(userId)=>{
+            socket.in(userId).broadcast.emit('close_client');
+        });
     });
 };

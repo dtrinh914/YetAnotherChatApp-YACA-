@@ -35,14 +35,7 @@ function Chat({io, url, loggedIn, setLoggedIn}){
     const [loaded, setLoaded] = useState(false);
 
     const handleLogOut = () => {
-        const userId = chatData.user._id;
-
-        chatData.groups.forEach(group => {
-            socket.emit('update_status', group._id, userId, false);
-        });
-
-        socket.emit('closeClient', chatData.user._id);
-
+        socket.emit('close_client', chatData.user._id);
         axios.get('/api/actions/logout', {withCredentials:true})
         .then(res => {
             if(res.data.loggedIn === false){
@@ -136,7 +129,7 @@ function Chat({io, url, loggedIn, setLoggedIn}){
                 socket.emit('user', chatData.user._id);
             });
 
-            socket.on('closeClient', ()=>{
+            socket.on('close_client', ()=>{
                 handleLogOut();
             });
         }
