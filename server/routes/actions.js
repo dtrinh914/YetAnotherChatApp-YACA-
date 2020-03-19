@@ -12,8 +12,7 @@ router.post('/login', (req,res,next) => {
         if(err) return next(err);
         req.login(user, (err) => {
             if(err) return next(err);
-            //update in redis that user is online
-            redisSet(user._id.toString(), 'online');
+            redisSet(req.user._id.toString(), 'online');
             return res.json({loggedIn:true});
         })
     })(req,res,next);
@@ -28,6 +27,7 @@ router.get('/logout', (req, res) => {
 // route to check is a user is logged in
 router.get('/loggedon', (req,res) => {
     if(req.isAuthenticated()){
+        redisSet(req.user._id.toString(), 'online');
         res.json({loggedIn:true});
     } else {
         res.json({loggedIn:false});

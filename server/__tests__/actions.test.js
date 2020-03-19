@@ -45,14 +45,13 @@ describe('/api/actions/login', () => {
         expect(response.text).toBe(result);
 
         if(username === 'test_user' && password === 'test_password'){
-            expect(response.header['set-cookie'][0]).toContain('connect.sid=')
+            expect(response.header['set-cookie'][0]).toContain('connect.sid=');
+            
+            //check if status is inserted into redis
+            const status = await redisGet(testId.toString());
+            expect(status).toBe('online');
         }
     });
-
-    it('should have user status online in redis', async () => {
-        const response = await redisGet(testId.toString());
-        expect(response).toBe('online');
-    })
 });
 
 describe('/api/actions/logout', () => {
@@ -75,6 +74,10 @@ describe('/api/actions/loggedon',() => {
                             .get('/api/actions/loggedon')
                             .set('Cookie', cookie);
         expect(response.text).toBe('{"loggedIn":true}')
+
+        //check if status is inserted into redis
+        const status = await redisGet(testId.toString());
+        expect(status).toBe('online');
     });
     it('returns {"loggedIn":false}', async() => {
         const response = await request(app).get('/api/actions/loggedon');

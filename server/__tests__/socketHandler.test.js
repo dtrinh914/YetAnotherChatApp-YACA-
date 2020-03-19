@@ -96,6 +96,20 @@ test('should join and leave room properly', async ()=>{
     });
 });
 
+test('should create room for user and store id in redis', async() =>{
+    const [socket1] = clients;
+
+    socket1.emit('user', 'test_id');
+
+    await wait(async()=>{
+        expect(serverRooms['test_id'].length).toBe(1);
+    });
+
+    //socketId and userId should be stored in redis
+    const response = await redisGet('socket'+socket1.id);
+    expect(response).toBe('test_id');
+});
+
 test('should emit update_pendinglist message to proper user', async()=>{
     const [socket1, socket2] = clients;
     // client will send message to server to create a room specific for each user
@@ -262,9 +276,21 @@ test('should store message in DB and send to clients in room', async() =>{
     expect(messages.length).toBe(1);
 });
 
-test('should remove client from redis', async() =>{
-    const [socket1] = clients;
+test('should remove client from redis and send message to all rooms that the client is in to update the status of client', async() =>{
+    //initialize user and join two rooms
+    const [socket1, socket2] = clients;
     socket1.emit('user', 'user1');
+    socket1.emit('join_room', 'room1');
+    socket1.emit('join_room', 'room2');
+
+    //2nd socket for testing
+    socket2.emit('join_room', 'room1');
+    socket2.emit('join_room', 'room2');
+
+    let result = 0;
+    socket2.on('update_status', ()=>{
+        result++;
+    });
 
     //create room for user
     await wait(()=>{
@@ -274,15 +300,43 @@ test('should remove client from redis', async() =>{
     //set key in redis 
     await redisSet('user1', 'true');
     let response = await redisGet('user1');
-
     //key should exists
     expect(response).toBeTruthy();
 
-    socket1.emit('closeClient', 'user1');
+    //should store socket id and user id
+    response = await redisGet('socket'+socket1.id);
+    expect(response).toBe('user1');
+
+    socket1.close();
+
+    
+    await wait(async()=>{
+        //check if socket2 received message to update status
+        expect(result).toBe(2);
+    });
 
     //key should be deleted
-    await wait(async()=>{
-        response = await redisGet('user1');
-        expect(response).toBeFalsy();
+    response = await redisGet('user1');
+    expect(response).toBeFalsy();
+
+    response = await redisGet('socket'+socket1.id);
+    expect(response).toBeFalsy();
+});
+
+test('should send message to close_client', async() =>{
+    const [socket1, socket2,socket3] = clients;
+
+    socket1.emit('user', 'user1');
+    socket2.emit('user', 'user1');
+
+    let result = 0;
+    socket2.on('close_client', ()=>{
+        result++;
     });
-})
+
+    socket3.emit('close_client', 'user1');
+
+    await wait(()=>{
+        expect(result).toBe(1);
+    });
+});
