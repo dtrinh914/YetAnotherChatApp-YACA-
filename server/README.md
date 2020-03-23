@@ -1,8 +1,8 @@
 The server requires MongoDB, Redis, and Bcrypt.
 
-Consult the following links to install the required tools:
-https://docs.mongodb.com/manual/installation/
-https://redis.io/topics/quickstart
+Consult the following links to install the required tools: <br/>
+https://docs.mongodb.com/manual/installation/ <br/>
+https://redis.io/topics/quickstart <br/>
 https://www.npmjs.com/package/bcrypt
 
 To install:
