@@ -1,9 +1,6 @@
 import React from 'react';
 import ChatPage from '../views/ChatPage';
-import INIT_SEED_DATA from '../testData/INIT_SEED_DATA';
-import INIT_SEED_DATA_CLEAN from '../testData/INIT_SEED_DATA_CLEAN';
-import MOCK_GROUP_DATA from '../testData/MOCK_GROUP_DATA';
-import DELETED_MEMBER_DATA from '../testData/DELETED_MEMBER_DATA';
+import mockData from '../util/mockData';
 import {BrowserRouter} from 'react-router-dom';
 import {ChatProvider} from '../contexts/chatContext';
 import {NavProvider} from '../contexts/navContext';
@@ -14,30 +11,43 @@ import axiosMock from 'axios';
 import { SocketIO, Server } from 'mock-socket';
 
 const fakeURL = 'ws://localhost:8080';
-const mockServer = new Server(fakeURL);
+let mockServer;
 
-const component = <BrowserRouter>
-                  <NavProvider>
-                  <ChatProvider>
-                     <ChatPage io={SocketIO} url={fakeURL} loggedIn={true} setUserData={()=>{console.log('Triggered')}} />
-                  </ChatProvider>
-                  </NavProvider>
-                  </BrowserRouter>;
+const genComponent = (theme) =>{
+    return(
+        <MuiThemeProvider theme={theme}>
+        <BrowserRouter>
+        <NavProvider>
+        <ChatProvider>
+            <ChatPage io={SocketIO} url={fakeURL} loggedIn={true} setUserData={()=>{console.log('Triggered')}} />
+        </ChatProvider>
+        </NavProvider>
+        </BrowserRouter>
+        </MuiThemeProvider>
+    );
+}
 
-const seedData = INIT_SEED_DATA;
+const seedData = mockData.seedData;
+const mockGroupData = mockData.newGroupData;
 
 jest.mock('popper.js');
-afterEach(cleanup);
+beforeEach(()=>{
+   mockServer = new Server(fakeURL);
+});
+
+afterEach(()=>{
+    cleanup;
+    mockServer.stop();
+});
 
 describe('<ChatPage/> when the screen size is large', ()=>{
     afterEach(cleanup);
     const theme = createMuiTheme({props:{MuiWithWidth: {initialWidth:'lg'}}});
+    const component = genComponent(theme);
 
     it('should display welcome page and open new group form', async()=>{
-        axiosMock.get.mockResolvedValueOnce(INIT_SEED_DATA_CLEAN);
-        const {queryByTestId} = render(<MuiThemeProvider theme={theme}>
-                                            {component}
-                                       </MuiThemeProvider>);
+        axiosMock.get.mockResolvedValueOnce(mockData.cleanSeedData);
+        const {queryByTestId} = render(component);
 
         await wait(()=>{
             expect(queryByTestId('newgroupform')).toBeNull();
@@ -51,9 +61,8 @@ describe('<ChatPage/> when the screen size is large', ()=>{
     it('should toggle right nav when the toggle button is clicked', async () =>{
         //get init user data
         axiosMock.get.mockResolvedValueOnce(seedData);
-        const {queryByTestId} = render(<MuiThemeProvider theme={theme}>
-                                            {component}
-                                       </MuiThemeProvider>);
+        const {queryByTestId} = render(component);
+
         await wait(()=>{
             expect(queryByTestId('left-nav')).toBeTruthy();
             expect(queryByTestId('right-nav')).toBeTruthy();
@@ -71,9 +80,7 @@ describe('<ChatPage/> when the screen size is large', ()=>{
 
     it('should enter new message in Chat Window', async () =>{
         axiosMock.get.mockResolvedValueOnce(seedData);
-        const {queryByTestId, queryAllByTestId} = render(<MuiThemeProvider theme={theme}>
-                                                                {component}
-                                                         </MuiThemeProvider>);
+        const {queryByTestId, queryAllByTestId} = render(component);
 
         //setup to check if client sends message to server
         let received = 0;
@@ -82,7 +89,7 @@ describe('<ChatPage/> when the screen size is large', ()=>{
         });
 
         await wait(()=>{
-            //should start off with three messages
+            //should start off with four messages
             expect(queryAllByTestId('message').length).toBe(4);
         });
 
@@ -102,9 +109,8 @@ describe('<ChatPage/> when the screen size is large', ()=>{
 
     it('should change the current group', async () =>{
         axiosMock.get.mockResolvedValueOnce(seedData);
-        const {queryByTestId, queryAllByTestId} = render(<MuiThemeProvider theme={theme}>
-                                                                {component}
-                                                         </MuiThemeProvider>);
+        const {queryByTestId, queryAllByTestId} = render(component);
+
         await wait(()=>{
             //should start off on test_group1 
             expect(queryByTestId('nav-group-name').textContent).toBe('test_group1');
@@ -124,9 +130,7 @@ describe('<ChatPage/> when the screen size is large', ()=>{
 
     it('should accept invite and add to group list', async () =>{
         axiosMock.get.mockResolvedValueOnce(seedData);
-        const {queryAllByTestId} = render(<MuiThemeProvider theme={theme}>
-                                                                {component}
-                                                         </MuiThemeProvider>);
+        const {queryAllByTestId} = render(component);
 
         await wait(()=>{
             //should start off with 2 groups in the group list
@@ -140,11 +144,11 @@ describe('<ChatPage/> when the screen size is large', ()=>{
         //setup to check if client sends message to server
         let received = 0;
         mockServer.on('update_memberlist', (groupId) =>{
-            if(groupId === MOCK_GROUP_DATA.data.data[0]._id)received++;
+            if(groupId === mockGroupData.data.data[0]._id)received++;
         });
 
         axiosMock.post.mockResolvedValueOnce({data:{status:1}});
-        axiosMock.get.mockResolvedValueOnce(MOCK_GROUP_DATA);
+        axiosMock.get.mockResolvedValueOnce(mockGroupData);
         //click accept on first group invite
         fireEvent.click(getByTestId(groupInvites[0], 'group-invite-accept'));
 
@@ -162,9 +166,8 @@ describe('<ChatPage/> when the screen size is large', ()=>{
 
     it('should decline invite', async () =>{
         axiosMock.get.mockResolvedValueOnce(seedData);
-        const {queryAllByTestId} = render(<MuiThemeProvider theme={theme}>
-                                                                {component}
-                                                         </MuiThemeProvider>);
+        const {queryAllByTestId} = render(component);
+
         await wait(()=>{
             //should start off with 2 groups in the group list
             expect(queryAllByTestId('group-tab-button').length).toBe(2);
@@ -177,7 +180,7 @@ describe('<ChatPage/> when the screen size is large', ()=>{
          //setup to check if client sends message to server
          let received = 0;
          mockServer.on('update_memberlist', (groupId) =>{
-             if(groupId === MOCK_GROUP_DATA.data.data[0]._id)received++;
+             if(groupId === mockGroupData.data.data[0]._id)received++;
          });
 
         axiosMock.delete.mockResolvedValueOnce({data:{status:1}});
@@ -194,9 +197,8 @@ describe('<ChatPage/> when the screen size is large', ()=>{
 
     it('should create new group', async () => {
         axiosMock.get.mockResolvedValueOnce(seedData);
-        const {queryByTestId, queryAllByTestId} = render(<MuiThemeProvider theme={theme}>
-                                                                {component}
-                                                         </MuiThemeProvider>);
+        const {queryByTestId, queryAllByTestId} = render(component);
+
         await wait(()=>{
             //should start off with 2 groups in the group list
             expect(queryAllByTestId('group-tab-button').length).toBe(2);
@@ -208,10 +210,10 @@ describe('<ChatPage/> when the screen size is large', ()=>{
         //setup to check if client sends message to server
         let received = 0;
         mockServer.on('join_room', (roomId) =>{
-            if(roomId === MOCK_GROUP_DATA.data.data[0]._id)received++;
+            if(roomId === mockGroupData.data.data[0]._id)received++;
         });
 
-        axiosMock.post.mockResolvedValueOnce(MOCK_GROUP_DATA);
+        axiosMock.post.mockResolvedValueOnce(mockGroupData);
         fireEvent.click(queryByTestId('newgroupform-submit'));
 
         await wait(()=>{
@@ -222,9 +224,7 @@ describe('<ChatPage/> when the screen size is large', ()=>{
 
     it('should change the group description', async () => {
         axiosMock.get.mockResolvedValueOnce(seedData);
-        const {getByTestId, queryByTestId} = render(<MuiThemeProvider theme={theme}>
-                                                                            {component}
-                                                                      </MuiThemeProvider>);
+        const {getByTestId, queryByTestId} = render(component);
         
         await wait(()=> {
             //should have group settings icon
@@ -258,9 +258,7 @@ describe('<ChatPage/> when the screen size is large', ()=>{
 
     it('should delete group', async () => {
         axiosMock.get.mockResolvedValueOnce(seedData);
-        const {getByTestId, queryByTestId, queryAllByTestId} = render(<MuiThemeProvider theme={theme}>
-                                                                            {component}
-                                                                      </MuiThemeProvider>);
+        const {getByTestId, queryByTestId, queryAllByTestId} = render(component);
         
         await wait(()=> {
             //should have group settings icon
@@ -290,9 +288,8 @@ describe('<ChatPage/> when the screen size is large', ()=>{
 
     it('should delete one member', async() => {
         axiosMock.get.mockResolvedValueOnce(seedData);
-        const {getByTestId, queryByTestId, queryAllByTestId} = render(<MuiThemeProvider theme={theme}>
-                                                                            {component}
-                                                                      </MuiThemeProvider>);
+        const {getByTestId, queryByTestId, queryAllByTestId} = render(component);
+
         await wait(()=> {
             //should have group settings icon
             expect(queryByTestId('nav-groupsettings')).toBeTruthy();
@@ -325,9 +322,8 @@ describe('<ChatPage/> when the screen size is large', ()=>{
 
     it('should open second group tab and leave group', async() => {
         axiosMock.get.mockResolvedValueOnce(seedData);
-        const {getByTestId, queryAllByTestId} = render(<MuiThemeProvider theme={theme}>
-                                                                            {component}
-                                                                      </MuiThemeProvider>);
+        const {getByTestId, queryAllByTestId} = render(component);
+
         await wait(()=> {
             //should have 2 groups in group tabs
             expect(queryAllByTestId('group-tab-button').length).toBe(2);
@@ -358,9 +354,8 @@ describe('<ChatPage/> when the screen size is large', ()=>{
 
     it('should open add member container', async () => {
         axiosMock.get.mockResolvedValueOnce(seedData);
-        const {queryByTestId} = render(<MuiThemeProvider theme={theme}>
-                                            {component}
-                                        </MuiThemeProvider>);
+        const {queryByTestId} = render(component);
+
         await wait(()=>{
             expect(queryByTestId('addmember-form')).toBeNull();
         });
@@ -368,17 +363,225 @@ describe('<ChatPage/> when the screen size is large', ()=>{
         fireEvent.click(queryByTestId('nav-addmem'));
         expect(queryByTestId('addmember-form')).toBeTruthy();
     });
+
+    it('should receive and display new message', async () => {
+        axiosMock.get.mockResolvedValueOnce(seedData);
+    
+        const {queryAllByTestId} = render(component);
+
+        await wait(()=>{
+            //should start off with four messages
+            expect(queryAllByTestId('message').length).toBe(4);
+        });
+
+        
+        //set up message to send to client
+        const roomId = seedData.data.groups[0]._id;
+        const userID = seedData.data.groups[0].activeMembers[1]._id;
+        const message = {id: userID, text:'new_message', time: "2020-01-22T22:04:37.511Z"};
+        
+
+        await wait(()=>{
+            //send new message to client
+            mockServer.emit('message', roomId, JSON.stringify(message));
+            expect(queryAllByTestId('message').length).toBe(5);
+        });
+    });
+
+    it('should update status of user to be online and then offline', async() =>{
+
+        //colors for the online and offline states
+        const onlineColor = 'rgb(0, 230, 118)';
+        const offlineColor = 'rgb(158, 158, 158)';
+
+        axiosMock.get.mockResolvedValueOnce(seedData);
+    
+        const {queryAllByTestId} = render(component);
+
+        await wait(()=>{
+            //check status badge color, 1&2 are online, 3 is offline
+            const statusBadges = queryAllByTestId('status-badge-color');
+            expect(statusBadges.length).toBe(3);
+            expect(statusBadges[0].style.background).toBe(onlineColor);
+            expect(statusBadges[1].style.background).toBe(onlineColor);
+            expect(statusBadges[2].style.background).toBe(offlineColor);
+        });
+
+        //first group id and third member id from seed data 
+        const groupId = seedData.data.groups[0]._id
+        const memberId = seedData.data.groups[0].activeMembers[2]._id;
+
+        await wait(()=>{
+            //server emits message
+            mockServer.emit('update_status', groupId, memberId, 'true');
+
+            //status should update to all be online
+            const statusBadges = queryAllByTestId('status-badge-color');
+            expect(statusBadges[0].style.background).toBe(onlineColor);
+            expect(statusBadges[1].style.background).toBe(onlineColor);
+            expect(statusBadges[2].style.background).toBe(onlineColor);
+        });
+
+
+        await wait(()=>{
+            //set status of third user to be offline
+            mockServer.emit('update_status', groupId, memberId, 'false');
+
+            //should return to offline color
+            const statusBadges = queryAllByTestId('status-badge-color');
+            expect(statusBadges[0].style.background).toBe(onlineColor);
+            expect(statusBadges[1].style.background).toBe(onlineColor);
+            expect(statusBadges[2].style.background).toBe(offlineColor);
+        });        
+    });
+
+    it('should receive new group invite', async()=>{
+        axiosMock.get.mockResolvedValueOnce(seedData);
+    
+        const {queryAllByTestId} = render(component);
+        
+        await wait(()=>{
+            expect(queryAllByTestId('group-invite-item').length).toBe(3);
+        });
+
+        //mock get request for new invite data
+        axiosMock.get.mockResolvedValueOnce(mockData.newInviteData);
+
+        await wait(()=>{
+            //server sends message to client to update pending list
+            //client will send get request for new group invites
+            mockServer.emit('update_pendinglist');
+            expect(queryAllByTestId('group-invite-item').length).toBe(4);
+        })
+    });
+
+    it('should update member list', async()=>{
+        axiosMock.get.mockResolvedValueOnce(seedData);
+        const {queryAllByTestId} = render(component);
+
+        await wait(()=>{
+            expect(queryAllByTestId('group-member').length).toBe(3);
+        });
+
+        axiosMock.get.mockResolvedValueOnce(mockData.newMemberList);
+        const groupId = seedData.data.groups[0]._id;
+
+        await wait(()=>{
+                //should update member list to now have four members
+            mockServer.emit('update_memberlist', groupId);
+            expect(queryAllByTestId('group-member').length).toBe(4);
+        });
+    });
+
+    it('should update group description', async()=>{
+        axiosMock.get.mockResolvedValueOnce(seedData);
+        const {queryByTestId} = render(component);
+
+        const initDescription = seedData.data.groups[0].description;
+        const newDescription = 'This is a new description';
+
+        await wait(()=>{
+            expect(queryByTestId('group-description').textContent).toBe(initDescription);
+        });
+
+        const groupId = seedData.data.groups[0]._id;
+
+        await wait(()=>{
+            //server emit message to client to update group description
+            mockServer.emit('update_group', groupId, newDescription);
+            expect(queryByTestId('group-description').textContent).toBe(newDescription);
+        });
+    });
+
+    it('should remove group', async()=>{
+        axiosMock.get.mockResolvedValueOnce(seedData);
+        const {queryAllByTestId} = render(component);
+        const groupId = seedData.data.groups[0]._id;
+        const groupName = seedData.data.groups[0].groupName;
+
+        await wait(()=>{
+            const groupTabs = queryAllByTestId('group-tab-button');
+            expect(queryAllByTestId('group-tab-button').length).toBe(2);
+            expect(groupTabs[0].textContent).toBe(groupName);
+        });
+
+        await wait(()=>{
+            //server emit message to client to update group description
+            mockServer.emit('remove_group', groupId);
+            const groupTabs = queryAllByTestId('group-tab-button');
+            expect(groupTabs.length).toBe(1);
+            expect(groupTabs[0].textContent).not.toBe(groupName);
+        });
+    });
+
+    it('should emit the proper messages via socket to server upon connection', async()=>{
+        const currGroups = seedData.data.groups;
+        const currUserId = seedData.data.user._id;
+        let groupIndex = 0;
+
+        //resuls track how many times correct messages to
+        // 'join_room', 'update_status', and 'user' were received by the server
+        let results = [0,0,0];
+
+        mockServer.on('join_room', (groupId)=>{
+            if(groupId === currGroups[groupIndex]._id) results[0]++;
+        });
+
+        mockServer.on('update_status', (groupId, userId, status)=>{
+            if(groupId === currGroups[groupIndex]._id
+               && userId === currUserId
+               && status === 'true'){
+                results[1]++;
+                groupIndex++;
+            }
+        });
+
+        mockServer.on('user', (userId)=>{
+            if(userId === currUserId) results[2]++;
+        });
+
+        axiosMock.get.mockResolvedValueOnce(seedData);
+        render(component);
+
+        await wait(()=>{
+            expect(results).toStrictEqual([2,2,1]);
+        });
+    });
+
+    it('should log out properly', async()=>{
+        axiosMock.get.mockResolvedValueOnce(seedData);
+        const {getByTestId} = render(component);
+        const currUserId = seedData.data.user._id;
+
+        //results variable tracks that server received the proper socket message
+        //from the client
+        let result = 0;
+        mockServer.on('close_client', (userId) =>{
+            if(userId === currUserId) result++;
+        });
+
+        await wait(()=>{
+            expect(getByTestId('nav-logout')).toBeTruthy();
+        });
+
+        axiosMock.get.mockResolvedValueOnce({data:{loggedIn:false}});
+        fireEvent.click(getByTestId('nav-logout'));
+
+        await wait(()=>{
+            expect(result).toBe(1);
+        });
+    });
 });
 
 describe('<ChatPage/> when the screen size is small', ()=>{
     afterEach(cleanup);
     const theme = createMuiTheme({props:{MuiWithWidth: {initialWidth:'sm'}}});
+    const component = genComponent(theme);
 
     it('should render properly and open right drawer', async () =>{
         axiosMock.get.mockResolvedValueOnce(seedData);
-        const {queryByTestId} = render(<MuiThemeProvider theme={theme}>
-                                            {component}
-                                       </MuiThemeProvider>);
+        const {queryByTestId} = render(component);
+
         await wait(()=>{
             expect(queryByTestId('left-nav')).toBeTruthy();
             expect(queryByTestId('right-nav')).toBeNull();
@@ -396,9 +599,8 @@ describe('<ChatPage/> when the screen size is small', ()=>{
 
     it('should open add member container', async () =>{
         axiosMock.get.mockResolvedValueOnce(seedData);
-        const {queryByTestId} = render(<MuiThemeProvider theme={theme}>
-                                            {component}
-                                       </MuiThemeProvider>);
+        const {queryByTestId} = render(component);
+
         await wait(()=>{
             expect(queryByTestId('addmember-form')).toBeNull();
         });
@@ -415,13 +617,12 @@ describe('<ChatPage/> when the screen size is small', ()=>{
 describe('<ChatPage/> when the screen size is extra small', ()=>{
     afterEach(cleanup);
     const theme = createMuiTheme({props:{MuiWithWidth: {initialWidth:'xs'}}});
+    const component = genComponent(theme);
 
     it('should render properly and open left drawer', async () =>{
         axiosMock.get.mockResolvedValueOnce(seedData);
+        const {queryByTestId} = render(component);
 
-        const {queryByTestId} = render(<MuiThemeProvider theme={theme}>
-                                            {component}
-                                       </MuiThemeProvider>);
         await wait(()=>{
             expect(queryByTestId('nav-group-nav')).toBeTruthy();
             expect(queryByTestId('left-nav')).toBeNull();

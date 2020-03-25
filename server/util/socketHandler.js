@@ -67,7 +67,7 @@ module.exports = function(io){
             if(userId && !io.sockets.adapter.rooms[userId]){
                 for(let key in rooms){
                     if(key === socket.id || key === userId) continue;
-                    io.in(key).emit('update_status', key, userId, false);
+                    io.in(key).emit('update_status', key, userId, 'false');
                 }
 
                 await redisDel(userId);

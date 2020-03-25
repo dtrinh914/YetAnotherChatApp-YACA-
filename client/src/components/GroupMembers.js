@@ -19,7 +19,7 @@ export default function GroupMembers({groupMembers}) {
     return (
         <div>
             <h2>Group Members</h2>
-            <List className={classes.list}>
+            <List data-testid='group-members-list'className={classes.list}>
                 {groupMembers.map(member => <ListItem key={member._id} data-testid='group-member'>
                                                 <Avatar className={classes.avatar}>
                                                     {member.username[0].toUpperCase()}

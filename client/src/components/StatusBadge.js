@@ -21,12 +21,12 @@ const useStyle = makeStyles({
 
 export default function StatusBadge({online}) {
     const classes = useStyle();
-    const badgeColor = online ? '#00e676' : '#9e9e9e'
+    const badgeColor = online ? 'rgb(0,230,118)' : 'rgb(158,158,158)'
 
     return (
         <>
           <span className={classes.badgeOutline}></span>
-          <span className={classes.badgeCore} style={{background: badgeColor}}></span>  
+          <span data-testid='status-badge-color' className={classes.badgeCore} style={{background: badgeColor}}></span>  
         </>
     )
 }

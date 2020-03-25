@@ -8,6 +8,7 @@ exports[`GroupMember component with no data should match snapshot 1`] = `
     </h2>
     <ul
       class="MuiList-root makeStyles-list-1 MuiList-padding"
+      data-testid="group-members-list"
     />
   </div>
 </div>

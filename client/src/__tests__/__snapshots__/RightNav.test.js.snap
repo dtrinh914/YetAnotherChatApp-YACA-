@@ -25,6 +25,7 @@ exports[`right nav when window size is md should render properly and match snaps
         </h2>
         <ul
           class="MuiList-root makeStyles-list-12 MuiList-padding"
+          data-testid="group-members-list"
         >
           <li
             class="MuiListItem-root MuiListItem-gutters"
@@ -40,6 +41,7 @@ exports[`right nav when window size is md should render properly and match snaps
             />
             <span
               class="makeStyles-badgeCore-37"
+              data-testid="status-badge-color"
               style="background: rgb(158, 158, 158);"
             />
             <span>
@@ -60,6 +62,7 @@ exports[`right nav when window size is md should render properly and match snaps
             />
             <span
               class="makeStyles-badgeCore-37"
+              data-testid="status-badge-color"
               style="background: rgb(158, 158, 158);"
             />
             <span>
@@ -80,6 +83,7 @@ exports[`right nav when window size is md should render properly and match snaps
             />
             <span
               class="makeStyles-badgeCore-37"
+              data-testid="status-badge-color"
               style="background: rgb(158, 158, 158);"
             />
             <span>
