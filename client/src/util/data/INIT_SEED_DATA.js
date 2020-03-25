@@ -40,9 +40,9 @@ export default {data:
                                             }
                                             ],
                                 "activeMembers":[
-                                                {"_id":"5e28c5c685ffc434b337c269","username":"test_user1"},
-                                                {"_id":"5e28c5bc85ffc434b337c264","username":"test_user2"},
-                                                {"_id":"5e28c5c485ffc434b337c268","username":"test_user3"}
+                                                {"_id":"5e28c5c685ffc434b337c269","username":"test_user1", "online": true},
+                                                {"_id":"5e28c5bc85ffc434b337c264","username":"test_user2", "online": true},
+                                                {"_id":"5e28c5c485ffc434b337c268","username":"test_user3", "online": false}
                                                 ],
                                 "pendingMembers":[],
                                 "pendingRequests":[],
@@ -72,9 +72,9 @@ export default {data:
                                             }
                                         ],
                                 "activeMembers":[
-                                                {"_id":"5e28c5bc85ffc434b337c264","username":"test_user2"},
-                                                {"_id":"5e28c5c685ffc434b337c269","username":"test_user1"},
-                                                {"_id":"5e28c5c485ffc434b337c268","username":"test_user3"}
+                                                {"_id":"5e28c5bc85ffc434b337c264","username":"test_user2", "online": true},
+                                                {"_id":"5e28c5c685ffc434b337c269","username":"test_user1", "online": true},
+                                                {"_id":"5e28c5c485ffc434b337c268","username":"test_user3", "online": true}
                                                 ],
                                 "pendingMembers":[],
                                 "pendingRequests":[],

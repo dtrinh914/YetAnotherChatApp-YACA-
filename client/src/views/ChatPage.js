@@ -75,12 +75,13 @@ function Chat({io, url, loggedIn, setLoggedIn}){
 
             //listens for new messages from the backend and updates state
             socket.on('message', (room, message) => {
+                message = JSON.parse(message);
                 chatDispatch({type:'NEW_MSG', room:room, message:message})
             });
 
             //listener to update user status
             socket.on('update_status', (groupId, userId, status) => {
-                chatDispatch({type:'UPDATE_STATUS', groupId: groupId, userId: userId, status:status});
+                chatDispatch({type:'UPDATE_STATUS', groupId: groupId, userId: userId, status:JSON.parse(status)});
             });
 
             //listener to update pending list
@@ -123,7 +124,7 @@ function Chat({io, url, loggedIn, setLoggedIn}){
                 chatData.groups.forEach(group => {
                     socket.emit('join_room', group._id);
                     //emit to groups that user is online
-                    socket.emit('update_status', group._id, userId, true);
+                    socket.emit('update_status', group._id, userId, 'true');
                 });
 
                 socket.emit('user', chatData.user._id);
@@ -133,12 +134,17 @@ function Chat({io, url, loggedIn, setLoggedIn}){
                 handleLogOut();
             });
         }
+
+        //closes socket connection when component dismounts
+        return () => {
+            if(socket) socket.close();
+        }
         //eslint-disable-next-line
     }, [loaded])
 
     const newMessage = (text) => {
-        const message = {id: chatData.user._id, text: text, time: new Date()}
-        socket.emit('message', chatData.selected._id, message);
+        const message = {id: chatData.user._id, text: text, time: new Date()};
+        socket.emit('message', chatData.selected._id, JSON.stringify(message));
         chatDispatch({type:'NEW_MSG', room:chatData.selected._id, message:message});
     }
     const joinRoom = (roomId) => {

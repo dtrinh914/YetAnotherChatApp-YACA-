@@ -165,7 +165,7 @@ function Navbar({handleLogOut, isCreator, isAdmin}){
                             <PersonAddIcon />
                          </IconButton>
                         {isCreator ? creatorButtons : memberButtons}
-                        <Button onClick={handleLogOut}>Log Out</Button>
+                        <Button data-testid='nav-logout' onClick={handleLogOut}>Log Out</Button>
                     </div>
                 </Hidden>
 
