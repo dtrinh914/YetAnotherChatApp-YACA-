@@ -28,7 +28,9 @@ function reducer(state, action){
         case 'NEWGROUP':
             prevLeftNav = state.leftNav;
             return {...state, leftNav:{...prevLeftNav, newGroup:action.open}};
-        
+        //changes chat page view
+        case 'VIEW':
+            return {...state, view: action.view}
         default:
             return state;
     }

@@ -2,6 +2,7 @@ import React, {createContext, useReducer} from 'react';
 import navReducer from '../reducers/navReducer';
 
 const initialState = {
+    view: 'chat',
     rightNav:{
         root:true,
         drawer: false,

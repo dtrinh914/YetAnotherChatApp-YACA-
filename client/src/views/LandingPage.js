@@ -94,7 +94,7 @@ export default function LandingPage({loggedIn}) {
                 <Paper className={classes.jumbo} square>
                     <Typography variant='h1'>It's Time.</Typography>
                     <Typography variant='h4'>To join yet another chat app.</Typography>
-                    <Typography className={classes.line}>YACA is a demo chat application made to fill some guy's portfolio.</Typography>
+                    <Typography className={classes.line}>YACA is an easy to use chat application made with you in mind.</Typography>
                 </Paper>
                 <article className={classes.description}>
                     <Typography variant='h2'>Connect With Others</Typography>

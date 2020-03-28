@@ -11,6 +11,7 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import IconButton from '@material-ui/core/IconButton';
+import VideoCallIcon from '@material-ui/icons/VideoCall';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import GroupIcon from '@material-ui/icons/Group';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -99,6 +100,10 @@ function Navbar({handleLogOut, isCreator, isAdmin}){
     const handleLeaveGroup = () => {
         navDispatch({type:'LEAVEGROUP', open:true});
     };
+
+    const handleVideoConference = () => {
+        navDispatch({type:'VIEW', view:'video'});
+    };
     
     const creatorButtons = <IconButton data-testid='nav-groupsettings' size='small' onClick={handleGroupSettings}>
                                 <EditAttributesIcon />
@@ -164,6 +169,9 @@ function Navbar({handleLogOut, isCreator, isAdmin}){
                         <IconButton data-testid='nav-addmem' onClick={handleAddMem} size='small'>
                             <PersonAddIcon />
                          </IconButton>
+                        <IconButton data-testid='nav-videoconference' onClick={handleVideoConference} size='small'>
+                            <VideoCallIcon />
+                        </IconButton>
                         {isCreator ? creatorButtons : memberButtons}
                         <Button data-testid='nav-logout' onClick={handleLogOut}>Log Out</Button>
                     </div>
