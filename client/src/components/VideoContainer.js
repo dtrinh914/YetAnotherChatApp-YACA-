@@ -20,7 +20,14 @@ export default function VideoContainer() {
                 setMicOn(true);
             })
             .catch(err => console.log(err));
-    },[])
+    },[]);
+    
+    //clean up on exit
+    useEffect(()=>{
+        return () => {
+            if(feed) feed.getTracks().forEach(track => track.stop());
+        }
+    },[feed])
 
     const handleCameraToggle = () => {
         if(cameraOn){
