@@ -5,25 +5,15 @@ import MicIcon from '@material-ui/icons/Mic';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import IconButton from '@material-ui/core/IconButton';
 
-export default function VideoContainer() {
+export default function VideoContainer({feed}) {
     const video = useRef();
-    const [cameraOn, setCameraOn] = useState(false);
-    const [micOn, setMicOn] = useState(false);
-    const [feed, setFeed] = useState();
-    
-    useEffect(()=>{
-        navigator.mediaDevices.getUserMedia({audio:true, video:true})
-            .then(stream =>{
-                setFeed(stream);
-                video.current.srcObject = stream;
-                setCameraOn(true);
-                setMicOn(true);
-            })
-            .catch(err => console.log(err));
-    },[]);
+    const [cameraOn, setCameraOn] = useState(true);
+    const [micOn, setMicOn] = useState(true);
     
     //clean up on exit
     useEffect(()=>{
+        video.current.srcObject = feed;
+
         return () => {
             if(feed) feed.getTracks().forEach(track => track.stop());
         }
