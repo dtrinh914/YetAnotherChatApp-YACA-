@@ -41,14 +41,14 @@ module.exports = function (io, socket){
 
     //RTC signaling
     socket.on('send_offer', (to, from, offer) => {
-        socket.in(to).emit('receive-offer', from, offer);
+        socket.in(to).emit('receive_offer', from, offer);
     });
 
     socket.on('send_answer', (to, from, answer) => {
-        socket.in(to).emit('receive-answer', from, answer);
+        socket.in(to).emit('receive_answer', from, answer);
     });
 
     socket.on('send_candidate', (to, from, candidate) => {
-        socket.in(to).emit('receive-candidate', from, candidate);
+        socket.in(to).emit('receive_candidate', from, candidate);
     });
 };
