@@ -175,9 +175,11 @@ function Chat({io, url, loggedIn, setLoggedIn}){
         socket.emit('leave_room', groupId);
     }
 
+    const currentGroup = chatData.groups[chatData.selected.index];
+
     const ChatDisplay = <><LeftNav userData={chatData.user} groupData={chatData.groups} joinRoom={joinRoom} updateMembers={updateMembers} />
                         {chatData.groups.length > 0 ? 
-                            <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} userInfo={chatData.user}
+                            <ChatRoom currentGroup={currentGroup} userInfo={chatData.user}
                             newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}
                             updateGroup={updateGroup} removeGroup={removeGroup} leaveRoom={leaveRoom} 
                             updateInvite={updateInvite} handleLogOut={handleLogOut} /> 
@@ -186,7 +188,10 @@ function Chat({io, url, loggedIn, setLoggedIn}){
     if(loaded){
         return(
             <div className={classes.root}>
-                {navData.view === 'chat' ? ChatDisplay : <VideoConference socket={socket} channelId={chatData.selected._id} userId={chatData.user._id} /> }
+                {navData.view === 'chat' ? ChatDisplay : <VideoConference socket={socket} 
+                                                            channelId={chatData.selected._id} 
+                                                            userId={chatData.user._id} 
+                                                            groupName={currentGroup.groupName}/> }
             </div>
         );
     } else {

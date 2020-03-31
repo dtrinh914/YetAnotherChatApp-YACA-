@@ -8,12 +8,21 @@ module.exports = function (io, socket){
         let res = await redisGet(formattedId);
         if(res){
             res = JSON.parse(res);
+
+            //check if maximum number of clients in room
+            if(res.length === 4){
+                //send message to user
+                io.in(userId).emit('client_list', false);
+                //exit out early
+                return;
+            }            
             //add userId to list of users
             res.push(userId);
         } else {
             res = [userId];   
         }
         await redisSet(formattedId, JSON.stringify(res));
+
         //send the new userlist to everyone in room
         io.in(formattedId).emit('client_list', JSON.stringify(res));
     });

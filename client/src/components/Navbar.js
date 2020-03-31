@@ -148,6 +148,10 @@ function Navbar({handleLogOut, isCreator, isAdmin}){
                                             onClick={e => {handleClose(e); handleRightDrawer(e)}}>
                                                 Group Information
                                         </MenuItem>
+                                        <MenuItem data-testid='nav-config-video' 
+                                            onClick={e => {handleClose(e); handleVideoConference(e)}}>
+                                                Join Video Call
+                                        </MenuItem>
                                         <MenuItem data-testid='nav-config-addmem' 
                                             onClick={e => {handleClose(e); handleAddMem(e);}}>Invite</MenuItem>
                                         {isCreator ? creatorMenuItems : memberMenuItems}
