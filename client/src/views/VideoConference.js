@@ -93,7 +93,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
         //creates and sends offer to peer
         var handleNegotiationNeededEvent = async () => {
             const offer = await myPC.createOffer();
-            myPC.setLocalDescription(offer);
+            await myPC.setLocalDescription(offer);
             socket.emit('send_offer', peerId, myId, JSON.stringify(offer));
          };
          
