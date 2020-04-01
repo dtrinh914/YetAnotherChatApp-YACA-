@@ -1,8 +1,12 @@
 const {redisSet, redisGet, redisDel} = require('./redisUtil');
 const {storeGroupMsg} = require('./mongoUtil');
+const rtcHandler =  require('./rtcHandler');
 
 module.exports = function(io){
     io.on('connection', (socket) => {
+        //handles all logic related to video conferencing and rtc signaling
+        rtcHandler(io, socket);
+
         //joins room specified by the client
         socket.on('join_room', (room) => {
             socket.join(room);
@@ -67,7 +71,29 @@ module.exports = function(io){
             if(userId && !io.sockets.adapter.rooms[userId]){
                 for(let key in rooms){
                     if(key === socket.id || key === userId) continue;
-                    io.in(key).emit('update_status', key, userId, 'false');
+
+                    //clean up video conference rooms
+                    if(key.includes('video')){
+                        let res = await redisGet(key);
+
+                        if(res){
+                            res = JSON.parse(res);
+
+                            //iterate through array removing the userId
+                            res = res.filter(id => id !== userId);
+    
+                            //check if array is empty
+                            //insert if not empty, else delete
+                            if(res.length > 0){
+                                await redisSet(key, JSON.stringify(res));
+                                socket.in(key).emit('client_list', JSON.stringify(res));
+                            } else {
+                                await redisDel(key);
+                            }
+                        }
+                    } else {
+                        socket.in(key).emit('update_status', key, userId, 'false');
+                    }
                 }
 
                 await redisDel(userId);

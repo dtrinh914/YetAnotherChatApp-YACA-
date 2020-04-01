@@ -3,6 +3,7 @@ import {useHistory} from 'react-router-dom';
 import LeftNav from '../components/LeftNav';
 import ChatRoom from '../components/ChatRoom';
 import Welcome from '../components/Welcome';
+import VideoConference from './VideoConference';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from 'axios';
 import {ChatContext} from '../contexts/chatContext';
@@ -30,7 +31,7 @@ let socket;
 function Chat({io, url, loggedIn, setLoggedIn}){
     const classes = useStyles();
     const history = useHistory();
-    const {navDispatch} = useContext(NavContext);
+    const {navData, navDispatch} = useContext(NavContext);
     const {chatData, chatDispatch} = useContext(ChatContext);
     const [loaded, setLoaded] = useState(false);
 
@@ -174,16 +175,23 @@ function Chat({io, url, loggedIn, setLoggedIn}){
         socket.emit('leave_room', groupId);
     }
 
+    const currentGroup = chatData.groups[chatData.selected.index];
+
+    const ChatDisplay = <><LeftNav userData={chatData.user} groupData={chatData.groups} joinRoom={joinRoom} updateMembers={updateMembers} />
+                        {chatData.groups.length > 0 ? 
+                            <ChatRoom currentGroup={currentGroup} userInfo={chatData.user}
+                            newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}
+                            updateGroup={updateGroup} removeGroup={removeGroup} leaveRoom={leaveRoom} 
+                            updateInvite={updateInvite} handleLogOut={handleLogOut} /> 
+                        : <Welcome handleLogOut={handleLogOut} openNewGroup={openNewGroup} />}</>
+
     if(loaded){
         return(
             <div className={classes.root}>
-                <LeftNav userData={chatData.user} groupData={chatData.groups} joinRoom={joinRoom} updateMembers={updateMembers} />
-                {chatData.groups.length > 0 ? 
-                    <ChatRoom currentGroup={chatData.groups[chatData.selected.index]} userInfo={chatData.user}
-                    newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}
-                    updateGroup={updateGroup} removeGroup={removeGroup} leaveRoom={leaveRoom} 
-                    updateInvite={updateInvite} handleLogOut={handleLogOut} /> 
-                    : <Welcome handleLogOut={handleLogOut} openNewGroup={openNewGroup} />}
+                {navData.view === 'chat' ? ChatDisplay : <VideoConference socket={socket} 
+                                                            channelId={chatData.selected._id} 
+                                                            userId={chatData.user._id} 
+                                                            groupName={currentGroup.groupName}/> }
             </div>
         );
     } else {
