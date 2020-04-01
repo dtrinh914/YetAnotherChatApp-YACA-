@@ -4,23 +4,20 @@ import VideoContainer from '../components/VideoContainer';
 import VideoMenu from '../components/VideoMenu';
 import {NavContext} from '../contexts/navContext';
 import {makeStyles} from '@material-ui/styles';
+import Grid from '@material-ui/core/Grid';
 
 const useStyle = makeStyles({
     root:{
         display: 'flex',
         flexDirection: 'column',
         width:'100%',
-        height:'100vh'
+        height:'100%'
     },
     videos:{
         backgroundColor: '#eeeeee',
         flexGrow: 1,
-        flexWrap: 'wrap',
         display: 'flex',
         alignItems: 'center'
-    },
-    videoitem:{
-        flex: '1 1 0px'
     }
 });
 
@@ -43,18 +40,33 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
         peerConnectionsState.current = peerConnections;
     });
 
-    const videosRef = useRef();
-
+    const videosRef = useRef(null);
     useEffect(()=>{
         if(!loading){
-            const appHeight = () => {
-                const calcValue = videosRef.current.offsetHeight - window.innerHeight + 90;
+            //adjusts the left/right padding on resize to maintain aspect ratio of videos
+            const adjPadding = () => {
+                const h = window.innerHeight;
+                const w = window.innerWidth;
+                //count of how many feeds
+                const len = feedsState.current.length;
+                //multiplier for top: when there is more than one video
+                // the aspect ratio is doubled because the width is twice as long
+                const top = len > 1 ? 2 : 1;
+
+                //multiplier for bottom: when there is more than two videos
+                // the aspect ratio is divided by two because there are now two rows of videos
+                const bot = len > 2 ? 2 : 1;
+
+                //padding needed = 
+                // current width - the width need to preserve 16:9 aspect ratio at the current height
+                // divided by two to account for padding being applied to both sides
+                const calcValue = (w - (( (16 * top) / (9 * bot)) * (h - 91) )) / 2 ;
                 videosRef.current.style.setProperty('padding', `0 ${calcValue > 0 ? calcValue: 0}px`);
             }
-            window.addEventListener('resize', appHeight);
-            appHeight();
+            window.addEventListener('resize', adjPadding);
+            adjPadding();
 
-            return () => window.removeEventListener('resize', appHeight);
+            return () => window.removeEventListener('resize', adjPadding);
         }
     }, [loading]);
     
@@ -308,10 +320,12 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
             <div className={classes.root}>
                 <VideoHeader groupName={groupName} />
                 <div className={classes.videos} ref={videosRef} >
-                    {feeds.map(feed => <div className={classes.videoitem}>
+                    <Grid container justify='center'>
+                    {feeds.map(feed => <Grid item xs={feeds.length > 1 ? 6 : 12}>
                                             <VideoContainer feed={feed.stream} />
-                                        </div>
+                                        </Grid>
                             )}
+                    </Grid>
                 </div>
                 <VideoMenu feed={feeds[0] ? feeds[0].stream : ''} handleGoBack={handleGoBack} />
             </div>
