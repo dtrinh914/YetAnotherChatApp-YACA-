@@ -166,6 +166,10 @@ function Chat({io, url, loggedIn, setLoggedIn}){
         socket.emit('remove_group', groupId);
     }
 
+    const removeUsers = (userIds, groupId) => {
+        socket.emit('remove_users', userIds, groupId);
+    }
+
     const openNewGroup = () => {
         navDispatch({type:'NEWGROUP', open:true});
         navDispatch({type:'LEFTDRAWER', open: false});
@@ -182,7 +186,7 @@ function Chat({io, url, loggedIn, setLoggedIn}){
                             <ChatRoom currentGroup={currentGroup} userInfo={chatData.user}
                             newMessage={newMessage} updateMembers={updateMembers} selected={chatData.selected}
                             updateGroup={updateGroup} removeGroup={removeGroup} leaveRoom={leaveRoom} 
-                            updateInvite={updateInvite} handleLogOut={handleLogOut} /> 
+                            removeUsers={removeUsers} updateInvite={updateInvite} handleLogOut={handleLogOut} /> 
                         : <Welcome handleLogOut={handleLogOut} openNewGroup={openNewGroup} />}</>
 
     if(loaded){
