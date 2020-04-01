@@ -2,7 +2,6 @@ import React, {useState, useRef, useEffect, useContext} from 'react';
 import VideoHeader from '../components/VideoHeader';
 import VideoContainer from '../components/VideoContainer';
 import VideoMenu from '../components/VideoMenu';
-import VideoOverlays from '../components/VideoOverlays';
 import {NavContext} from '../contexts/navContext';
 import {makeStyles} from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
@@ -27,6 +26,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     const [loading, setLoading] = useState(true);
     const [clientList, setClientList] = useState([]);
     const [feeds, setFeeds] = useState([]);
+    const [topOpen, setTopOpen] = useState(false);
     const [peerConnections, setPeerConnections] = useState([]);
     const {navDispatch} = useContext(NavContext);
     const {RTCPeerConnection, RTCSessionDescription, RTCIceCandidate} = window;
@@ -44,13 +44,13 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     const videosRef = useRef(null);
     useEffect(()=>{
         if(!loading){
-            alert('Video calling is currently in development.')
             //adjusts the left/right padding on resize to maintain aspect ratio of videos
             const adjPadding = () => {
                 const h = window.innerHeight;
                 const w = window.innerWidth;
                 //count of how many feeds
                 const len = feedsState.current.length;
+                const uiHeight = topOpen ? 227 : 90;
                 //multiplier for top: when there is more than one video
                 // the aspect ratio is doubled because the width is twice as long
                 const top = len > 1 ? 2 : 1;
@@ -62,7 +62,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                 //padding needed = 
                 // current width - the width need to preserve 16:9 aspect ratio at the current height
                 // divided by two to account for padding being applied to both sides
-                const calcValue = (w - (( (16 * top) / (9 * bot)) * (h - 91) )) / 2 ;
+                const calcValue = (w - (( (16 * top) / (9 * bot)) * (h - uiHeight) )) / 2 ;
                 videosRef.current.style.setProperty('padding', `0 ${calcValue > 0 ? calcValue: 0}px`);
             }
             window.addEventListener('resize', adjPadding);
@@ -70,7 +70,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
 
             return () => window.removeEventListener('resize', adjPadding);
         }
-    }, [loading]);
+    }, [loading, topOpen]);
     
     const createPeerConnection = (myId, peerId) => {
         //creates a new peer connection
@@ -191,6 +191,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     //get client's camera/microphone data
     useEffect(()=>{
         if(!loading){
+            alert('Video calling is currently in development.')
             //handle errors on getting user's video/audio data
             const handleGetUserMediaError = (e) => {
                 switch(e.name){
@@ -321,8 +322,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     } else {
         return(
             <div className={classes.root}>
-                <VideoHeader groupName={groupName} />
-                <VideoOverlays socket={socket} channelId={channelId} clientList={clientList} />
+                <VideoHeader groupName={groupName} socket={socket} channelId={channelId} setTopOpen={setTopOpen} />
                 <div className={classes.videos} ref={videosRef} >
                     <Grid container justify='center'>
                     {feeds.map(feed => <Grid item xs={feeds.length > 1 ? 6 : 12}>
