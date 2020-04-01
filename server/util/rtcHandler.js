@@ -60,4 +60,8 @@ module.exports = function (io, socket){
     socket.on('send_candidate', (to, from, candidate) => {
         socket.in(to).emit('receive_candidate', from, candidate);
     });
+
+    socket.on('overlay_state', (channelId,state) => {
+        socket.in(channelId).emit('overlay_state', state);
+    });
 };

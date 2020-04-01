@@ -31,7 +31,7 @@ export default function VideoMenu({feed, handleGoBack}) {
     }
 
     return (
-        <div style={{height:'50px',background:'grey', display:'flex', justifyContent:'center'}}>
+        <div style={{height:'50px',background:'#9e9e9e', display:'flex', justifyContent:'center'}}>
             <IconButton onClick={handleCameraToggle}>
                 {cameraOn ? <VideocamIcon /> : <VideocamOffIcon/>}
             </IconButton>

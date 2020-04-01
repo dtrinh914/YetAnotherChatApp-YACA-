@@ -2,6 +2,7 @@ import React, {useState, useRef, useEffect, useContext} from 'react';
 import VideoHeader from '../components/VideoHeader';
 import VideoContainer from '../components/VideoContainer';
 import VideoMenu from '../components/VideoMenu';
+import VideoOverlays from '../components/VideoOverlays';
 import {NavContext} from '../contexts/navContext';
 import {makeStyles} from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
@@ -43,6 +44,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     const videosRef = useRef(null);
     useEffect(()=>{
         if(!loading){
+            alert('Video calling is currently in development.')
             //adjusts the left/right padding on resize to maintain aspect ratio of videos
             const adjPadding = () => {
                 const h = window.innerHeight;
@@ -298,6 +300,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                 socket.off('client_list');
                 socket.off('receive_offer');
                 socket.off('receive_candidate');
+                socket.off('overlay_state');
             }
         };
         //eslint-disable-next-line
@@ -319,6 +322,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
         return(
             <div className={classes.root}>
                 <VideoHeader groupName={groupName} />
+                <VideoOverlays socket={socket} channelId={channelId} clientList={clientList} />
                 <div className={classes.videos} ref={videosRef} >
                     <Grid container justify='center'>
                     {feeds.map(feed => <Grid item xs={feeds.length > 1 ? 6 : 12}>
