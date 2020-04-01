@@ -1,22 +1,32 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import LifeCounters from './LifeCounters';
 import { v4 as uuid } from 'uuid';
 
 export default function VideoTopTools({socket, channelId}) {
     const [counters, setCounters] = useState([]);
 
+    const countersState = useRef();
+    useEffect(()=>{
+        countersState.current = counters;
+    })
+
     useEffect(() => {
-        socket.on('overlay_state', state =>{
+        socket.on('update_video_tools_state', state =>{
             setCounters(JSON.parse(state));
         });
 
+        socket.on('get_video_tools_state', id => {
+            socket.emit('send_video_tools_state', id, JSON.stringify(countersState.current));
+        });
+
         return () => {
-            socket.off('overlay_state')
+            socket.off('update_video_tools_state');
+            socket.off('get_video_tools_state');
         }
     }, [socket])
 
     const emitState = (state)=> {
-        socket.emit('overlay_state', channelId, JSON.stringify(state));
+        socket.emit('update_video_tools_state', channelId, JSON.stringify(state));
     }
 
     const handleLifeChange = (id, change) => {

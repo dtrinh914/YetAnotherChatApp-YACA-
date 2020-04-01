@@ -11,7 +11,8 @@ const useStyle = makeStyles({
     root:{
         display: 'flex',
         alignItems: 'center',
-        color: 'white'
+        color: 'white',
+        marginBottom: '8px'
     },
     title:{
         marginRight:'10px'

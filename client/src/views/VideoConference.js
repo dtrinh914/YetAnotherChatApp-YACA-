@@ -70,7 +70,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
 
             return () => window.removeEventListener('resize', adjPadding);
         }
-    }, [loading, topOpen]);
+    }, [loading, topOpen, clientList]);
     
     const createPeerConnection = (myId, peerId) => {
         //creates a new peer connection
@@ -191,7 +191,11 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     //get client's camera/microphone data
     useEffect(()=>{
         if(!loading){
-            alert('Video calling is currently in development.')
+            //check if user is the first in room, if not request the current video tools state
+            //from the first user
+            if(clientList[0] !== userId){
+                socket.emit('get_video_tools_state', clientList[0], userId)
+            }
             //handle errors on getting user's video/audio data
             const handleGetUserMediaError = (e) => {
                 switch(e.name){
@@ -229,7 +233,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                 .catch(handleGetUserMediaError);
         }
         //eslint-disable-next-line
-    },[userId,loading]);
+    },[userId,loading, socket]);
 
     useEffect(()=> {
         //subscribe to video channel
@@ -322,7 +326,8 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     } else {
         return(
             <div className={classes.root}>
-                <VideoHeader groupName={groupName} socket={socket} channelId={channelId} setTopOpen={setTopOpen} />
+                <VideoHeader groupName={groupName} socket={socket} 
+                             channelId={channelId} setTopOpen={setTopOpen} />
                 <div className={classes.videos} ref={videosRef} >
                     <Grid container justify='center'>
                     {feeds.map(feed => <Grid item xs={feeds.length > 1 ? 6 : 12}>
