@@ -61,7 +61,17 @@ module.exports = function (io, socket){
         socket.in(to).emit('receive_candidate', from, candidate);
     });
 
-    socket.on('overlay_state', (channelId,state) => {
-        socket.in(channelId).emit('overlay_state', state);
+
+    //used to keep video tools state in sync between users
+    socket.on('update_video_tools_state', (channelId,state) => {
+        socket.in(channelId).emit('update_video_tools_state', state);
+    });
+
+    socket.on('get_video_tools_state', (to,from)=>{
+        socket.in(to).emit('get_video_tools_state', from);
+    });
+
+    socket.on('send_video_tools_state', (to, state)=>{
+        socket.in(to).emit('update_video_tools_state', state);
     });
 };

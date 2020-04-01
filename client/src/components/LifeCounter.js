@@ -10,10 +10,12 @@ const useStyle = makeStyles({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        color: 'white'
     },
     button:{
+        color: 'white',
         padding: '0px'
-    }
+    },
 });
 
 export default function LifeCounter({count, id, handleLifeChange}) {
