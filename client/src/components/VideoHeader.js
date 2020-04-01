@@ -37,7 +37,8 @@ const useStyle = makeStyles({
         justifyContent:'space-between',
         backgroundColor: '#3f51b5',
         height: '70px',
-        overflow:'hidden'
+        overflow:'hidden',
+        paddingLeft: 0,
     },
     divider:{
         width:'100%',
