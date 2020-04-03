@@ -1,4 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
+import AutoCompleteItem from './AutoCompleteItem';
 import SearchIcon from '@material-ui/icons/Search';
 import Input from '@material-ui/core/Input';
 import List from '@material-ui/core/List';
@@ -22,14 +23,21 @@ const useStyle = makeStyles({
     input:{
         color: 'white'
     },
+    container:{
+        position:'fixed',
+        height: '100vh',
+    },
     results:{
         backgroundColor: '#5c6bc0',
         borderRadius: '0 0 5px 5px',
         position:'absolute',
-        width: '200px'
+        width: '200px',
+        maxHeight: '70%',
+        overflow: 'auto'
     },
     list:{
-        padding: 0
+        padding: 0,
+        color: 'white'
     }
 });
 
@@ -38,6 +46,7 @@ export default function CardSearcher() {
     const valueRef = useRef('');
     const [value, setValue] = useState();
     const [acData, setACData] = useState([]);
+    const [cache, setCache] = useState({}); 
     const [image, setImage]= useState('');
     const [selected, setSelected] = useState(0);
 
@@ -67,12 +76,20 @@ export default function CardSearcher() {
     const autoComplete = async() =>{
         const query = value;
         const url = 'https://api.scryfall.com/cards/autocomplete?q='+query
+
+        //check if data is in cache
+        if(cache[query]){
+            setACData(cache[query]);
+            return;
+        }
+
         try{
-            const response = await axios.get(url)
-                setSelected(0);
-                if(response.status === 200 && query === value){
+            const response = await axios.get(url);
+            setSelected(0);
+            if(response.status === 200 && query === value){
                 const data = await response.data;
                 setACData(data.data)
+                setCache({...cache, [query]:data.data});
             }
         } catch(e){
             console.log(e);
@@ -97,7 +114,7 @@ export default function CardSearcher() {
         }
     }
 
-    const handleSubmit = async (e) =>{
+    const handleSubmit = (e) =>{
         e.preventDefault();
         //reset the values on submit
         if(acData.length > 0){
@@ -132,6 +149,12 @@ export default function CardSearcher() {
             }
         }
     }
+
+    const clickItem = (index) => {
+        setSelected(index);
+        handleSubmit();
+    }
+
     return (
         <form onSubmit={handleSubmit}>
             <div className={classes.search}>
@@ -140,9 +163,14 @@ export default function CardSearcher() {
                        placeholder='Card Search' onKeyDown={handleKeyDown}
                        onChange={handleChange} />
             </div>
-            <div className={classes.results}>
-                <List className={classes.list}>
-                </List>
+            <div className={classes.container}>
+                <div className={classes.results}>
+                    <List className={classes.list}>
+                        {acData.map( (item,index) => <AutoCompleteItem key={item} index={index} 
+                                                        content={item} selected={index === selected}
+                                                        clickItem={clickItem} />)}
+                    </List>
+                </div>
             </div>
         </form>
     )
