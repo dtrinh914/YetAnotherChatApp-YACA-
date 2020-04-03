@@ -14,6 +14,7 @@ const useStyle = makeStyles({
         height:'100%'
     },
     videos:{
+        zIndex: -100,
         backgroundColor: '#eeeeee',
         flexGrow: 1,
         display: 'flex',
@@ -339,7 +340,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                              channelId={channelId} setTopOpen={setTopOpen} />
                 <div className={classes.videos} ref={videosRef} >
                     <Grid container justify='center'>
-                    {feeds.map(feed => <Grid item xs={feeds.length > 1 ? 6 : 12}>
+                    {feeds.map(feed => <Grid key={feed.id} item xs={feeds.length > 1 ? 6 : 12}>
                                             <VideoContainer feed={feed.stream} />
                                         </Grid>
                             )}

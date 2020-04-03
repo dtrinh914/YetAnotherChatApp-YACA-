@@ -1,5 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react';
 import AutoCompleteItem from './AutoCompleteItem';
+import CardDisplay from './CardDisplay';
 import SearchIcon from '@material-ui/icons/Search';
 import Input from '@material-ui/core/Input';
 import List from '@material-ui/core/List';
@@ -44,26 +45,30 @@ const useStyle = makeStyles({
 export default function CardSearcher() {
     const classes = useStyle();
     const valueRef = useRef('');
-    const [value, setValue] = useState();
+    const selectedRef = useRef(0);
+    const [value, setValue] = useState('');
     const [acData, setACData] = useState([]);
-    const [cache, setCache] = useState({}); 
+    const [cache, setCache] = useState({});
+    const [displayOpen, setDisplayOpen]  = useState(false); 
     const [image, setImage]= useState('');
     const [selected, setSelected] = useState(0);
 
     useEffect(()=>{
+        selectedRef.current = selected;
         valueRef.current = value
     })
 
     //get card image
     const getCard = async () => {
-        const query = acData[selected];
+        const query = acData[selectedRef.current];
         const url = 'https://api.scryfall.com/cards/named?exact=' + query;
         try{
             const response = await axios.get(url);
         
             if(response.status === 200){
                 const data = await response.data;
-                setImage(data.image_uris.normal)
+                setImage(data.image_uris.normal);
+                setDisplayOpen(true);
             }
         } catch(e){
             console.log(e);
@@ -115,12 +120,12 @@ export default function CardSearcher() {
     }
 
     const handleSubmit = (e) =>{
-        e.preventDefault();
+        if(e) e.preventDefault();
         //reset the values on submit
         if(acData.length > 0){
-            getCardDebounced();
             setValue('');
             setACData([]);
+            getCardDebounced();
         } 
     }
 
@@ -155,11 +160,16 @@ export default function CardSearcher() {
         handleSubmit();
     }
 
+    const handleCloseDisplay = () => {
+        setDisplayOpen(false);
+    }
+
     return (
+        <>
         <form onSubmit={handleSubmit}>
             <div className={classes.search}>
                 <SearchIcon className={classes.icon} />
-                <Input className={classes.input} disableUnderline 
+                <Input className={classes.input} disableUnderline value={value}
                        placeholder='Card Search' onKeyDown={handleKeyDown}
                        onChange={handleChange} />
             </div>
@@ -173,5 +183,7 @@ export default function CardSearcher() {
                 </div>
             </div>
         </form>
+        {displayOpen ? <CardDisplay url={image} handleClose={handleCloseDisplay} /> : ''}
+        </>
     )
 }

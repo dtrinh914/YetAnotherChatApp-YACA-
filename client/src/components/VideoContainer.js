@@ -13,6 +13,6 @@ export default function VideoContainer({feed}) {
     },[feed]);
 
     return (
-        <video style={{display:'flex'}} width='100%' autoPlay ref={video} />
+        <video width='100%' autoPlay ref={video} />
     )
 }
