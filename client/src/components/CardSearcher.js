@@ -42,7 +42,7 @@ const useStyle = makeStyles({
     }
 });
 
-export default function CardSearcher() {
+export default function CardSearcher({socket, channelId}) {
     const classes = useStyle();
     const valueRef = useRef('');
     const selectedRef = useRef(0);
@@ -55,8 +55,19 @@ export default function CardSearcher() {
 
     useEffect(()=>{
         selectedRef.current = selected;
-        valueRef.current = value
+        valueRef.current = value;
     })
+
+    useEffect(()=>{
+        socket.on('get_card', url => {
+            setImage(url);
+            setDisplayOpen(true);
+        });
+
+        return () => {
+            socket.off('get_card');
+        }
+    },[]);
 
     //get card image
     const getCard = async () => {
@@ -164,6 +175,10 @@ export default function CardSearcher() {
         setDisplayOpen(false);
     }
 
+    const handleShare = () => {
+        socket.emit('share_card', channelId, image);
+    }
+
     return (
         <>
         <form onSubmit={handleSubmit}>
@@ -183,7 +198,7 @@ export default function CardSearcher() {
                 </div>
             </div>
         </form>
-        {displayOpen ? <CardDisplay url={image} handleClose={handleCloseDisplay} /> : ''}
+        {displayOpen ? <CardDisplay url={image} handleShare={handleShare} handleClose={handleCloseDisplay} /> : ''}
         </>
     )
 }

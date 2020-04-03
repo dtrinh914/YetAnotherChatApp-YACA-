@@ -34,7 +34,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function CardDisplay({url, handleSend, handleClose}){
+export default function CardDisplay({url, handleShare, handleClose}){
     const classes = useStyles();
 
     return (
@@ -43,7 +43,7 @@ export default function CardDisplay({url, handleSend, handleClose}){
                 <Paper className={classes.paper}>
                     <img className={classes.img} src={url} alt='mtg-card' />
                     <div className={classes.display}> 
-                        <Button>Share</Button>
+                        <Button onClick={handleShare}>Share</Button>
                         <Button onClick={handleClose}>Close</Button>
                     </div>
                 </Paper>

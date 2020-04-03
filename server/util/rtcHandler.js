@@ -74,4 +74,8 @@ module.exports = function (io, socket){
     socket.on('send_video_tools_state', (to, state)=>{
         socket.in(to).emit('update_video_tools_state', state);
     });
+
+    socket.on('share_card', (to, url) => {
+        socket.in(to).emit('get_card', url);
+    });
 };
