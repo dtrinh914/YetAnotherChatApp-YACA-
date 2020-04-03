@@ -13,7 +13,8 @@ const useStyle = makeStyles({
         display: 'flex',
         alignItems: 'center',
         color: 'white',
-        marginBottom: '8px'
+        marginBottom: '8px',
+        overflow: 'hidden'
     },
     title:{
         marginLeft: '24px',

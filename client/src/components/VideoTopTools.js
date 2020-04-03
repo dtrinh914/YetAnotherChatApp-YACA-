@@ -1,14 +1,26 @@
 import React, {useState, useEffect, useRef} from 'react';
 import LifeCounters from './LifeCounters';
+import CardSearcher from './CardSearcher';
 import { v4 as uuid } from 'uuid';
+import {makeStyles} from '@material-ui/styles';
+import {debounce} from 'throttle-debounce';
+
+const useStyle = makeStyles({
+    root:{
+        display: 'flex',
+        justifyContent:'space-between',
+        alignItems: 'center'
+    }
+});
 
 export default function VideoTopTools({socket, channelId}) {
+    const classes = useStyle();
     const [counters, setCounters] = useState([]);
 
     const countersState = useRef();
     useEffect(()=>{
         countersState.current = counters;
-    })
+    });
 
     useEffect(() => {
         socket.on('update_video_tools_state', state =>{
@@ -28,6 +40,7 @@ export default function VideoTopTools({socket, channelId}) {
     const emitState = (state)=> {
         socket.emit('update_video_tools_state', channelId, JSON.stringify(state));
     }
+    const debounceEmitState = debounce(emitState, 500);
 
     const handleLifeChange = (id, change) => {
         const newCounterState = counters.map(counter => {
@@ -40,14 +53,14 @@ export default function VideoTopTools({socket, channelId}) {
         });
 
         setCounters(newCounterState);
-        emitState(newCounterState);
+        debounceEmitState(newCounterState);
     };
 
     const addCounter = () => {
         if(counters.length < 12){
             const newCounterState = [...counters, {id: uuid(), count: 40}]
             setCounters(newCounterState);
-            emitState(newCounterState);
+            debounceEmitState(newCounterState);
         }
     }
 
@@ -56,7 +69,7 @@ export default function VideoTopTools({socket, channelId}) {
             let newCounterState = [...counters];
             newCounterState.pop();
             setCounters(newCounterState);
-            emitState(newCounterState);
+            debounceEmitState(newCounterState);
         }   
     }
 
@@ -73,15 +86,18 @@ export default function VideoTopTools({socket, channelId}) {
 
         if(changed){
             setCounters(newCounterState);
-            emitState(newCounterState);
+            debounceEmitState(newCounterState);
         }
     }
 
     return (
-            <LifeCounters counters={counters}
-                          handleLifeChange={handleLifeChange} 
-                          addCounter={addCounter}
-                          removeCounter={removeCounter}
-                          resetCounters={resetCounters}/>
+            <div className={classes.root}>
+                <LifeCounters counters={counters}
+                            handleLifeChange={handleLifeChange} 
+                            addCounter={addCounter}
+                            removeCounter={removeCounter}
+                            resetCounters={resetCounters}/>
+                <CardSearcher socket={socket} channelId={channelId} />
+            </div>
     )
 }

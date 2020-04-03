@@ -192,7 +192,7 @@ function Chat({io, url, loggedIn, setLoggedIn}){
     if(loaded){
         return(
             <div className={classes.root}>
-                {navData.view === 'chat' ? ChatDisplay : <VideoConference socket={socket} 
+                {navData.view === 'chat' ? ChatDisplay : <VideoConference socket={socket}  
                                                             channelId={chatData.selected._id} 
                                                             userId={chatData.user._id} 
                                                             groupName={currentGroup.groupName}/> }

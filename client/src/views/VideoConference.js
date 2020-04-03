@@ -14,6 +14,7 @@ const useStyle = makeStyles({
         height:'100%'
     },
     videos:{
+        zIndex: -100,
         backgroundColor: '#eeeeee',
         flexGrow: 1,
         display: 'flex',
@@ -74,14 +75,11 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     
     const createPeerConnection = (myId, peerId) => {
         //creates a new peer connection
-        let myPC = new RTCPeerConnection({
-            iceServers:[
+        let myPC = new RTCPeerConnection({iceServers:[
                 {
-                    urls: ['stun:stun.1.google.com:19302', 
-                           'stun:stun.2.google.com:19302']
+                    urls: [process.env.REACT_APP_ICE]
                 }
-            ]
-        })
+        ]});
 
         //sends ice candidate to peer
         var handleICECandidateEvent = (e) => {
@@ -92,9 +90,13 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
 
         //creates and sends offer to peer
         var handleNegotiationNeededEvent = async () => {
+            try{
             const offer = await myPC.createOffer();
-            myPC.setLocalDescription(offer);
+            await myPC.setLocalDescription(offer);
             socket.emit('send_offer', peerId, myId, JSON.stringify(offer));
+            } catch(e) {
+                console.log(e)
+            }
          };
          
          //adds stream tracks to client
@@ -212,7 +214,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                 }
             }
             //get user's audio and video data
-            navigator.mediaDevices.getUserMedia({audio:true, video:{width:1280,height:720}})
+            navigator.mediaDevices.getUserMedia({audio:true, video:{width:{ideal:1280},height:{ideal:720}}})
                 .then(stream =>{
                     //store stream data in feeds state
                     setFeeds(prevState => [...prevState, {id: userId, stream: stream}]);
@@ -256,33 +258,41 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     
         //on receiving offer
         socket.on('receive_offer', async(clientId, offer) => {
-            //create new peer connection
-            const pc = createPeerConnection(userId, clientId);
+            try{
+                //create new peer connection
+                const pc = createPeerConnection(userId, clientId);
 
-            //user offer data to set pc remote SD 
-            const desc = new RTCSessionDescription(JSON.parse(offer));
-            await pc.setRemoteDescription(desc);
-            
-            //attaches user's stream data to peer connection
-            const stream = feedsState.current[0].stream;
-            stream.getTracks().forEach(track => pc.addTrack(track, stream));
-            
-            //create answer and set local SD to answer
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
+                //user offer data to set pc remote SD 
+                const desc = new RTCSessionDescription(JSON.parse(offer));
+                await pc.setRemoteDescription(desc);
+                
+                //attaches user's stream data to peer connection
+                const stream = feedsState.current[0].stream;
+                stream.getTracks().forEach(track => pc.addTrack(track, stream));
+                
+                //create answer and set local SD to answer
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
 
-            //send answer to peer
-            socket.emit('send_answer', clientId, userId, JSON.stringify(answer));
+                //send answer to peer
+                socket.emit('send_answer', clientId, userId, JSON.stringify(answer));
+            } catch(e){
+                console.log(e)
+            }
         });
     
         socket.on('receive_answer', async(clientId, answer) => {
-            //find peerConnection and set remote SD to be answer
-            for(let i = 0; i < peerConnectionsState.current.length; i++){
-                const pc = peerConnectionsState.current[i];
-                if(pc.id === clientId){
-                    await pc.connection.setRemoteDescription(new RTCSessionDescription(JSON.parse(answer)));
-                }
-            } 
+            try{
+                //find peerConnection and set remote SD to be answer
+                for(let i = 0; i < peerConnectionsState.current.length; i++){
+                    const pc = peerConnectionsState.current[i];
+                    if(pc.id === clientId){
+                        await pc.connection.setRemoteDescription(new RTCSessionDescription(JSON.parse(answer)));
+                    }
+                } 
+            } catch(e){
+                console.log(e);
+            }
         });
     
         socket.on('receive_candidate', (clientId, data)=>{
@@ -330,7 +340,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                              channelId={channelId} setTopOpen={setTopOpen} />
                 <div className={classes.videos} ref={videosRef} >
                     <Grid container justify='center'>
-                    {feeds.map(feed => <Grid item xs={feeds.length > 1 ? 6 : 12}>
+                    {feeds.map(feed => <Grid key={feed.id} item xs={feeds.length > 1 ? 6 : 12}>
                                             <VideoContainer feed={feed.stream} />
                                         </Grid>
                             )}
