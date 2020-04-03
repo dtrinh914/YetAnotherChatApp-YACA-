@@ -192,7 +192,6 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     //get client's camera/microphone data
     useEffect(()=>{
         if(!loading){
-            alert(process.env.REACT_APP_ICE);
             //check if user is the first in room, if not request the current video tools state
             //from the first user
             if(clientList[0] !== userId){

@@ -1,8 +1,19 @@
 import React, {useState, useEffect, useRef} from 'react';
 import LifeCounters from './LifeCounters';
+import CardSearcher from './CardSearcher';
 import { v4 as uuid } from 'uuid';
+import {makeStyles} from '@material-ui/styles';
+
+const useStyle = makeStyles({
+    root:{
+        display: 'flex',
+        justifyContent:'space-between',
+        alignItems: 'center'
+    }
+});
 
 export default function VideoTopTools({socket, channelId}) {
+    const classes = useStyle();
     const [counters, setCounters] = useState([]);
 
     const countersState = useRef();
@@ -78,10 +89,13 @@ export default function VideoTopTools({socket, channelId}) {
     }
 
     return (
-            <LifeCounters counters={counters}
-                          handleLifeChange={handleLifeChange} 
-                          addCounter={addCounter}
-                          removeCounter={removeCounter}
-                          resetCounters={resetCounters}/>
+            <div className={classes.root}>
+                <LifeCounters counters={counters}
+                            handleLifeChange={handleLifeChange} 
+                            addCounter={addCounter}
+                            removeCounter={removeCounter}
+                            resetCounters={resetCounters}/>
+                <CardSearcher/>
+            </div>
     )
 }
