@@ -193,10 +193,10 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     //get client's camera/microphone data
     useEffect(()=>{
         if(!loading){
-            //check if user is the first in room, if not request the current video tools state
+            //check if user is the first in room, if not request the current life counter state
             //from the first user
             if(clientList[0] !== userId){
-                socket.emit('get_video_tools_state', clientList[0], userId)
+                socket.emit('get_counters', clientList[0], userId)
             }
             //handle errors on getting user's video/audio data
             const handleGetUserMediaError = (e) => {
