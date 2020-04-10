@@ -25,6 +25,7 @@ const useStyle = makeStyles({
         color: 'white'
     },
     container:{
+        zIndex: 1000,
         position:'fixed',
         height: '100vh',
     },
@@ -67,7 +68,7 @@ export default function CardSearcher({socket, channelId}) {
         return () => {
             socket.off('get_card');
         }
-    },[]);
+    },[socket]);
 
     //get card image
     const getCard = async () => {

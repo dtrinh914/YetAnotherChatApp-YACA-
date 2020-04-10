@@ -5,6 +5,8 @@ import VideoMenu from '../components/VideoMenu';
 import {NavContext} from '../contexts/navContext';
 import {makeStyles} from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
+import {DndProvider} from 'react-dnd';
+import Backend from 'react-dnd-html5-backend';
 
 const useStyle = makeStyles({
     root:{
@@ -14,7 +16,6 @@ const useStyle = makeStyles({
         height:'100%'
     },
     videos:{
-        zIndex: -100,
         backgroundColor: '#eeeeee',
         flexGrow: 1,
         display: 'flex',
@@ -193,10 +194,10 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     //get client's camera/microphone data
     useEffect(()=>{
         if(!loading){
-            //check if user is the first in room, if not request the current video tools state
+            //check if user is the first in room, if not request the current life counter state
             //from the first user
             if(clientList[0] !== userId){
-                socket.emit('get_video_tools_state', clientList[0], userId)
+                socket.emit('get_counters', clientList[0], userId)
             }
             //handle errors on getting user's video/audio data
             const handleGetUserMediaError = (e) => {
@@ -327,6 +328,13 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
         setFeeds(prevState => prevState.filter(feed => clientList.includes(feed.id)));
     },[clientList])
 
+    //change the index of the feeds, which changes placement of the videos
+    const moveVideo = (currentIndex, toIndex) => {
+        let newFeedState = [...feedsState.current];
+        [newFeedState[currentIndex], newFeedState[toIndex]] = [newFeedState[toIndex], newFeedState[currentIndex]];
+        setFeeds(newFeedState);
+    };
+
     if(loading){
         return (
             <div>
@@ -335,19 +343,20 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
         );
     } else {
         return(
-            <div className={classes.root}>
-                <VideoHeader groupName={groupName} socket={socket} 
-                             channelId={channelId} setTopOpen={setTopOpen} />
-                <div className={classes.videos} ref={videosRef} >
-                    <Grid container justify='center'>
-                    {feeds.map(feed => <Grid key={feed.id} item xs={feeds.length > 1 ? 6 : 12}>
-                                            <VideoContainer feed={feed.stream} />
-                                        </Grid>
-                            )}
-                    </Grid>
+            <DndProvider backend={Backend}> 
+                <div className={classes.root}>
+                    <VideoHeader groupName={groupName} socket={socket} 
+                                channelId={channelId} setTopOpen={setTopOpen} />
+                        <div className={classes.videos} ref={videosRef} >
+                            <Grid container justify='center'>
+                            {feeds.map( (feed,index) => <VideoContainer key={feed.id} feed={feed.stream} 
+                                                    size={feeds.length > 1 ? 6 : 12} index={index} 
+                                                    moveVideo={moveVideo} />)}
+                            </Grid>
+                        </div>
+                    <VideoMenu feed={feeds[0] ? feeds[0].stream : ''} handleGoBack={handleGoBack} />
                 </div>
-                <VideoMenu feed={feeds[0] ? feeds[0].stream : ''} handleGoBack={handleGoBack} />
-            </div>
+            </DndProvider>  
         );
     }
 }
