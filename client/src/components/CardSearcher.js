@@ -25,6 +25,7 @@ const useStyle = makeStyles({
         color: 'white'
     },
     container:{
+        zIndex: 1000,
         position:'fixed',
         height: '100vh',
     },
