@@ -8,7 +8,7 @@ const ioClient = require('socket.io-client');
 const wait = require('wait-for-expect');
 
 //mock config file to use test DB
-jest.mock('../config/config')
+jest.mock('../config/config');
 
 //define client sockets for testing
 let socket1, socket2, socket3, clients, testGroupId;

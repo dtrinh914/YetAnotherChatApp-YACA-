@@ -2,48 +2,56 @@ const {redisSet, redisGet, redisDel} = require('./redisUtil');
 
 module.exports = function (io, socket){
     socket.on('join_video', async (channelId,userId) => {
-        const formattedId = 'video' + channelId;
-        socket.join(formattedId);
-        //check to see if video channel exists
-        let res = await redisGet(formattedId);
-        if(res){
-            res = JSON.parse(res);
+        try{
+            const formattedId = 'video' + channelId;
+            socket.join(formattedId);
+            //check to see if video channel exists
+            let res = await redisGet(formattedId);
+            if(res){
+                res = JSON.parse(res);
 
-            //check if maximum number of clients in room
-            if(res.length === 4){
-                //send message to user
-                io.in(userId).emit('client_list', false);
-                //exit out early
-                return;
-            }            
-            //add userId to list of users
-            res.push(userId);
-        } else {
-            res = [userId];   
+                //check if maximum number of clients in room
+                if(res.length === 4){
+                    //send message to user
+                    socket.emit('client_list', false);
+                    //exit out early
+                    return;
+                }            
+                //add userId to list of users
+                res.push(userId);
+            } else {
+                res = [userId];   
+            }
+            await redisSet(formattedId, JSON.stringify(res));
+
+            //send the new userlist to everyone in room
+            io.in(formattedId).emit('client_list', JSON.stringify(res));
+        } catch(e){
+            console.log(e);
         }
-        await redisSet(formattedId, JSON.stringify(res));
-
-        //send the new userlist to everyone in room
-        io.in(formattedId).emit('client_list', JSON.stringify(res));
     });
 
     socket.on('leave_video', async (channelId, userId) => {
-        const formattedId = 'video' + channelId;
-        let res = await redisGet(formattedId);
+        try{
+            const formattedId = 'video' + channelId;
+            let res = await redisGet(formattedId);
 
-        if(res){
-            res = JSON.parse(res);
-            //iterate through array removing the userId
-            res = res.filter(id => id !== userId);
+            if(res){
+                res = JSON.parse(res);
+                //iterate through array removing the userId
+                res = res.filter(id => id !== userId);
 
-            //check if array is empty
-            //insert if not empty, else delete
-            if(res.length > 0){
-                await redisSet(formattedId, JSON.stringify(res));
-                socket.in(formattedId).emit('client_list', JSON.stringify(res));
-            } else {
-                await redisDel(formattedId);
+                //check if array is empty
+                //insert if not empty, else delete
+                if(res.length > 0){
+                    await redisSet(formattedId, JSON.stringify(res));
+                    socket.in(formattedId).emit('client_list', JSON.stringify(res));
+                } else {
+                    await redisDel(formattedId);
+                }
             }
+        } catch(e){
+            console.log(e);
         }
     });
 
@@ -63,7 +71,7 @@ module.exports = function (io, socket){
 
 
     //used to keep video tools state in sync between users
-    socket.on('update_counters', (channelId,state) => {
+    socket.on('update_counters', (channelId, state) => {
         socket.in(channelId).emit('update_counters', state);
     });
 
