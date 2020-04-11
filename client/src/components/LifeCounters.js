@@ -14,7 +14,7 @@ const useStyle = makeStyles({
         display: 'flex',
         alignItems: 'center',
         color: 'white',
-        marginBottom: '8px',
+        marginBottom: '2px',
         overflow: 'hidden'
     },
     title:{
@@ -60,10 +60,10 @@ export default function LifeCounters({socket, channelId}) {
         socket.emit('update_counters', channelId, JSON.stringify(state));
     }
     
-    const handleLifeChange = (id, change) => {
+    const handleLifeChange = (id, newLife) => {
         const newCounterState = counters.map(counter => {
             if(counter.id === id){
-                const newCount = counter.count + change;
+                const newCount = newLife;
                 return {...counter, count:newCount};
             } else {
                 return counter;
