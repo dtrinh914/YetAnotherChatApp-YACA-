@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, useContext} from 'react';
+import React, {useState, useRef, useEffect, useContext, useCallback} from 'react';
 import VideoHeader from '../components/VideoHeader';
 import VideoContainer from '../components/VideoContainer';
 import VideoMenu from '../components/VideoMenu';
@@ -13,7 +13,8 @@ const useStyle = makeStyles({
         display: 'flex',
         flexDirection: 'column',
         width:'100%',
-        height:'100%'
+        height:'100%',
+        overflow: 'hidden'
     },
     videos:{
         backgroundColor: '#eeeeee',
@@ -44,36 +45,44 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     });
 
     const videosRef = useRef(null);
+
+    //adjusts the left/right padding on resize to maintain aspect ratio of videos
+    const adjPadding = useCallback(() => {
+        const h = window.innerHeight;
+        const w = window.innerWidth;
+        //count of how many feeds
+        const len = feedsState.current.length;
+        const uiHeight = topOpen ? 227 : 90;
+        //multiplier for top: when there is more than one video
+        // the aspect ratio is doubled because the width is twice as long
+        const top = len > 1 ? 2 : 1;
+
+        //multiplier for bottom: when there is more than two videos
+        // the aspect ratio is divided by two because there are now two rows of videos
+        const bot = len > 2 ? 2 : 1;
+
+        //padding needed = 
+        // current width - the width need to preserve 16:9 aspect ratio at the current height
+        // divided by two to account for padding being applied to both sides
+        const calcValue = (w - (( (16 * top) / (9 * bot)) * (h - uiHeight) )) / 2 ;
+        videosRef.current.style.setProperty('padding', `0 ${calcValue > 0 ? calcValue: 0}px`);
+    }, [topOpen]);  
+
+    //add event listener on load
     useEffect(()=>{
         if(!loading){
-            //adjusts the left/right padding on resize to maintain aspect ratio of videos
-            const adjPadding = () => {
-                const h = window.innerHeight;
-                const w = window.innerWidth;
-                //count of how many feeds
-                const len = feedsState.current.length;
-                const uiHeight = topOpen ? 227 : 90;
-                //multiplier for top: when there is more than one video
-                // the aspect ratio is doubled because the width is twice as long
-                const top = len > 1 ? 2 : 1;
-
-                //multiplier for bottom: when there is more than two videos
-                // the aspect ratio is divided by two because there are now two rows of videos
-                const bot = len > 2 ? 2 : 1;
-
-                //padding needed = 
-                // current width - the width need to preserve 16:9 aspect ratio at the current height
-                // divided by two to account for padding being applied to both sides
-                const calcValue = (w - (( (16 * top) / (9 * bot)) * (h - uiHeight) )) / 2 ;
-                videosRef.current.style.setProperty('padding', `0 ${calcValue > 0 ? calcValue: 0}px`);
-            }
             window.addEventListener('resize', adjPadding);
             adjPadding();
 
             return () => window.removeEventListener('resize', adjPadding);
         }
-    }, [loading, topOpen, clientList]);
-    
+    }, [loading, adjPadding]);
+
+    //adjust padding when feeds and topOpen changes state
+    useEffect(()=>{
+        if(videosRef.current) adjPadding();
+    },[topOpen, feeds, adjPadding])
+
     const createPeerConnection = (myId, peerId) => {
         //creates a new peer connection
         let myPC = new RTCPeerConnection({iceServers:[
