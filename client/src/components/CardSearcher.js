@@ -46,7 +46,6 @@ const useStyle = makeStyles({
 export default function CardSearcher({socket, channelId}) {
     const classes = useStyle();
     const valueRef = useRef('');
-    const selectedRef = useRef(0);
     const [value, setValue] = useState('');
     const [acData, setACData] = useState([]);
     const [cache, setCache] = useState({});
@@ -55,9 +54,8 @@ export default function CardSearcher({socket, channelId}) {
     const [selected, setSelected] = useState(0);
 
     useEffect(()=>{
-        selectedRef.current = selected;
         valueRef.current = value;
-    })
+    },[value]);
 
     useEffect(()=>{
         socket.on('get_card', url => {
@@ -71,8 +69,8 @@ export default function CardSearcher({socket, channelId}) {
     },[socket]);
 
     //get card image
-    const getCard = async (q) => {
-        const query = q;
+    const getCard = async (index) => {
+        const query = acData[index];
         const url = 'https://api.scryfall.com/cards/named?exact=' + query;
         try{
             const response = await axios.get(url);
@@ -94,8 +92,6 @@ export default function CardSearcher({socket, channelId}) {
             console.log(e);
         }
     };
-
-    const getCardDebounced = useCallback(debounce(500, getCard),[]);
 
     //get autocomplete data
     const autoComplete = async(value, cache) =>{
@@ -141,12 +137,12 @@ export default function CardSearcher({socket, channelId}) {
     };
 
     const handleSubmit = (e) =>{
-        if(e) e.preventDefault();
+        e.preventDefault();
         //reset the values on submit
         if(acData.length > 0){
             setValue('');
             setACData([]);
-            getCardDebounced(acData[selectedRef.current]);
+            getCard(selected);
         } 
     };
 
@@ -177,8 +173,9 @@ export default function CardSearcher({socket, channelId}) {
     };
 
     const clickItem = (index) => {
-        setSelected(index);
-        handleSubmit();
+        setValue('');
+        setACData([]);
+        getCard(index);
     };
 
     const handleCloseDisplay = () => {
@@ -189,12 +186,6 @@ export default function CardSearcher({socket, channelId}) {
         socket.emit('share_card', channelId, image);
     };
 
-    //clear values if input loses focus
-    const handleBlur = () => {
-        setValue('');
-        setACData([]);
-    };
-
     return (
         <>
         <form onSubmit={handleSubmit}>
@@ -202,7 +193,7 @@ export default function CardSearcher({socket, channelId}) {
                 <SearchIcon className={classes.icon} />
                 <Input className={classes.input} disableUnderline value={value}
                        placeholder='Card Search' onKeyDown={handleKeyDown}
-                       onChange={handleChange} onBlur={handleBlur} />
+                       onChange={handleChange} />
             </div>
             <div className={classes.container}>
                 <div className={classes.results}>
