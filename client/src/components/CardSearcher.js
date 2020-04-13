@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useEffect, useCallback} from 'react';
 import AutoCompleteItem from './AutoCompleteItem';
 import CardDisplay from './CardDisplay';
 import SearchIcon from '@material-ui/icons/Search';
@@ -46,18 +46,16 @@ const useStyle = makeStyles({
 export default function CardSearcher({socket, channelId}) {
     const classes = useStyle();
     const valueRef = useRef('');
-    const selectedRef = useRef(0);
     const [value, setValue] = useState('');
     const [acData, setACData] = useState([]);
     const [cache, setCache] = useState({});
     const [displayOpen, setDisplayOpen]  = useState(false); 
-    const [image, setImage]= useState('');
+    const [image, setImage]= useState([]);
     const [selected, setSelected] = useState(0);
 
     useEffect(()=>{
-        selectedRef.current = selected;
         valueRef.current = value;
-    })
+    },[value]);
 
     useEffect(()=>{
         socket.on('get_card', url => {
@@ -71,50 +69,57 @@ export default function CardSearcher({socket, channelId}) {
     },[socket]);
 
     //get card image
-    const getCard = async () => {
-        const query = acData[selectedRef.current];
+    const getCard = async (index) => {
+        const query = acData[index];
         const url = 'https://api.scryfall.com/cards/named?exact=' + query;
         try{
             const response = await axios.get(url);
         
             if(response.status === 200){
                 const data = await response.data;
-                setImage(data.image_uris.normal);
+
+                if(data.image_uris){
+                    setImage([data.image_uris.normal]);
+                //logic to deal with double-faced cards
+                } else {
+                    const imageUrls = data.card_faces.map(face => face.image_uris.normal);
+                    setImage(imageUrls);
+                }
+
                 setDisplayOpen(true);
             }
         } catch(e){
             console.log(e);
         }
-    }
-    const getCardDebounced = debounce(500, getCard);
-
+    };
 
     //get autocomplete data
-    const autoComplete = async() =>{
+    const autoComplete = async(value, cache) =>{
         const query = value;
         const url = 'https://api.scryfall.com/cards/autocomplete?q='+query
 
         //check if data is in cache
         if(cache[query]){
-            setACData(cache[query]);
+            if(valueRef.current) setACData(cache[query]);
             return;
         }
 
         try{
             const response = await axios.get(url);
             setSelected(0);
-            if(response.status === 200 && query === value){
+
+            if(response.status === 200 && query === valueRef.current){
                 const data = await response.data;
-                setACData(data.data)
+                if(valueRef.current) setACData(data.data)
                 setCache({...cache, [query]:data.data});
             }
         } catch(e){
             console.log(e);
         }
-    }
+    };
   
-    const autoCompleteThrottled = throttle(500, autoComplete);
-    const autoCompleteDebounced = debounce(500, autoComplete);
+    const autoCompleteThrottled = useCallback(throttle(200, autoComplete),[]);
+    const autoCompleteDebounced = useCallback(debounce(200, autoComplete),[]);
 
     const handleChange = (e) => {
         const newVal = e.target.value;
@@ -124,22 +129,22 @@ export default function CardSearcher({socket, channelId}) {
         // old input are different
         if(value && newVal.trim() !== value.trim()){
             if(newVal.length < 5){
-                autoCompleteThrottled();
+                autoCompleteThrottled(newVal, cache);
             } else {
-                autoCompleteDebounced();
+                autoCompleteDebounced(newVal, cache);
             }
         }
-    }
+    };
 
     const handleSubmit = (e) =>{
-        if(e) e.preventDefault();
+        e.preventDefault();
         //reset the values on submit
         if(acData.length > 0){
             setValue('');
             setACData([]);
-            getCardDebounced();
+            getCard(selected);
         } 
-    }
+    };
 
     const handleKeyDown = (e) =>{
         //on down arrow
@@ -165,20 +170,21 @@ export default function CardSearcher({socket, channelId}) {
                 setSelected(acData.length -1);
             }
         }
-    }
+    };
 
     const clickItem = (index) => {
-        setSelected(index);
-        handleSubmit();
-    }
+        setValue('');
+        setACData([]);
+        getCard(index);
+    };
 
     const handleCloseDisplay = () => {
         setDisplayOpen(false);
-    }
+    };
 
     const handleShare = () => {
         socket.emit('share_card', channelId, image);
-    }
+    };
 
     return (
         <>
@@ -199,7 +205,7 @@ export default function CardSearcher({socket, channelId}) {
                 </div>
             </div>
         </form>
-        {displayOpen ? <CardDisplay url={image} handleShare={handleShare} handleClose={handleCloseDisplay} /> : ''}
+        {displayOpen ? <CardDisplay urls={image} handleShare={handleShare} handleClose={handleCloseDisplay} /> : ''}
         </>
     )
 }
