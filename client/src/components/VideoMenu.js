@@ -32,10 +32,10 @@ export default function VideoMenu({feed, handleGoBack}) {
 
     return (
         <div style={{height:'50px',background:'#9e9e9e', display:'flex', justifyContent:'center'}}>
-            <IconButton onClick={handleCameraToggle}>
+            <IconButton onClick={handleCameraToggle} disabled={!feed}>
                 {cameraOn ? <VideocamIcon /> : <VideocamOffIcon/>}
             </IconButton>
-            <IconButton onClick={handleMicToggle}>
+            <IconButton onClick={handleMicToggle} disabled={!feed}>
                 {micOn ? <MicIcon /> : <MicOffIcon/>}
             </IconButton>
             <Button onClick={handleGoBack}>Go Back</Button>
