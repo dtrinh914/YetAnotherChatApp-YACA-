@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {makeStyles} from '@material-ui/styles';
 import Paper from '@material-ui/core/Paper';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
@@ -37,6 +37,11 @@ const useStyles = makeStyles({
 export default function CardDisplay({urls, handleShare, handleClose}){
     const classes = useStyles();
     const [face, setFace] = useState(0);
+    const containerRef = useRef(null);
+
+    useEffect(()=>{
+        containerRef.current.focus();
+    },[])
 
     //switch image on click of double faced cards
     const handleFace = () => {
@@ -49,7 +54,7 @@ export default function CardDisplay({urls, handleShare, handleClose}){
     return (
         <div className={classes.root}>
             <ClickAwayListener onClickAway={handleClose} mouseEvent='onMouseDown'>
-                <Paper className={classes.paper}>
+                <Paper className={classes.paper} ref={containerRef}>
                     <img onClick={handleFace} className={classes.img} src={urls[face]} alt='mtg-card' />
                     <div className={classes.display}> 
                         <Button onClick={handleShare}>Share</Button>

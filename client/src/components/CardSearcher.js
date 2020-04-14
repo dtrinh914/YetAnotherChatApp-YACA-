@@ -1,9 +1,13 @@
 import React, {useState, useRef, useEffect, useCallback} from 'react';
+import useToggle from '../hooks/useToggle';
 import AutoCompleteItem from './AutoCompleteItem';
 import CardDisplay from './CardDisplay';
 import SearchIcon from '@material-ui/icons/Search';
+import HistoryIcon from '@material-ui/icons/History';
 import Input from '@material-ui/core/Input';
 import List from '@material-ui/core/List';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/styles';
 import {throttle, debounce} from 'throttle-debounce';
 import axios from 'axios'
@@ -17,9 +21,9 @@ const useStyle = makeStyles({
         height: '40px',
         width: '200px'
     },
-    icon:{
-        marginLeft: '10px',
-        color:'white'
+    searchIcon:{
+        color:'white',
+        minWidth: '30px'
     },
     input:{
         color: 'white'
@@ -48,8 +52,10 @@ export default function CardSearcher({socket, channelId}) {
     const valueRef = useRef('');
     const [value, setValue] = useState('');
     const [acData, setACData] = useState([]);
+    const [historyData, setHistoryData] = useState([]);
     const [cache, setCache] = useState({});
-    const [displayOpen, setDisplayOpen]  = useState(false); 
+    const [displayOpen, setDisplayOpen] = useState(false); 
+    const [historyOpen, toggleHistoryOpen] = useToggle(false);
     const [image, setImage]= useState([]);
     const [selected, setSelected] = useState(0);
 
@@ -77,15 +83,16 @@ export default function CardSearcher({socket, channelId}) {
         
             if(response.status === 200){
                 const data = await response.data;
-
-                if(data.image_uris){
-                    setImage([data.image_uris.normal]);
-                //logic to deal with double-faced cards
-                } else {
-                    const imageUrls = data.card_faces.map(face => face.image_uris.normal);
-                    setImage(imageUrls);
-                }
-
+                
+                //logic to handle double faced cards
+                const imageUrls = data.image_uris ? [data.image_uris.normal] 
+                                                  : data.card_faces.map(face => face.image_uris.normal);
+                setImage(imageUrls);
+                //store search history
+                let oldHistoryState = [...historyData];
+                //limit to previous 20 searches
+                if (oldHistoryState.length === 20) oldHistoryState.pop();
+                setHistoryData([{name: query, urls: imageUrls}, ...oldHistoryState]);
                 setDisplayOpen(true);
             }
         } catch(e){
@@ -139,19 +146,23 @@ export default function CardSearcher({socket, channelId}) {
     const handleSubmit = (e) =>{
         e.preventDefault();
         //reset the values on submit
-        if(acData.length > 0){
+        if(!historyOpen && acData.length > 0){
             setValue('');
             setACData([]);
             getCard(selected);
-        } 
+        } else if (historyOpen){
+            getHistoryItem(selected);
+        }
     };
 
     const handleKeyDown = (e) =>{
+        const len = historyOpen ? historyData.length : acData.length;
+
         //on down arrow
         if(e.keyCode === 40){
         e.preventDefault();
         //scroll down 
-            if(selected < acData.length){
+            if(selected < len - 1){
                 setSelected(selected + 1);
         //go to the topmost element
             } else{
@@ -167,16 +178,22 @@ export default function CardSearcher({socket, channelId}) {
                 setSelected(selected - 1)
             } else {
         //go to the bottommost element
-                setSelected(acData.length -1);
+                setSelected(len -1);
             }
         }
     };
 
-    const clickItem = (index) => {
+    const clickCardItem = (index) => {
         setValue('');
         setACData([]);
         getCard(index);
     };
+
+    const getHistoryItem = (index) => {
+        setDisplayOpen(true);
+        setImage(historyData[index].urls);
+        toggleMenu();
+    }
 
     const handleCloseDisplay = () => {
         setDisplayOpen(false);
@@ -186,22 +203,52 @@ export default function CardSearcher({socket, channelId}) {
         socket.emit('share_card', channelId, image);
     };
 
+    //toggles search / histroy menu
+    const toggleMenu = () => {
+        setValue('');
+        setACData([]);
+        setSelected(0);
+        toggleHistoryOpen();
+    }
+
+    const handleEnter = (e) => {
+        e.preventDefault();
+        if(e.keyCode === 13) handleSubmit(e);
+    }
+
     return (
         <>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
             <div className={classes.search}>
-                <SearchIcon className={classes.icon} />
-                <Input className={classes.input} disableUnderline value={value}
-                       placeholder='Card Search' onKeyDown={handleKeyDown}
-                       onChange={handleChange} />
+                {historyOpen ?  <>
+                                    <Button className={classes.searchIcon} onClick={toggleMenu} onKeyDown={handleEnter}>
+                                        <HistoryIcon />
+                                    </Button>
+                                    <Typography className={classes.input}>Search History</Typography>
+                                </>
+                             :
+                                <>
+                                    <Button className={classes.searchIcon} onClick={toggleMenu} >
+                                        <SearchIcon />
+                                    </Button>
+                                    <Input className={classes.input} disableUnderline value={value}
+                                        placeholder='Card Search' onChange={handleChange} />
+                                </>
+                }
             </div>
             <div className={classes.container}>
                 <div className={classes.results}>
-                    <List className={classes.list}>
-                        {acData.map( (item,index) => <AutoCompleteItem key={item} index={index} 
-                                                        content={item} selected={index === selected}
-                                                        clickItem={clickItem} />)}
-                    </List>
+                {historyOpen ?  <List className={classes.list}>
+                                    {historyData.map( (item,index) => <AutoCompleteItem key={item.name} index={index} 
+                                                                            content={item.name} selected={index === selected} 
+                                                                            clickItem={getHistoryItem} />)}
+                                </List>
+                             :  <List className={classes.list}>
+                                    {acData.map( (item,index) => <AutoCompleteItem key={item} index={index} 
+                                                                        content={item} selected={index === selected}
+                                                                        clickItem={clickCardItem} />)}
+                                </List>
+                }
                 </div>
             </div>
         </form>
