@@ -18,7 +18,7 @@ module.exports = function (io, socket){
                     return;
                 }            
                 //add userId to list of users
-                res.push(userId);
+                if(!res.includes(userId))res.push(userId);
             } else {
                 res = [userId];   
             }

@@ -91,6 +91,9 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                 }
         ]});
 
+        //boolean to track if user created initial offer
+        let createdOffer = false;
+
         //sends ice candidate to peer
         var handleICECandidateEvent = (e) => {
             if(e.candidate){
@@ -99,9 +102,11 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
         };
 
         //creates and sends offer to peer
-        var handleNegotiationNeededEvent = async () => {
+        var handleNegotiationNeededEvent = async (restarting = false) => {
             try{
-            const offer = await myPC.createOffer();
+            createdOffer = true;
+            const parameters = restarting ? {iceRestart:true}:{};
+            const offer = await myPC.createOffer(parameters);
             await myPC.setLocalDescription(offer);
             socket.emit('send_offer', peerId, myId, JSON.stringify(offer));
             } catch(e) {
@@ -146,9 +151,14 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
          //close the connection if ice connection errors out
          var handleICEConnectionStateChangeEvent = (e) => {
              switch(myPC.iceConnectionState){
-                 case 'closed':
                  case 'failed':
-                 case 'disconnected':
+                    //only restart ICE if initially made offer
+                    if(createdOffer){
+                        if(myPC.restartIce) myPC.restartIce();
+                        else handleNegotiationNeededEvent(true);
+                    }
+                    break;
+                 case 'closed':
                      closeConnection();
                      break;
                 default:
@@ -179,6 +189,9 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                  myPC.close();
                  myPC = null;
              }
+
+            setPeerConnections(prevState => prevState.filter(pc => pc.id !== peerId));
+            setFeeds(prevState => prevState.filter(feed => feed.id !== peerId));
          };
     
         myPC.onicecandidate = handleICECandidateEvent;
@@ -260,6 +273,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                 setClientList(parsedIds);
                 setLoading(false);
             } else {
+                alert('This room is currently full.');
                 // send user back to previous page 
                 navDispatch({type:'VIEW', view:'chat'});
             }
@@ -318,10 +332,18 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                 }
             }    
         });
+
+        // alert when user becomes offline and go back to previous page
+        const handleOfflineStatus = () => {
+            alert('There seems to be a problem with your internet connection.');
+            handleGoBack();
+        };
+        window.addEventListener('offline', handleOfflineStatus);
         
         return () => {
             //clean up socket listeners of room
             if(socket){
+                window.removeEventListener('offline', handleOfflineStatus);
                 socket.off('client_list');
                 socket.off('receive_offer');
                 socket.off('receive_candidate');
