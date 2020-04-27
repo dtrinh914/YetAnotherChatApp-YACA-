@@ -91,6 +91,9 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                 }
         ]});
 
+        //boolean to track if user created initial offer
+        let createdOffer = false;
+
         //sends ice candidate to peer
         var handleICECandidateEvent = (e) => {
             if(e.candidate){
@@ -99,9 +102,11 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
         };
 
         //creates and sends offer to peer
-        var handleNegotiationNeededEvent = async () => {
+        var handleNegotiationNeededEvent = async (restarting = false) => {
             try{
-            const offer = await myPC.createOffer();
+            createdOffer = true;
+            const parameters = restarting ? {iceRestart:true}:{};
+            const offer = await myPC.createOffer(parameters);
             await myPC.setLocalDescription(offer);
             socket.emit('send_offer', peerId, myId, JSON.stringify(offer));
             } catch(e) {
@@ -146,9 +151,14 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
          //close the connection if ice connection errors out
          var handleICEConnectionStateChangeEvent = (e) => {
              switch(myPC.iceConnectionState){
-                 case 'closed':
                  case 'failed':
-                 case 'disconnected':
+                    //only restart ICE if initially made offer
+                    if(createdOffer){
+                        if(myPC.restartIce) myPC.restartIce();
+                        else handleNegotiationNeededEvent(true);
+                    }
+                    break;
+                 case 'closed':
                      closeConnection();
                      break;
                 default:

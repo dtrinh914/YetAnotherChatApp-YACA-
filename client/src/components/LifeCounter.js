@@ -49,7 +49,7 @@ export default function LifeCounter({count, id, handleLifeChange}) {
     const handleSubmit = (e) => {
         e.preventDefault();
         const parsed = parseInt(value);
-        if(parsed) handleLifeChange(id, parsed);
+        if(!isNaN(parsed)) handleLifeChange(id, parsed);
         resetValue();
         setOpenEdit(false);
     };
