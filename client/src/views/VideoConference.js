@@ -189,6 +189,9 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                  myPC.close();
                  myPC = null;
              }
+
+            setPeerConnections(prevState => prevState.filter(pc => pc.id !== peerId));
+            setFeeds(prevState => prevState.filter(feed => feed.id !== peerId));
          };
     
         myPC.onicecandidate = handleICECandidateEvent;
@@ -270,6 +273,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                 setClientList(parsedIds);
                 setLoading(false);
             } else {
+                alert('This room is currently full.');
                 // send user back to previous page 
                 navDispatch({type:'VIEW', view:'chat'});
             }
@@ -328,10 +332,18 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                 }
             }    
         });
+
+        // alert when user becomes offline and go back to previous page
+        const handleOfflineStatus = () => {
+            alert('There seems to be a problem with your internet connection.');
+            handleGoBack();
+        };
+        window.addEventListener('offline', handleOfflineStatus);
         
         return () => {
             //clean up socket listeners of room
             if(socket){
+                window.removeEventListener('offline', handleOfflineStatus);
                 socket.off('client_list');
                 socket.off('receive_offer');
                 socket.off('receive_candidate');
