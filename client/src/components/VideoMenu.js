@@ -9,7 +9,7 @@ import SettingsInputSvideoIcon from '@material-ui/icons/SettingsInputSvideo';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 
-export default function VideoMenu({feed, handleGoBack}) {
+export default function VideoMenu({userId, feed, setFeeds, peerConnections, handleGoBack}) {
     const [IO, setIO] = useState(null);
     const [IoOpen, toggleIoOpen] = useToggle(false);
     const [cameraOn, setCameraOn] = useState(true);
@@ -35,29 +35,76 @@ export default function VideoMenu({feed, handleGoBack}) {
         }
     };
 
-    useEffect(()=>{
-        const getDevices = async () => {
-            const deviceInfos = await navigator.mediaDevices.enumerateDevices();
-            const formattedIO = {
-                                    audioinput:[],
-                                    audiooutput:[],
-                                    videoinput:[]
-                                };
-    
-            deviceInfos.forEach(device => {
-                switch(device.kind){
-                    case 'audioinput':
-                    case 'audiooutput':
-                    case 'videoinput':
-                        formattedIO[device.kind].push({id:device.deviceId, label: device.label});
-                        break;
-                    default:
-                        break;
-                }
+    const handleInputChanges = (audioIn, videoIn) => {
+        //stop tracks for current feed
+        if(feed){
+            feed.getTracks().forEach(track => {
+                track.stop();
             });
-            setIO(formattedIO);
         }
 
+        //set contraints for new stream
+        const constraints = {
+            audio: {deviceId: audioIn},
+            video: {deviceId: videoIn, width:{ideal:1280},height:{ideal:720}}
+        };
+
+        //get user media using contraints
+        navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+            //replace tracks on each peer connection
+            const audioTrack = stream.getAudioTracks()[0];
+            const videoTrack = stream.getVideoTracks()[0];
+
+            peerConnections.forEach(pc => {
+                const senders = pc.connection.getSenders();
+
+                senders.forEach( s => {
+                    if(s.track.kind === videoTrack.kind){
+                        s.replaceTrack(videoTrack);
+                    }
+                    else if(s.track.kind === audioTrack.kind){
+                        s.replaceTrack(audioTrack)
+                    }
+                })
+            });
+
+            //update old feed
+            setFeeds(prevState => prevState.map( feed => {
+                if(feed.id === userId) return {...feed, stream:stream};
+                else return feed;
+            }));
+            setCameraOn(true);
+            setMicOn(true);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    };
+
+    const getDevices = async () => {
+        //get array of user devices
+        const deviceInfos = await navigator.mediaDevices.enumerateDevices();
+        const formattedIO = {
+                                audioinput:[],
+                                videoinput:[]
+                            };
+        
+        //store audio and video inputs
+        deviceInfos.forEach(device => {
+            switch(device.kind){
+                case 'audioinput':
+                case 'videoinput':
+                    formattedIO[device.kind].push({id:device.deviceId, label: device.label});
+                    break;
+                default:
+                    break;
+            }
+        });
+        setIO(formattedIO);
+    };
+
+    useEffect(()=>{
         getDevices();
     },[]);
 
@@ -75,7 +122,7 @@ export default function VideoMenu({feed, handleGoBack}) {
             </IconButton>
             <Button onClick={handleGoBack}>Go Back</Button>
         </div>
-        {IoOpen ? <VideoIOMenu handleClose={toggleIoOpen} IO={IO} /> : ''}
+        {IoOpen ? <VideoIOMenu IO={IO} getDevices={getDevices} handleInputChanges={handleInputChanges} handleClose={toggleIoOpen}  /> : ''}
         </>
     )
 }

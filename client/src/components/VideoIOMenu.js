@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import VideoAudioSelect from './VideoAudioSelect';
 import useInput from '../hooks/useInput';
 import {makeStyles} from '@material-ui/styles';
@@ -41,15 +41,19 @@ const useStyles = makeStyles({
     }
 });
 
-export default function VideoIOMenu({IO, handleClose}){
+export default function VideoIOMenu({IO, getDevices, handleInputChanges, handleClose}){
     const classes = useStyles();
     const [audioIn, setAudioIn] = useInput('');
-    const [audioOut, setAudioOut] = useInput('');
     const [videoIn, setVideoIn] = useInput('');
     
+    useEffect(()=>{
+        getDevices();
+    }, [getDevices]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        handleInputChanges(audioIn, videoIn);
+        handleClose();
     };
 
     return (
@@ -61,7 +65,6 @@ export default function VideoIOMenu({IO, handleClose}){
                             Video and Audio Settings
                         </Typography>
                         <VideoAudioSelect label='Audio Input' options={IO.audioinput} setSelect={setAudioIn} />
-                        <VideoAudioSelect label='Audio Output' options={IO.audiooutput} setSelect={setAudioOut} /> 
                         <VideoAudioSelect label='Video Input' options={IO.videoinput} setSelect={setVideoIn} /> 
                         <div className={classes.controls}> 
                             <Button className={classes.button} type='submit'>Save</Button>
