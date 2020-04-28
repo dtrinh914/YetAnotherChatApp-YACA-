@@ -28,6 +28,7 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
     const classes = useStyle();
     const [loading, setLoading] = useState(true);
     const [clientList, setClientList] = useState([]);
+    const [myFeed, setMyFeed] = useState(null);
     const [feeds, setFeeds] = useState([]);
     const [topOpen, setTopOpen] = useState(false);
     const [peerConnections, setPeerConnections] = useState([]);
@@ -359,6 +360,19 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
         setFeeds(prevState => prevState.filter(feed => clientList.includes(feed.id)));
     },[clientList])
 
+    useEffect(()=>{
+        let targetFeed;
+
+        for(let i = 0; i < feeds.length; i++){
+            if(feeds[i].id === userId){
+                targetFeed = feeds[i];
+                break;
+            }
+        }
+
+        setMyFeed(targetFeed);
+    },[feeds, userId])
+
     //change the index of the feeds, which changes placement of the videos
     const moveVideo = (currentIndex, toIndex) => {
         let newFeedState = [...feedsState.current];
@@ -385,7 +399,8 @@ export default function VideoConference({socket, channelId, userId, groupName}) 
                                                     moveVideo={moveVideo} />)}
                             </Grid>
                         </div>
-                    <VideoMenu feed={feeds[0] ? feeds[0].stream : ''} handleGoBack={handleGoBack} />
+                    <VideoMenu userId={userId} feed={myFeed ? myFeed.stream : ''} setFeeds={setFeeds} 
+                        peerConnections={peerConnections} handleGoBack={handleGoBack} />
                 </div>
             </DndProvider>  
         );
