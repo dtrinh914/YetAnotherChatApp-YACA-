@@ -1,5 +1,6 @@
 import React, {useState, useRef, useEffect, useCallback} from 'react';
 import useToggle from '../hooks/useToggle';
+import useCardHistory from '../hooks/useCardHistory';
 import AutoCompleteItem from './AutoCompleteItem';
 import CardDisplay from './CardDisplay';
 import SearchIcon from '@material-ui/icons/Search';
@@ -52,7 +53,7 @@ export default function CardSearcher({socket, channelId}) {
     const valueRef = useRef('');
     const [value, setValue] = useState('');
     const [acData, setACData] = useState([]);
-    const [historyData, setHistoryData] = useState([]);
+    const [historyData, setHistoryData] = useCardHistory([]);
     const [cache, setCache] = useState({});
     const [displayOpen, setDisplayOpen] = useState(false); 
     const [historyOpen, toggleHistoryOpen] = useToggle(false);
@@ -64,15 +65,16 @@ export default function CardSearcher({socket, channelId}) {
     },[value]);
 
     useEffect(()=>{
-        socket.on('get_card', url => {
-            setImage(url);
+        socket.on('get_card', data => {
+            setHistoryData(data);
+            setImage(data);
             setDisplayOpen(true);
         });
 
         return () => {
             socket.off('get_card');
         }
-    },[socket]);
+    },[socket, setHistoryData]);
 
     //get card image
     const getCard = async (index) => {
@@ -87,12 +89,9 @@ export default function CardSearcher({socket, channelId}) {
                 //logic to handle double faced cards
                 const imageUrls = data.image_uris ? [data.image_uris.normal] 
                                                   : data.card_faces.map(face => face.image_uris.normal);
-                setImage(imageUrls);
-                //store search history
-                let oldHistoryState = [...historyData];
-                //limit to previous 20 searches
-                if (oldHistoryState.length === 20) oldHistoryState.pop();
-                setHistoryData([{name: query, urls: imageUrls}, ...oldHistoryState]);
+                const cardData = {name: query, urls: imageUrls};
+                setImage(cardData);
+                setHistoryData(cardData);
                 setDisplayOpen(true);
             }
         } catch(e){
@@ -191,7 +190,7 @@ export default function CardSearcher({socket, channelId}) {
 
     const getHistoryItem = (index) => {
         setDisplayOpen(true);
-        setImage(historyData[index].urls);
+        setImage(historyData[index]);
         toggleMenu();
     }
 
@@ -252,7 +251,7 @@ export default function CardSearcher({socket, channelId}) {
                 </div>
             </div>
         </form>
-        {displayOpen ? <CardDisplay urls={image} handleShare={handleShare} handleClose={handleCloseDisplay} /> : ''}
+        {displayOpen ? <CardDisplay cardData={image} handleShare={handleShare} handleClose={handleCloseDisplay} /> : ''}
         </>
     )
 }
