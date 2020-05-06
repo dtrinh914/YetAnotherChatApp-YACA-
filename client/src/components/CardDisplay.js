@@ -34,7 +34,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function CardDisplay({urls, handleShare, handleClose}){
+export default function CardDisplay({cardData, handleShare, handleClose}){
     const classes = useStyles();
     const [face, setFace] = useState(0);
     const containerRef = useRef(null);
@@ -45,7 +45,7 @@ export default function CardDisplay({urls, handleShare, handleClose}){
 
     //switch image on click of double faced cards
     const handleFace = () => {
-        if(urls.length > 1){
+        if(cardData.urls.length > 1){
             const newState = face ? 0 : 1;
             setFace(newState);
         }
@@ -55,7 +55,7 @@ export default function CardDisplay({urls, handleShare, handleClose}){
         <div className={classes.root}>
             <ClickAwayListener onClickAway={handleClose} mouseEvent='onMouseDown'>
                 <Paper className={classes.paper} ref={containerRef}>
-                    <img onClick={handleFace} className={classes.img} src={urls[face]} alt='mtg-card' />
+                    <img onClick={handleFace} className={classes.img} src={cardData.urls[face]} alt='mtg-card' />
                     <div className={classes.display}> 
                         <Button onClick={handleShare}>Share</Button>
                         <Button onClick={handleClose}>Close</Button>
